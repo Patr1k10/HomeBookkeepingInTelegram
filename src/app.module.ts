@@ -9,14 +9,8 @@ import { LoggerModule } from './loger/loger.modul';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseConfigService } from './mongodb/mongoose-config.service';
-import {
-  Balance,
-  BalanceSchema,
-  Transaction,
-  TransactionSchema,
-} from './mongodb/shemas';
+import { Balance, BalanceSchema, Transaction, TransactionSchema } from './mongodb/shemas';
 import configuration from './mongodb/configuration';
-import { TransactionController } from './controllers/transaction.controller';
 
 dotenv.config();
 
@@ -41,12 +35,7 @@ const sessions = new LocalSession({ database: 'session_db.json' });
       load: [configuration],
     }),
   ],
-  providers: [
-    TransactionService,
-    AppUpdate,
-    PinoLoggerService,
-    TransactionController,
-  ],
+  providers: [TransactionService, AppUpdate, PinoLoggerService],
   exports: [PinoLoggerService],
 })
 export class AppModule {}

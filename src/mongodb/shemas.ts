@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
 export enum TransactionType {
-  INCOME = 'доход',
-  EXPENSE = 'расходы',
+  INCOME = 'Доход',
+  EXPENSE = 'Расходы',
 }
 
 @Schema()
@@ -14,11 +14,7 @@ export class Balance extends Document {
   @Prop({ required: true })
   balance: number;
 
-  @Prop({
-    required: true,
-    type: [{ type: Types.ObjectId, ref: 'Transaction' }],
-  })
-  transactions: Types.ObjectId[];
+
 }
 
 @Schema()

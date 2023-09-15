@@ -3,6 +3,7 @@
 /node_modules
 .env
 session_db.json
+todoo.txt
 # Logs
 logs
 *.log
