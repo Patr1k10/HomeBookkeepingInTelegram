@@ -2,10 +2,7 @@ import { Markup } from 'telegraf';
 
 export function actionButtonsStart() {
   return Markup.keyboard(
-    [
-      Markup.button.callback('Баланс 💰', 'Баланс'),
-      Markup.button.callback('Транзакция 💸', 'Транзакция'),
-    ],
+    [Markup.button.callback('Баланс 💰', 'Баланс'), Markup.button.callback('Транзакция 💸', 'Транзакция')],
     {
       columns: 2,
     },
@@ -31,4 +28,11 @@ export function actionButtonsStatistics() {
     ],
     { columns: 3 },
   );
+}
+export function actionButtonsTransactionNames(transactionNames: string[]) {
+  const buttons = [];
+  for (const name of transactionNames) {
+    buttons.push(Markup.button.callback(name, `TransactionName:${name}`));
+  }
+  return Markup.inlineKeyboard(buttons, { columns: 2 });
 }

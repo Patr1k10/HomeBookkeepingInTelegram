@@ -2,7 +2,7 @@ import { TransactionType } from '../mongodb/shemas';
 
 export class CreateBalanceDto {
   userId: number;
-  balance: number;
+  balance?: number;
 }
 
 export class CreateTransactionDto {

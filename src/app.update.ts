@@ -5,11 +5,13 @@ import {
   actionButtonsStart,
   actionButtonsStatistics,
   actionButtonsTransaction,
+  actionButtonsTransactionNames,
 } from './app.buttons';
 import { PinoLoggerService } from './loger/pino.loger.service';
-import { Context } from './interface/context.interfsce';
 import { MyMessage } from './interface/my-message.interface';
 import { TransactionType } from './mongodb/shemas';
+import { Context, CustomCallbackQuery } from './interface/context.interfsce';
+import { callbackQuery } from 'telegraf/filters';
 
 @Update()
 export class AppUpdate {
@@ -25,10 +27,7 @@ export class AppUpdate {
   async startCommand(ctx: Context) {
     try {
       const userId = ctx.message.from.id;
-      const existingBalance = await this.transactionService.getBalance(userId);
-      if (!existingBalance) {
-        await this.transactionService.createBalance({ userId, balance: 0 });
-      }
+      await this.transactionService.createBalance({ userId });
       await ctx.reply(
         '\n' +
           '👋 Привет! Добро пожаловать в бот домашней бухгалтерии! 👛\n' +
@@ -90,6 +89,50 @@ export class AppUpdate {
     );
     this.logger.log('расходы command executed');
   }
+  @Action('По категории')
+  async categoryListCommand(ctx: Context) {
+    const userId = ctx.from.id;
+    const uniqueTransactionNames =
+      await this.transactionService.getUniqueTransactionNames(userId);
+    const transactionNameButtons = actionButtonsTransactionNames(
+      uniqueTransactionNames,
+    );
+    await ctx.reply('Выберите категорию транзакции:', transactionNameButtons);
+  }
+
+  @Action(/TransactionName:(.+)/)
+  async transactionNameCommand(ctx: Context) {
+    this.logger.log('transactionName command executed');
+    const callbackQuery: CustomCallbackQuery =
+      ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+      const selectedTransactionName = parts[1];
+      const userId = ctx.from.id;
+      const transactions =
+        await this.transactionService.getTransactionsByTransactionName(
+          userId,
+          selectedTransactionName,
+        );
+      if (transactions.length > 0) {
+        const formattedTransactions = transactions.map(
+          this.transactionService.formatTransaction,
+        );
+        await ctx.reply(
+          `Транзакции по категории "${selectedTransactionName}":\n${formattedTransactions.join(
+            '\n',
+          )}`,
+        );
+      } else {
+        await ctx.reply(
+          `Нет транзакций по категории "${selectedTransactionName}"`,
+        );
+      }
+    } else {
+      this.logger.log('callbackQuery is undefined');
+    }
+  }
   @Action('За сегодня')
   async todayListCommand(ctx: Context) {
     this.logger.log('today command executed');
@@ -121,12 +164,8 @@ export class AppUpdate {
     try {
       await ctx.deleteMessage();
       const userId = ctx.message.from.id;
-      const balance = await this.transactionService.getBalance(userId);
-      if (!balance) {
-        await this.transactionService.createBalance({ userId, balance: 0 });
-      }
+      await this.transactionService.getBalance(userId);
       ctx.session.type = 'balance';
-      await ctx.reply(`Ваш баланс: ${balance.balance}`);
       await ctx.reply(
         'Хотите получить статистику транзакций? Выберите параметр: ',
         actionButtonsStatistics(),
@@ -164,10 +203,9 @@ export class AppUpdate {
       amount,
       transactionType,
     );
-    const newBalance = await this.transactionService.getBalance(userId);
+    await this.transactionService.getBalance(userId);
     await ctx.deleteMessage();
     delete ctx.session.type;
-    await ctx.reply(`Ваш баланс: ${newBalance.balance}`);
     this.logger.log('textCommand executed');
   }
 }

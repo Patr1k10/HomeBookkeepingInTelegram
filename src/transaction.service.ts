@@ -21,10 +21,24 @@ export class TransactionService {
 
   async createBalance(createBalanceDto: CreateBalanceDto): Promise<Balance> {
     try {
-      const balance = new this.balanceModel(createBalanceDto);
-      const createdBalance = await balance.save();
-      this.logger.log(`Created balance for user ${createBalanceDto.userId}`);
-      return createdBalance;
+      const userId = createBalanceDto.userId;
+      const existingBalance = await this.balanceModel
+        .findOne({ userId })
+        .exec();
+      if (existingBalance) {
+        this.logger.log(`Balance already exists for user ${userId}`);
+        return existingBalance;
+      } else {
+        const balance = new this.balanceModel({
+          userId,
+          balance: 0, // Устанавливаем начальный баланс равным 0
+          transactions: [],
+        });
+
+        const createdBalance = await balance.save();
+        this.logger.log(`Created balance for user ${userId}`);
+        return createdBalance;
+      }
     } catch (error) {
       this.logger.error('Error creating balance', error);
       throw error;
@@ -35,7 +49,22 @@ export class TransactionService {
     createTransactionDto: CreateTransactionDto,
   ): Promise<Transaction> {
     try {
-      const transaction = new this.transactionModel(createTransactionDto);
+      // ...
+      const transactionType = createTransactionDto.transactionType;
+      let amount = createTransactionDto.amount;
+
+      if (transactionType === TransactionType.EXPENSE) {
+        // Если это расход, умножьте сумму на -1
+        amount *= -1;
+      }
+
+      const transaction = new this.transactionModel({
+        userId: createTransactionDto.userId,
+        transactionName: createTransactionDto.transactionName,
+        transactionType,
+        amount,
+      });
+
       const createdTransaction = await transaction.save();
       this.logger.log(
         `Created transaction for user ${createTransactionDto.userId}`,
@@ -47,74 +76,76 @@ export class TransactionService {
     }
   }
 
-  async getBalance(userId: number): Promise<Balance | null> {
+  async getBalance(userId: number): Promise<void> {
     try {
       const balance = await this.balanceModel.findOne({ userId }).exec();
       if (balance) {
+        const message = `Ваш баланс: ${balance.balance} грн`;
+        await this.bot.telegram.sendMessage(userId, message);
+
         this.logger.log(`Retrieved balance for user ${userId}`);
       } else {
+        await this.createBalance({ userId });
         this.logger.log(`No balance found for user ${userId}`);
       }
-      return balance;
     } catch (error) {
       this.logger.error('Error getting balance', error);
       throw error;
     }
   }
 
-  async getTransactions(userId: number): Promise<void> {
-    try {
-      const transactions = await this.transactionModel.find({ userId }).exec();
-      const formattedTransactions: string[] = [];
+  // async getTransactions(userId: number): Promise<void> {
+  //   try {
+  //     const transactions = await this.transactionModel.find({ userId }).exec();
+  //     const formattedTransactions: string[] = [];
+  //     if (transactions.length > 0) {
+  //       this.logger.log(
+  //         `Retrieved ${transactions.length} transactions for user ${userId}`,
+  //       );
+  //       for (const transaction of transactions) {
+  //         const formattedTransaction = this.formatTransaction(transaction);
+  //         formattedTransactions.push(formattedTransaction);
+  //       }
+  //       await this.bot.telegram.sendMessage(
+  //         userId,
+  //         formattedTransactions.join('\n'),
+  //       );
+  //     } else {
+  //       this.logger.log(`No transactions found for user ${userId}`);
+  //       await this.bot.telegram.sendMessage(
+  //         userId,
+  //         'Нет транзакций для отображения',
+  //       );
+  //     }
+  //   } catch (error) {
+  //     this.logger.error('Error getting transactions', error);
+  //     throw error;
+  //   }
+  // }
 
-      if (transactions.length > 0) {
-        this.logger.log(
-          `Retrieved ${transactions.length} transactions for user ${userId}`,
-        );
-        for (const transaction of transactions) {
-          const formattedTransaction = this.formatTransaction(transaction);
-          formattedTransactions.push(formattedTransaction);
-        }
-        await this.bot.telegram.sendMessage(
-          userId,
-          formattedTransactions.join('\n'),
-        );
-      } else {
-        this.logger.log(`No transactions found for user ${userId}`);
-        await this.bot.telegram.sendMessage(
-          userId,
-          'Нет транзакций для отображения',
-        );
-      }
-    } catch (error) {
-      this.logger.error('Error getting transactions', error);
-      throw error;
-    }
-  }
-
-  async deleteBalance(userId: number): Promise<void> {
-    try {
-      const result = await this.balanceModel
-        .findOneAndRemove({ userId })
-        .exec();
-      if (result) {
-        this.logger.log(`Deleted balance for user ${userId}`);
-        await this.bot.telegram.sendMessage(
-          userId,
-          'Баланс пользователя удален',
-        );
-      } else {
-        this.logger.log(`No balance found for user ${userId}`);
-        await this.bot.telegram.sendMessage(
-          userId,
-          'Баланс пользователя не найден',
-        );
-      }
-    } catch (error) {
-      this.logger.error('Error deleting balance', error);
-      throw error;
-    }
-  }
+  // async deleteBalance(userId: number): Promise<void> {
+  //   try {
+  //     const result = await this.balanceModel
+  //       .findOneAndRemove({ userId })
+  //       .exec();
+  //     if (result) {
+  //       this.logger.log(`Deleted balance for user ${userId}`);
+  //       await this.bot.telegram.sendMessage(
+  //         userId,
+  //         'Баланс пользователя удален',
+  //       );
+  //     } else {
+  //       this.logger.log(`No balance found for user ${userId}`);
+  //       await this.bot.telegram.sendMessage(
+  //         userId,
+  //         'Баланс пользователя не найден',
+  //       );
+  //     }
+  //   } catch (error) {
+  //     this.logger.error('Error deleting balance', error);
+  //     throw error;
+  //   }
+  // }
 
   async updateBalance(
     userId: number,
@@ -139,6 +170,7 @@ export class TransactionService {
         if (transactionType === TransactionType.INCOME) {
           balance.balance += amount;
         } else if (transactionType === TransactionType.EXPENSE) {
+          // Если это расход, учитываем знак минус
           balance.balance -= amount;
         }
         await balance.save();
@@ -187,27 +219,12 @@ export class TransactionService {
   async getTransactionsByTransactionName(
     userId: number,
     transactionName: string,
-  ): Promise<void> {
+  ): Promise<Transaction[]> {
     try {
       const transactions = await this.transactionModel
         .find({ userId, transactionName })
         .exec();
-      const formattedTransactions: string[] = [];
-      for (const transaction of transactions) {
-        const formattedTransaction = this.formatTransaction(transaction);
-        formattedTransactions.push(formattedTransaction);
-      }
-      if (formattedTransactions.length > 0) {
-        await this.bot.telegram.sendMessage(
-          userId,
-          formattedTransactions.join('\n'),
-        );
-      } else {
-        await this.bot.telegram.sendMessage(
-          userId,
-          'Нет транзакций с таким названием',
-        );
-      }
+      return transactions;
     } catch (error) {
       this.logger.error('Error getting transactions by transactionName', error);
       throw error;
@@ -325,7 +342,19 @@ export class TransactionService {
     }
   }
 
-  private formatTransaction(transaction: Transaction): string {
+  async getUniqueTransactionNames(userId: number): Promise<string[]> {
+    try {
+      const uniqueTransactionNames = await this.transactionModel
+        .distinct('transactionName', { userId })
+        .exec();
+      return uniqueTransactionNames;
+    } catch (error) {
+      this.logger.error('Error getting unique transaction names', error);
+      throw error;
+    }
+  }
+
+  formatTransaction(transaction: Transaction): string {
     const transactionName = transaction.transactionName;
     const transactionType = transaction.transactionType;
     const amount = transaction.amount;
