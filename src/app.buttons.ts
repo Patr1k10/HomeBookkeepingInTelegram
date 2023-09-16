@@ -6,7 +6,7 @@ export function actionButtonsStart() {
     {
       columns: 2,
     },
-  );
+  ).resize();
 }
 
 export function actionButtonsTransaction() {

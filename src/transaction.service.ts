@@ -17,7 +17,9 @@ export class TransactionService {
     private readonly transactionModel: Model<Transaction>,
     private readonly logger: PinoLoggerService,
     @InjectBot() private readonly bot: Telegraf<Context>,
-  ) {}
+  ) {
+    this.logger.setContext('TransactionService');
+  }
 
   async createBalance(createBalanceDto: CreateBalanceDto): Promise<Balance> {
     try {
@@ -32,7 +34,6 @@ export class TransactionService {
           balance: 0, // Устанавливаем начальный баланс равным 0
           transactions: [],
         });
-
         const createdBalance = await balance.save();
         this.logger.log(`Created balance for user ${userId}`);
         return createdBalance;
@@ -42,25 +43,21 @@ export class TransactionService {
       throw error;
     }
   }
-
   async createTransaction(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
     try {
       // ...
       const transactionType = createTransactionDto.transactionType;
       let amount = createTransactionDto.amount;
-
       if (transactionType === TransactionType.EXPENSE) {
         // Если это расход, умножьте сумму на -1
         amount *= -1;
       }
-
       const transaction = new this.transactionModel({
         userId: createTransactionDto.userId,
         transactionName: createTransactionDto.transactionName,
         transactionType,
         amount,
       });
-
       const createdTransaction = await transaction.save();
       this.logger.log(`Created transaction for user ${createTransactionDto.userId}`);
       return createdTransaction;
@@ -69,14 +66,12 @@ export class TransactionService {
       throw error;
     }
   }
-
   async getBalance(userId: number): Promise<void> {
     try {
       const balance = await this.balanceModel.findOne({ userId }).exec();
       if (balance) {
         const message = `Ваш баланс: ${balance.balance} грн`;
         await this.bot.telegram.sendMessage(userId, message);
-
         this.logger.log(`Retrieved balance for user ${userId}`);
       } else {
         await this.createBalance({ userId });
@@ -87,9 +82,6 @@ export class TransactionService {
       throw error;
     }
   }
-
-
-
   async updateBalance(userId: number, amount: number, transactionType: TransactionType): Promise<void> {
     try {
       const balance = await this.balanceModel.findOne({ userId });
@@ -118,15 +110,16 @@ export class TransactionService {
       throw error;
     }
   }
-
   async getTransactionsByType(userId: number, transactionType: TransactionType): Promise<void> {
     try {
       const transactions = await this.transactionModel.find({ userId, transactionType }).exec();
       if (transactions.length > 0) {
         this.logger.log(`Retrieved ${transactions.length} transactions for user ${userId}`);
-        for (const transaction of transactions) {
-          const formattedTransaction = this.formatTransaction(transaction);
-          await this.bot.telegram.sendMessage(userId, formattedTransaction);
+        const transactionGroups = this.splitArray(transactions, 5);
+        for (const group of transactionGroups) {
+          const formattedTransactions = group.map(this.formatTransaction);
+          const message = formattedTransactions.join('\n');
+          await this.bot.telegram.sendMessage(userId, message);
         }
       } else {
         this.logger.log(`No transactions of type ${transactionType} found for user ${userId}`);
@@ -137,15 +130,18 @@ export class TransactionService {
       throw error;
     }
   }
-
   async getTransactionsByTransactionName(userId: number, transactionName: string): Promise<void> {
     try {
       const transactions = await this.transactionModel.find({ userId, transactionName }).exec();
       if (transactions.length > 0) {
         this.logger.log(`Retrieved ${transactions.length} transactions by name for user ${userId}`);
-        for (const transaction of transactions) {
-          const formattedTransaction = this.formatTransaction(transaction);
-          await this.bot.telegram.sendMessage(userId, formattedTransaction);
+
+        const transactionGroups = this.splitArray(transactions, 5);
+
+        for (const group of transactionGroups) {
+          const formattedTransactions = group.map(this.formatTransaction);
+          const message = formattedTransactions.join('\n');
+          await this.bot.telegram.sendMessage(userId, message);
         }
       } else {
         this.logger.log(`No transactions with name ${transactionName} found for user ${userId}`);
@@ -160,20 +156,22 @@ export class TransactionService {
   async getFormattedTransactionsForToday(userId: number): Promise<void> {
     try {
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Установите время начала дня
+      today.setHours(0, 0, 0, 0);
       const transactions = await this.transactionModel
         .find({
           userId,
           timestamp: { $gte: today },
         })
         .exec();
-
       if (!transactions || transactions.length === 0) {
         await this.bot.telegram.sendMessage(userId, 'Нет транзакций на сегодня');
       } else {
-        for (const transaction of transactions) {
-          const formattedTransaction = this.formatTransaction(transaction);
-          await this.bot.telegram.sendMessage(userId, formattedTransaction);
+        const transactionGroups = this.splitArray(transactions, 5);
+
+        for (const group of transactionGroups) {
+          const formattedTransactions = group.map(this.formatTransaction);
+          const message = formattedTransactions.join('\n');
+          await this.bot.telegram.sendMessage(userId, message);
         }
       }
     } catch (error) {
@@ -181,7 +179,6 @@ export class TransactionService {
       await this.bot.telegram.sendMessage(userId, 'Произошла ошибка при получении транзакций на сегодня');
     }
   }
-
   async getFormattedTransactionsForWeek(userId: number): Promise<void> {
     try {
       const today = new Date();
@@ -194,9 +191,12 @@ export class TransactionService {
         })
         .exec();
       if (transactions.length > 0) {
-        for (const transaction of transactions) {
-          const formattedTransaction = this.formatTransaction(transaction);
-          await this.bot.telegram.sendMessage(userId, formattedTransaction);
+        const transactionGroups = this.splitArray(transactions, 5);
+
+        for (const group of transactionGroups) {
+          const formattedTransactions = group.map(this.formatTransaction);
+          const message = formattedTransactions.join('\n');
+          await this.bot.telegram.sendMessage(userId, message);
         }
       } else {
         await this.bot.telegram.sendMessage(userId, 'Нет транзакций за последнюю неделю');
@@ -206,7 +206,6 @@ export class TransactionService {
       await this.bot.telegram.sendMessage(userId, 'Произошла ошибка при получении транзакций за последнюю неделю');
     }
   }
-
   async getFormattedTransactionsForMonth(userId: number): Promise<void> {
     try {
       const today = new Date();
@@ -219,9 +218,11 @@ export class TransactionService {
         })
         .exec();
       if (transactions.length > 0) {
-        for (const transaction of transactions) {
-          const formattedTransaction = this.formatTransaction(transaction);
-          await this.bot.telegram.sendMessage(userId, formattedTransaction);
+        const transactionGroups = this.splitArray(transactions, 5);
+        for (const group of transactionGroups) {
+          const formattedTransactions = group.map(this.formatTransaction);
+          const message = formattedTransactions.join('\n');
+          await this.bot.telegram.sendMessage(userId, message);
         }
       } else {
         await this.bot.telegram.sendMessage(userId, 'Нет транзакций за последний месяц');
@@ -231,17 +232,14 @@ export class TransactionService {
       await this.bot.telegram.sendMessage(userId, 'Произошла ошибка при получении транзакций за последний месяц');
     }
   }
-
   async getUniqueTransactionNames(userId: number): Promise<string[]> {
     try {
-      const uniqueTransactionNames = await this.transactionModel.distinct('transactionName', { userId }).exec();
-      return uniqueTransactionNames;
+      return await this.transactionModel.distinct('transactionName', { userId }).exec();
     } catch (error) {
       this.logger.error('Error getting unique transaction names', error);
       throw error;
     }
   }
-
   formatTransaction(transaction: Transaction): string {
     const transactionName = transaction.transactionName;
     const transactionType = transaction.transactionType;
@@ -254,8 +252,6 @@ export class TransactionService {
       hour: 'numeric',
       minute: 'numeric',
     });
-
-    // Создайте форматированную строку с двумя колонками
     const formattedTransaction = `
     ---------------------------------------
     ${timestamp}
@@ -264,8 +260,13 @@ export class TransactionService {
     ${transactionType}
     ${amount} грн.
   `;
-
-    // Удалите лишние отступы и пробелы
     return formattedTransaction.trim();
+  }
+  splitArray(array: any[], chunkSize: number): any[][] {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
   }
 }

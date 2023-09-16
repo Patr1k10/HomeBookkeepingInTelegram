@@ -13,8 +13,6 @@ export class Balance extends Document {
 
   @Prop({ required: true })
   balance: number;
-
-
 }
 
 @Schema()

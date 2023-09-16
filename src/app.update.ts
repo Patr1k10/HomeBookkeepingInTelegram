@@ -11,7 +11,6 @@ import { PinoLoggerService } from './loger/pino.loger.service';
 import { MyMessage } from './interface/my-message.interface';
 import { TransactionType } from './mongodb/shemas';
 import { Context, CustomCallbackQuery } from './interface/context.interfsce';
-
 @Update()
 export class AppUpdate {
   constructor(
@@ -19,13 +18,18 @@ export class AppUpdate {
     private readonly transactionService: TransactionService,
     private readonly logger: PinoLoggerService,
   ) {
-    this.logger.setContext('Command');
+    this.logger.setContext('Update');
   }
-
   @Start()
   async startCommand(ctx: Context) {
     try {
       const userId = ctx.from.id;
+      const user = ctx.from;
+      this.logger.log(`
+      User ID: ${user.id}
+      First Name: ${user.first_name}
+      Last Name: ${user.last_name}
+      Username: ${user.username}`);
       await this.transactionService.createBalance({ userId });
       await ctx.reply(
         '\n' +
@@ -87,7 +91,6 @@ export class AppUpdate {
     const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames);
     await ctx.reply('Выберите категорию транзакции:', transactionNameButtons);
   }
-
   @Action(/TransactionName:(.+)/)
   async transactionNameCommand(ctx: Context) {
     this.logger.log('transactionName command executed');
@@ -113,21 +116,16 @@ export class AppUpdate {
   async weekListCommand(ctx: Context) {
     this.logger.log('week command executed');
     const userId = ctx.from.id;
-
     await this.transactionService.getFormattedTransactionsForWeek(userId);
-
     this.logger.log('week command executed');
   }
   @Action('За месяц')
   async monthListCommand(ctx: Context) {
     this.logger.log('month command executed');
     const userId = ctx.from.id;
-
     await this.transactionService.getFormattedTransactionsForMonth(userId);
-
     this.logger.log('month command executed');
   }
-
   @Hears('Баланс 💰')
   async listCommand(ctx: Context) {
     try {
@@ -177,7 +175,6 @@ export class AppUpdate {
       });
       await this.transactionService.updateBalance(userId, amount, transactionType);
       await this.transactionService.getBalance(userId);
-
       await ctx.deleteMessage();
       delete ctx.session.type;
       this.logger.log('textCommand executed');
