@@ -1,4 +1,4 @@
-FROM node:18
+FROM arm64v8/node:18
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 3000
 
 RUN npm run build
 
