@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export enum TransactionType {
   INCOME = 'Доход',
-  EXPENSE = 'Расходы',
+  EXPENSE = 'Расход',
 }
 
 @Schema()

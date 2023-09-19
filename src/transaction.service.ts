@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Balance, TransactionType } from './mongodb/shemas';
 import { PinoLoggerService } from './loger/pino.loger.service';
-import { CreateBalanceDto, CreateTransactionDto } from './dto/balance.dto';
+import { CreateTransactionDto } from './dto/balance.dto';
 import { Transaction } from './interface/transaction.interface';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
@@ -19,59 +19,6 @@ export class TransactionService {
     @InjectBot() private readonly bot: Telegraf<Context>,
   ) {
     this.logger.setContext('TransactionService');
-  }
-  private async getOrCreateBalance(userId: number): Promise<Balance> {
-    let balance = await this.balanceModel.findOne({ userId }).exec();
-    if (!balance) {
-      balance = new this.balanceModel({ userId, balance: 0 });
-      await balance.save();
-      this.logger.log(`Created new balance for user ${userId}`);
-    }
-    return balance;
-  }
-
-  async createBalance(createBalanceDto: CreateBalanceDto): Promise<Balance> {
-    try {
-      const userId = createBalanceDto.userId;
-      const existingBalance = await this.getOrCreateBalance(userId);
-      if (existingBalance) {
-        this.logger.log(`Balance already exists for user ${userId}`);
-      }
-      return existingBalance;
-    } catch (error) {
-      this.logger.error('Error creating balance', error);
-      throw error;
-    }
-  }
-
-  async getBalance(userId: number): Promise<void> {
-    try {
-      const balance = await this.getOrCreateBalance(userId);
-      const message = `Ваш баланс: ${balance.balance} грн`;
-      await this.bot.telegram.sendMessage(userId, message);
-      this.logger.log(`Retrieved balance for user ${userId}`);
-    } catch (error) {
-      this.logger.error('Error getting balance', error);
-      throw error;
-    }
-  }
-  async updateBalance(userId: number, amount: number, transactionType: TransactionType): Promise<void> {
-    try {
-      const balance = await this.getOrCreateBalance(userId);
-
-      if (transactionType === TransactionType.INCOME) {
-        balance.balance += amount;
-      } else if (transactionType === TransactionType.EXPENSE) {
-        balance.balance -= amount;
-      }
-
-      await balance.save();
-      this.logger.log(`Updated balance for user ${userId}`);
-      await this.bot.telegram.sendMessage(userId, 'Баланс пользователя обновлен');
-    } catch (error) {
-      this.logger.error('Error updating balance', error);
-      throw error;
-    }
   }
 
   async createTransaction(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
@@ -195,13 +142,13 @@ export class TransactionService {
       minute: 'numeric',
     });
     const formattedTransaction = `
-    ---------------------------------------
-    ${timestamp}
-    ${transactionName}
-
-    ${transactionType}
-    ${amount} грн.
-  `;
+<pre>
+📆 Дата: ${timestamp}
+📝 Название: ${transactionName}
+💼 Тип: ${transactionType === 'Доход' ? '<b>💸 Приход</b>' : '<i>🧾 Расход</i>'}
+💵 Сумма: ${amount} грн.
+</pre>
+`;
     return formattedTransaction.trim();
   }
   splitArray(array: any[], chunkSize: number): any[][] {
@@ -224,9 +171,7 @@ export class TransactionService {
       if (i === transactionGroups.length - 1) {
         message += `\n---------------------------------------\nВсего: ${totalAmount} грн`;
       }
-      await this.bot.telegram.sendMessage(userId, message);
+      await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
     }
   }
-
-  // Добавленный метод для управления балансом
 }
