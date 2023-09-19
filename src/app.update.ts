@@ -11,15 +11,19 @@ import { PinoLoggerService } from './loger/pino.loger.service';
 import { MyMessage } from './interface/my-message.interface';
 import { TransactionType } from './mongodb/shemas';
 import { Context, CustomCallbackQuery } from './interface/context.interfsce';
+import { BalanceService } from './balance.service';
 @Update()
 export class AppUpdate {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly transactionService: TransactionService,
+    private readonly balanceService: BalanceService,
+
     private readonly logger: PinoLoggerService,
   ) {
     this.logger.setContext('Update');
   }
+
   @Start()
   async startCommand(ctx: Context) {
     try {
@@ -30,17 +34,17 @@ export class AppUpdate {
       First Name: ${user.first_name}
       Last Name: ${user.last_name}
       Username: ${user.username}`);
-      await this.transactionService.createBalance({ userId });
-      await ctx.reply(
-        '\n' +
-          '👋 Привет! Добро пожаловать в бот домашней бухгалтерии! 👛\n' +
-          '\n' +
-          'Этот бот поможет вам вести учет своих финансов. Вы можете добавлять приходы 💰 и расходы 💸, ' +
-          '\nа также проверять свой баланс в любое время.\n' +
-          '\n' +
-          'Чтобы начать, выберите "Транзакция" и далее "Приход" или "Расход" в меню ниже. 😊',
+      await this.balanceService.createBalance({ userId });
+      await ctx.replyWithHTML(
+        `<b>👋 Здравствуйте! Добро пожаловать в ваш финансовый ассистент. 📘</b>\n` +
+          `\n` +
+          `<i>Этот инструмент создан для эффективного учета вашего бюджета.</i> С его помощью можно легко отслеживать <b>доходы 💰</b> и <b>расходы 📉</b>,` +
+          ` а также получать сводку по текущему балансу.\n` +
+          `\n` +
+          `Для начала работы выберите "Транзакция", а затем определитесь с типом: "Приход" или "Расход". 📊`,
         actionButtonsStart(),
       );
+
       await ctx.deleteMessage();
       delete ctx.session.type;
       this.logger.log('startCommand executed successfully');
@@ -131,7 +135,7 @@ export class AppUpdate {
     try {
       await ctx.deleteMessage();
       const userId = ctx.from.id;
-      await this.transactionService.getBalance(userId);
+      await this.balanceService.getBalance(userId);
       ctx.session.type = 'balance';
       await ctx.reply('Хотите получить статистику транзакций? Выберите параметр: ', actionButtonsStatistics());
       this.logger.log('Баланс command executed');
@@ -173,8 +177,8 @@ export class AppUpdate {
         transactionType,
         amount,
       });
-      await this.transactionService.updateBalance(userId, amount, transactionType);
-      await this.transactionService.getBalance(userId);
+      await this.balanceService.updateBalance(userId, amount, transactionType);
+      await this.balanceService.getBalance(userId);
       await ctx.deleteMessage();
       delete ctx.session.type;
       this.logger.log('textCommand executed');
