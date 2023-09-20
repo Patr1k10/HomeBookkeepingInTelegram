@@ -24,7 +24,6 @@ export class TransactionService {
       const transactionType = createTransactionDto.transactionType;
       let amount = createTransactionDto.amount;
       if (transactionType === TransactionType.EXPENSE) {
-        // Если это расход, умножьте сумму на -1
         amount *= -1;
       }
       const transaction = new this.transactionModel({
@@ -46,7 +45,7 @@ export class TransactionService {
       const transactions = await this.transactionModel.find({ userId, transactionType }).exec();
       if (transactions.length > 0) {
         this.logger.log(`Retrieved ${transactions.length} transactions for user ${userId}`);
-        await this.sendFormattedTransactions(userId, transactions); // Использование нового метода
+        await this.sendFormattedTransactions(userId, transactions);
       } else {
         this.logger.log(`No transactions of type ${transactionType} found for user ${userId}`);
         await this.bot.telegram.sendMessage(userId, `Нет транзакций данного типа (${transactionType})`);
@@ -149,7 +148,6 @@ export class TransactionService {
     }
     return result;
   }
-  // Добавленный метод для отправки форматированных транзакций
   private async sendFormattedTransactions(userId: number, transactions: Transaction[]): Promise<void> {
     let totalAmount = 0;
     transactions.forEach((transaction) => (totalAmount += transaction.amount));

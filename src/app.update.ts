@@ -18,7 +18,6 @@ export class AppUpdate {
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly transactionService: TransactionService,
     private readonly balanceService: BalanceService,
-
     private readonly logger: Logger,
   ) {}
 
@@ -156,7 +155,7 @@ export class AppUpdate {
       await ctx.reply('Пожалуйста, введите корректные данные.');
       return;
     }
-    const transactionName = matches[1].trim().toLowerCase(); // Преобразование в нижний регистр
+    const transactionName = matches[1].trim().toLowerCase();
     const amount = Number(matches[matches.length - 1]);
     if (!transactionName || isNaN(amount) || amount <= 0) {
       await ctx.reply('Пожалуйста, введите корректные данные.');
@@ -181,7 +180,6 @@ export class AppUpdate {
       delete ctx.session.type;
       this.logger.log('textCommand executed');
     } catch (error) {
-      // Обработка ошибок
       this.logger.error('Error in textCommand:', error);
       await ctx.reply('Произошла ошибка при выполнении команды. Пожалуйста, попробуйте еще раз позже.');
     }
