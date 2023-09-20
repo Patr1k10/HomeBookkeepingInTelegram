@@ -128,7 +128,7 @@ export class TransactionService {
   }
   formatTransaction(transaction: Transaction): string {
     const transactionName = transaction.transactionName;
-    const transactionType = transaction.transactionType;
+
     const amount = transaction.amount;
     const timestamp = new Date(transaction.timestamp).toLocaleString('ru-RU', {
       timeZone: 'Europe/Kiev',
@@ -138,15 +138,9 @@ export class TransactionService {
       hour: 'numeric',
       minute: 'numeric',
     });
-    const formattedTransaction = `
-<pre>
-📆 Дата: ${timestamp}
-📝 Название: ${transactionName}
-💼 Тип: ${transactionType === 'Доход' ? '<b>💸 Приход</b>' : '<i>🧾 Расход</i>'}
-💵 Сумма: ${amount} грн.
-</pre>
+    return `📆 ${timestamp}
+📝 <b>${transactionName}</b>: ${amount} грн.
 `;
-    return formattedTransaction.trim();
   }
   splitArray(array: any[], chunkSize: number): any[][] {
     const result = [];
@@ -166,7 +160,7 @@ export class TransactionService {
       let message = formattedTransactions.join('\n');
 
       if (i === transactionGroups.length - 1) {
-        message += `\n---------------------------------------\nВсего: ${totalAmount} грн`;
+        message += `\n---------------------------------------\n<b>Всего:</b> ${totalAmount} грн.`;
       }
       await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
     }
