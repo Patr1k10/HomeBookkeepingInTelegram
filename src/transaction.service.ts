@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Balance, TransactionType } from './mongodb/shemas';
-import { PinoLoggerService } from './loger/pino.loger.service';
 import { CreateTransactionDto } from './dto/balance.dto';
 import { Transaction } from './interface/transaction.interface';
 import { Telegraf } from 'telegraf';
@@ -15,11 +14,9 @@ export class TransactionService {
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
-    private readonly logger: PinoLoggerService,
+    private readonly logger: Logger,
     @InjectBot() private readonly bot: Telegraf<Context>,
-  ) {
-    this.logger.setContext('TransactionService');
-  }
+  ) {}
 
   async createTransaction(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
     try {

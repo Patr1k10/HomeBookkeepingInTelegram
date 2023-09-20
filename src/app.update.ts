@@ -7,11 +7,11 @@ import {
   actionButtonsTransaction,
   actionButtonsTransactionNames,
 } from './app.buttons';
-import { PinoLoggerService } from './loger/pino.loger.service';
 import { MyMessage } from './interface/my-message.interface';
 import { TransactionType } from './mongodb/shemas';
 import { Context, CustomCallbackQuery } from './interface/context.interfsce';
 import { BalanceService } from './balance.service';
+import { Logger } from '@nestjs/common';
 @Update()
 export class AppUpdate {
   constructor(
@@ -19,10 +19,8 @@ export class AppUpdate {
     private readonly transactionService: TransactionService,
     private readonly balanceService: BalanceService,
 
-    private readonly logger: PinoLoggerService,
-  ) {
-    this.logger.setContext('Update');
-  }
+    private readonly logger: Logger,
+  ) {}
 
   @Start()
   async startCommand(ctx: Context) {
@@ -63,7 +61,7 @@ export class AppUpdate {
   @Action('Приход')
   async incomeCommand(ctx: Context) {
     ctx.session.type = 'income';
-    await ctx.reply('Введите наименование прихода и сумму через пробел' + '\n' + 'Пример: "Зарплата 100000"');
+    await ctx.reply('Введите наименование прихода и сумму через пробел ' + '\n' + 'Пример: "Зарплата 100000"');
     this.logger.log('Приход command executed');
     await ctx.deleteMessage();
   }
