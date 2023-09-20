@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Balance, TransactionType } from './mongodb/shemas';
-import { PinoLoggerService } from './loger/pino.loger.service';
 import { CreateTransactionDto } from './dto/balance.dto';
 import { Transaction } from './interface/transaction.interface';
 import { Telegraf } from 'telegraf';
@@ -15,11 +14,9 @@ export class TransactionService {
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
-    private readonly logger: PinoLoggerService,
+    private readonly logger: Logger,
     @InjectBot() private readonly bot: Telegraf<Context>,
-  ) {
-    this.logger.setContext('TransactionService');
-  }
+  ) {}
 
   async createTransaction(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
     try {
@@ -27,7 +24,6 @@ export class TransactionService {
       const transactionType = createTransactionDto.transactionType;
       let amount = createTransactionDto.amount;
       if (transactionType === TransactionType.EXPENSE) {
-        // Если это расход, умножьте сумму на -1
         amount *= -1;
       }
       const transaction = new this.transactionModel({
@@ -49,7 +45,7 @@ export class TransactionService {
       const transactions = await this.transactionModel.find({ userId, transactionType }).exec();
       if (transactions.length > 0) {
         this.logger.log(`Retrieved ${transactions.length} transactions for user ${userId}`);
-        await this.sendFormattedTransactions(userId, transactions); // Использование нового метода
+        await this.sendFormattedTransactions(userId, transactions);
       } else {
         this.logger.log(`No transactions of type ${transactionType} found for user ${userId}`);
         await this.bot.telegram.sendMessage(userId, `Нет транзакций данного типа (${transactionType})`);
@@ -131,7 +127,7 @@ export class TransactionService {
   }
   formatTransaction(transaction: Transaction): string {
     const transactionName = transaction.transactionName;
-    const transactionType = transaction.transactionType;
+
     const amount = transaction.amount;
     const timestamp = new Date(transaction.timestamp).toLocaleString('ru-RU', {
       timeZone: 'Europe/Kiev',
@@ -141,15 +137,9 @@ export class TransactionService {
       hour: 'numeric',
       minute: 'numeric',
     });
-    const formattedTransaction = `
-<pre>
-📆 Дата: ${timestamp}
-📝 Название: ${transactionName}
-💼 Тип: ${transactionType === 'Доход' ? '<b>💸 Приход</b>' : '<i>🧾 Расход</i>'}
-💵 Сумма: ${amount} грн.
-</pre>
+    return `📆 ${timestamp}
+📝 <b>${transactionName}</b>: ${amount} грн.
 `;
-    return formattedTransaction.trim();
   }
   splitArray(array: any[], chunkSize: number): any[][] {
     const result = [];
@@ -158,7 +148,6 @@ export class TransactionService {
     }
     return result;
   }
-  // Добавленный метод для отправки форматированных транзакций
   private async sendFormattedTransactions(userId: number, transactions: Transaction[]): Promise<void> {
     let totalAmount = 0;
     transactions.forEach((transaction) => (totalAmount += transaction.amount));
@@ -169,7 +158,7 @@ export class TransactionService {
       let message = formattedTransactions.join('\n');
 
       if (i === transactionGroups.length - 1) {
-        message += `\n---------------------------------------\nВсего: ${totalAmount} грн`;
+        message += `\n---------------------------------------\n<b>Всего:</b> ${totalAmount} грн.`;
       }
       await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
     }

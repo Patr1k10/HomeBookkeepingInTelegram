@@ -7,22 +7,19 @@ import {
   actionButtonsTransaction,
   actionButtonsTransactionNames,
 } from './app.buttons';
-import { PinoLoggerService } from './loger/pino.loger.service';
 import { MyMessage } from './interface/my-message.interface';
 import { TransactionType } from './mongodb/shemas';
 import { Context, CustomCallbackQuery } from './interface/context.interfsce';
 import { BalanceService } from './balance.service';
+import { Logger } from '@nestjs/common';
 @Update()
 export class AppUpdate {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly transactionService: TransactionService,
     private readonly balanceService: BalanceService,
-
-    private readonly logger: PinoLoggerService,
-  ) {
-    this.logger.setContext('Update');
-  }
+    private readonly logger: Logger,
+  ) {}
 
   @Start()
   async startCommand(ctx: Context) {
@@ -63,7 +60,7 @@ export class AppUpdate {
   @Action('Приход')
   async incomeCommand(ctx: Context) {
     ctx.session.type = 'income';
-    await ctx.reply('Введите наименование прихода и сумму через пробел' + '\n' + 'Пример: "Зарплата 100000"');
+    await ctx.reply('Введите наименование прихода и сумму через пробел ' + '\n' + 'Пример: "Зарплата 100000"');
     this.logger.log('Приход command executed');
     await ctx.deleteMessage();
   }
@@ -158,7 +155,7 @@ export class AppUpdate {
       await ctx.reply('Пожалуйста, введите корректные данные.');
       return;
     }
-    const transactionName = matches[1].trim().toLowerCase(); // Преобразование в нижний регистр
+    const transactionName = matches[1].trim().toLowerCase();
     const amount = Number(matches[matches.length - 1]);
     if (!transactionName || isNaN(amount) || amount <= 0) {
       await ctx.reply('Пожалуйста, введите корректные данные.');
@@ -183,7 +180,6 @@ export class AppUpdate {
       delete ctx.session.type;
       this.logger.log('textCommand executed');
     } catch (error) {
-      // Обработка ошибок
       this.logger.error('Error in textCommand:', error);
       await ctx.reply('Произошла ошибка при выполнении команды. Пожалуйста, попробуйте еще раз позже.');
     }
