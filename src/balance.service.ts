@@ -17,7 +17,7 @@ export class BalanceService {
     private readonly logger: Logger,
     @InjectBot() private readonly bot: Telegraf<Context>,
   ) {}
-  private async getOrCreateBalance(userId: number): Promise<Balance> {
+  async getOrCreateBalance(userId: number): Promise<Balance> {
     let balance = await this.balanceModel.findOne({ userId }).exec();
     if (!balance) {
       balance = new this.balanceModel({ userId, balance: 0 });
@@ -64,7 +64,7 @@ export class BalanceService {
 
       await balance.save();
       this.logger.log(`Updated balance for user ${userId}`);
-      await this.bot.telegram.sendMessage(userId, 'Баланс пользователя обновлен');
+      await this.bot.telegram.sendMessage(userId, 'Ващ баланс обновлен✅');
     } catch (error) {
       this.logger.error('Error updating balance', error);
       throw error;

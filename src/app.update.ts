@@ -2,6 +2,7 @@ import { TransactionService } from './transaction.service';
 import { Action, Hears, InjectBot, On, Start, Update } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import {
+  actionButtonsMonths,
   actionButtonsStart,
   actionButtonsStatistics,
   actionButtonsTransaction,
@@ -47,7 +48,7 @@ export class AppUpdate {
       this.logger.log('startCommand executed successfully');
     } catch (error) {
       this.logger.error('Error in startCommand:', error);
-      await ctx.reply('Произошла ошибка при выполнении команды. Пожалуйста, попробуйте еще раз позже.');
+      await ctx.reply('⛔️Произошла ошибка при выполнении команды. Пожалуйста, попробуйте еще раз позже.⛔️');
     }
   }
   @Hears('Транзакция 💸')
@@ -55,7 +56,7 @@ export class AppUpdate {
     await ctx.deleteMessage();
     delete ctx.session.type;
     this.logger.log('Транзакция command executed');
-    await ctx.reply('Выберите транзакцию', actionButtonsTransaction());
+    await ctx.reply('Выберите транзакцию:🔽', actionButtonsTransaction());
   }
   @Action('Приход')
   async incomeCommand(ctx: Context) {
@@ -71,12 +72,45 @@ export class AppUpdate {
     this.logger.log('Расход command executed');
     await ctx.deleteMessage();
   }
+  @Action('Удаление последних️')
+  async deleteLastCommand(ctx: Context) {
+    const userId = ctx.from.id;
+    ctx.session.type = 'delete';
+    await this.transactionService.showLastNTransactionsWithDeleteOption(userId, 10);
+  }
   @Action('Мои приходы')
   async incomeListCommand(ctx: Context) {
     this.logger.log('приходы command executed');
     const userId = ctx.from.id;
     await this.transactionService.getTransactionsByType(userId, TransactionType.INCOME);
     this.logger.log('приходы command executed');
+  }
+  @Action(/delete_(.+)/)
+  async handleCallbackQuery(ctx: Context) {
+    try {
+      if (ctx.session.type !== 'delete') {
+        return;
+      }
+      await ctx.deleteMessage();
+
+      const customCallbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+
+      if (customCallbackQuery && 'data' in customCallbackQuery) {
+        const callbackData = customCallbackQuery.data;
+        const userId = ctx.from.id;
+        if (callbackData.startsWith('delete_')) {
+          const transactionIdToDelete = callbackData.replace('delete_', '');
+          await this.transactionService.deleteTransactionById(userId, transactionIdToDelete);
+          await ctx.answerCbQuery('Транзакция удалена');
+          delete ctx.session.type;
+        }
+      } else {
+        this.logger.error('customCallbackQuery is undefined or does not contain data');
+      }
+    } catch (error) {
+      this.logger.error('Error in handleCallbackQuery:', error);
+      await ctx.answerCbQuery('Произошла ошибка');
+    }
   }
   @Action('Мои расходы')
   async expenseListCommand(ctx: Context) {
@@ -126,6 +160,36 @@ export class AppUpdate {
     const userId = ctx.from.id;
     await this.transactionService.getFormattedTransactionsForMonth(userId);
     this.logger.log('month command executed');
+  }
+  @Action('Выбрать месяц')
+  async monthListMenuCommand(ctx: Context) {
+    this.logger.log('month menu command executed');
+    await ctx.reply('Выберите месяц:', actionButtonsMonths());
+  }
+  @Action(/Month:(.+)/)
+  async specificMonthListCommand(ctx: Context) {
+    this.logger.log('specific month command executed');
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+      const selectedMonth = Number(parts[1]);
+      const userId = ctx.from.id;
+
+      const fromDate = new Date();
+      fromDate.setMonth(selectedMonth - 1);
+      fromDate.setDate(1);
+      fromDate.setHours(0, 0, 0, 0);
+
+      const toDate = new Date();
+      toDate.setMonth(selectedMonth);
+      toDate.setDate(0);
+      toDate.setHours(23, 59, 59, 999);
+
+      await this.transactionService.getTransactionsByPeriod(userId, fromDate, toDate);
+    } else {
+      this.logger.log('callbackQuery is undefined');
+    }
   }
   @Hears('Баланс 💰')
   async listCommand(ctx: Context) {
