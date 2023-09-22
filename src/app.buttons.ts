@@ -31,7 +31,7 @@ export function actionButtonsStatistics() {
       Markup.button.callback('Мои расходы🧾', 'Мои расходы'),
       Markup.button.callback('По категории🗃️', 'По категории'),
     ],
-    { columns: 3 },
+    { columns: 2 },
   );
 }
 export function actionButtonsTransactionNames(transactionNames: string[]) {
