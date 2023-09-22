@@ -29,7 +29,7 @@ export class Transaction extends Document {
   @Prop({ required: true })
   amount: number;
 
-  @Prop({ required: true, default: Date.now() })
+  @Prop({ required: true, default: Date.now })
   timestamp: Date;
 }
 

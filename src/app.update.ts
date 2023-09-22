@@ -61,16 +61,17 @@ export class AppUpdate {
   @Action('Приход')
   async incomeCommand(ctx: Context) {
     ctx.session.type = 'income';
+    await ctx.deleteMessage();
     await ctx.reply('Введите наименование прихода и сумму через пробел ' + '\n' + 'Пример: "Зарплата 100000"');
     this.logger.log('Приход command executed');
-    await ctx.deleteMessage();
   }
+
   @Action('Расход')
   async expenseCommand(ctx: Context) {
     ctx.session.type = 'expense';
+    await ctx.deleteMessage();
     await ctx.reply('Введите наименование расхода и сумму через пробел' + '\n' + 'Пример: "Продукты 1000"');
     this.logger.log('Расход command executed');
-    await ctx.deleteMessage();
   }
   @Action('Удаление последних️')
   async deleteLastCommand(ctx: Context) {
