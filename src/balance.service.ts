@@ -7,6 +7,7 @@ import { Transaction } from './interface/transaction.interface';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
 import { Context } from './interface/context.interfsce';
+import { BALANCE_MESSAGE } from './constants/messages';
 
 @Injectable()
 export class BalanceService {
@@ -64,7 +65,7 @@ export class BalanceService {
 
       await balance.save();
       this.logger.log(`Updated balance for user ${userId}`);
-      await this.bot.telegram.sendMessage(userId, 'Ващ баланс обновлен✅');
+      await this.bot.telegram.sendMessage(userId, BALANCE_MESSAGE);
     } catch (error) {
       this.logger.error('Error updating balance', error);
       throw error;

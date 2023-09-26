@@ -50,7 +50,7 @@ export class TransactionService {
         await this.sendFormattedTransactions(userId, transactions);
       } else {
         this.logger.log(`No transactions of type ${transactionType} found for user ${userId}`);
-        await this.bot.telegram.sendMessage(userId, `⛔️Нет транзакций данного типа (${transactionType})⛔️`);
+        await this.bot.telegram.sendMessage(userId, `⛔️Немає транзакцій даного типу (${transactionType})⛔️`);
       }
     } catch (error) {
       this.logger.error('Error getting transactions by type', error);
@@ -79,7 +79,7 @@ export class TransactionService {
     await this.getTransactions(
       userId,
       { userId, transactionName },
-      `⛔️Нет транзакций с именем (${transactionName})⛔️`,
+      `⛔️Немає транзакцій з ім'ям (${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
     );
   }
@@ -90,7 +90,7 @@ export class TransactionService {
     await this.getTransactions(
       userId,
       { userId, timestamp: { $gte: today } },
-      '⛔️Нет транзакций на сегодня⛔️',
+      '⛔️Немає транзакцій на сьогодні⛔️',
       `Retrieved {count} transactions for today for user {userId}`,
     );
   }
@@ -102,7 +102,7 @@ export class TransactionService {
     await this.getTransactions(
       userId,
       { userId, timestamp: { $gte: weekAgo, $lte: today } },
-      '⛔️Нет транзакций за последнюю неделю⛔️',
+      '⛔️Немає транзакцій за останній тиждень⛔️',
       `Retrieved {count} transactions for the week for user {userId}`,
     );
   }
@@ -114,7 +114,7 @@ export class TransactionService {
     await this.getTransactions(
       userId,
       { userId, timestamp: { $gte: monthAgo, $lte: today } },
-      '⛔️Нет транзакций за последний месяц⛔️',
+      '⛔️Немає транзакцій за останній місяць⛔️',
       `Retrieved {count} transactions for the month for user {userId}`,
     );
   }
@@ -127,7 +127,7 @@ export class TransactionService {
       await this.sendFormattedTransactions(userId, transactions);
     } else {
       this.logger.log(`No transactions found for the period for user ${userId}`);
-      await this.bot.telegram.sendMessage(userId, '⛔️Нет транзакций за данный период⛔️');
+      await this.bot.telegram.sendMessage(userId, '⛔️Немає транзакцій за цей період⛔️');
     }
   }
   async getUniqueTransactionNames(userId: number): Promise<string[]> {
@@ -144,7 +144,7 @@ export class TransactionService {
       const transactions = await this.transactionModel.find({ userId }).sort({ timestamp: -1 }).limit(count).exec();
 
       if (transactions.length === 0) {
-        await this.bot.telegram.sendMessage(userId, '⛔️Нет доступных транзакций для удаления.⛔️');
+        await this.bot.telegram.sendMessage(userId, '⛔️Немає доступних транзакцій для видалення.⛔️');
         return;
       }
 
@@ -155,7 +155,7 @@ export class TransactionService {
         },
       ]);
 
-      await this.bot.telegram.sendMessage(userId, 'Выберите транзакции для удаления🗑️:', {
+      await this.bot.telegram.sendMessage(userId, 'Виберіть транзакції для видалення🗑️:', {
         reply_markup: {
           inline_keyboard: buttons,
         },
@@ -172,7 +172,7 @@ export class TransactionService {
 
       if (!transaction) {
         this.logger.log(`Transaction not found for ID: ${transactionId}`);
-        await this.bot.telegram.sendMessage(userId, '⛔️Транзакция не найдена⛔️');
+        await this.bot.telegram.sendMessage(userId, '⛔️Транзакція не знайдена⛔️');
         return;
       }
       const balance = await this.balanceService.getOrCreateBalance(userId);
@@ -187,7 +187,7 @@ export class TransactionService {
       await this.transactionModel.deleteOne({ _id: transactionId }).exec();
 
       this.logger.log(`Deleted transaction with ID: ${transactionId}`);
-      await this.bot.telegram.sendMessage(userId, 'Транзакция удалена');
+      await this.bot.telegram.sendMessage(userId, 'Транзакція видалена');
     } catch (error) {
       this.logger.error(`Error in deleteTransactionById: ${error}`);
       throw error;
@@ -218,17 +218,58 @@ export class TransactionService {
     return result;
   }
   private async sendFormattedTransactions(userId: number, transactions: Transaction[]): Promise<void> {
-    let totalAmount = 0;
-    transactions.forEach((transaction) => (totalAmount += transaction.amount));
+    let totalPositiveAmount = 0;
+    let totalNegativeAmount = 0;
+    const positiveTransactionSums: { [key: string]: number } = {};
+    const negativeTransactionSums: { [key: string]: number } = {};
+
+    transactions.forEach((transaction) => {
+      if (transaction.amount > 0) {
+        totalPositiveAmount += transaction.amount;
+        if (positiveTransactionSums[transaction.transactionName]) {
+          positiveTransactionSums[transaction.transactionName] += transaction.amount;
+        } else {
+          positiveTransactionSums[transaction.transactionName] = transaction.amount;
+        }
+      } else {
+        totalNegativeAmount += Math.abs(transaction.amount);
+        if (negativeTransactionSums[transaction.transactionName]) {
+          negativeTransactionSums[transaction.transactionName] += Math.abs(transaction.amount);
+        } else {
+          negativeTransactionSums[transaction.transactionName] = Math.abs(transaction.amount);
+        }
+      }
+    });
+
     const transactionGroups = this.splitArray(transactions, 5);
+
     for (let i = 0; i < transactionGroups.length; ++i) {
       const group = transactionGroups[i];
       const formattedTransactions = group.map(this.formatTransaction);
       let message = formattedTransactions.join('\n');
 
       if (i === transactionGroups.length - 1) {
-        message += `\n---------------------------------------\n<b>Всего:</b> ${totalAmount} грн.`;
+        message += `\n---------------------------------------\n<b>Усього:</b> ${
+          totalPositiveAmount - totalNegativeAmount
+        } грн.`;
+
+        if (Object.keys(positiveTransactionSums).length > 0) {
+          message += '\n\n<b>📈Доля додатних транзакцій⤵️:</b>\n';
+          for (const [name, sum] of Object.entries(positiveTransactionSums)) {
+            const percentage = ((sum / totalPositiveAmount) * 100).toFixed(2);
+            message += `${name}: ${percentage}%\n`;
+          }
+        }
+
+        if (Object.keys(negativeTransactionSums).length > 0) {
+          message += "\n<b>📉Доля від'ємних транзакцій⤵️:</b>\n";
+          for (const [name, sum] of Object.entries(negativeTransactionSums)) {
+            const percentage = ((sum / totalNegativeAmount) * 100).toFixed(2);
+            message += `${name}: ${percentage}%\n`;
+          }
+        }
       }
+
       await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
     }
   }

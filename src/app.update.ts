@@ -13,6 +13,19 @@ import { TransactionType } from './mongodb/shemas';
 import { Context, CustomCallbackQuery } from './interface/context.interfsce';
 import { BalanceService } from './balance.service';
 import { Logger } from '@nestjs/common';
+import {
+  ENTER_EXPENSE_MESSAGE,
+  ENTER_INCOME_MESSAGE,
+  ERROR_MESSAGE,
+  INVALID_DATA_MESSAGE,
+  INVALID_TRANSACTION_NAME_MESSAGE,
+  SELECT_CATEGORY_MESSAGE,
+  SELECT_MONTH_MESSAGE,
+  SELECT_TRANSACTION_MESSAGE,
+  TRANSACTION_DELETED_MESSAGE,
+  WANT_STATISTICS_MESSAGE,
+  WELCOME_MESSAGE,
+} from './constants/messages';
 @Update()
 export class AppUpdate {
   constructor(
@@ -33,36 +46,28 @@ export class AppUpdate {
       Last Name: ${user.last_name}
       Username: ${user.username}`);
       await this.balanceService.createBalance({ userId });
-      await ctx.replyWithHTML(
-        `<b>👋 Здравствуйте! Добро пожаловать в ваш финансовый ассистент. 📘</b>\n` +
-          `\n` +
-          `<i>Этот инструмент создан для эффективного учета вашего бюджета.</i> С его помощью можно легко отслеживать <b>доходы 💰</b> и <b>расходы 📉</b>,` +
-          ` а также получать сводку по текущему балансу.\n` +
-          `\n` +
-          `Для начала работы выберите "Транзакция", а затем определитесь с типом: "Приход" или "Расход". 📊`,
-        actionButtonsStart(),
-      );
+      await ctx.replyWithHTML(WELCOME_MESSAGE, actionButtonsStart());
 
       await ctx.deleteMessage();
       delete ctx.session.type;
       this.logger.log('startCommand executed successfully');
     } catch (error) {
       this.logger.error('Error in startCommand:', error);
-      await ctx.reply('⛔️Произошла ошибка при выполнении команды. Пожалуйста, попробуйте еще раз позже.⛔️');
+      await ctx.reply(ERROR_MESSAGE);
     }
   }
-  @Hears('Транзакция 💸')
+  @Hears('Транзакція 💸')
   async aboutCommand(ctx: Context) {
     await ctx.deleteMessage();
     delete ctx.session.type;
     this.logger.log('Транзакция command executed');
-    await ctx.reply('Выберите транзакцию:🔽', actionButtonsTransaction());
+    await ctx.reply(SELECT_TRANSACTION_MESSAGE, actionButtonsTransaction());
   }
   @Action('Приход')
   async incomeCommand(ctx: Context) {
     ctx.session.type = 'income';
     await ctx.deleteMessage();
-    await ctx.reply('Введите наименование прихода и сумму через пробел ' + '\n' + 'Пример: "Зарплата 100000"');
+    await ctx.reply(ENTER_INCOME_MESSAGE);
     this.logger.log('Приход command executed');
   }
 
@@ -70,7 +75,7 @@ export class AppUpdate {
   async expenseCommand(ctx: Context) {
     ctx.session.type = 'expense';
     await ctx.deleteMessage();
-    await ctx.reply('Введите наименование расхода и сумму через пробел' + '\n' + 'Пример: "Продукты 1000"');
+    await ctx.reply(ENTER_EXPENSE_MESSAGE);
     this.logger.log('Расход command executed');
   }
   @Action('Удаление последних️')
@@ -84,7 +89,6 @@ export class AppUpdate {
     this.logger.log('приходы command executed');
     const userId = ctx.from.id;
     await this.transactionService.getTransactionsByType(userId, TransactionType.INCOME);
-    this.logger.log('приходы command executed');
   }
   @Action(/delete_(.+)/)
   async handleCallbackQuery(ctx: Context) {
@@ -102,7 +106,7 @@ export class AppUpdate {
         if (callbackData.startsWith('delete_')) {
           const transactionIdToDelete = callbackData.replace('delete_', '');
           await this.transactionService.deleteTransactionById(userId, transactionIdToDelete);
-          await ctx.answerCbQuery('Транзакция удалена');
+          await ctx.answerCbQuery(TRANSACTION_DELETED_MESSAGE);
           delete ctx.session.type;
         }
       } else {
@@ -118,14 +122,13 @@ export class AppUpdate {
     this.logger.log('расходы command executed');
     const userId = ctx.from.id;
     await this.transactionService.getTransactionsByType(userId, TransactionType.EXPENSE);
-    this.logger.log('расходы command executed');
   }
   @Action('По категории')
   async categoryListCommand(ctx: Context) {
     const userId = ctx.from.id;
     const uniqueTransactionNames = await this.transactionService.getUniqueTransactionNames(userId);
     const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames);
-    await ctx.reply('Выберите категорию транзакции:', transactionNameButtons);
+    await ctx.reply(SELECT_CATEGORY_MESSAGE, transactionNameButtons);
   }
   @Action(/TransactionName:(.+)/)
   async transactionNameCommand(ctx: Context) {
@@ -165,7 +168,7 @@ export class AppUpdate {
   @Action('Выбрать месяц')
   async monthListMenuCommand(ctx: Context) {
     this.logger.log('month menu command executed');
-    await ctx.reply('Выберите месяц:', actionButtonsMonths());
+    await ctx.reply(SELECT_MONTH_MESSAGE, actionButtonsMonths());
   }
   @Action(/Month:(.+)/)
   async specificMonthListCommand(ctx: Context) {
@@ -199,11 +202,11 @@ export class AppUpdate {
       const userId = ctx.from.id;
       await this.balanceService.getBalance(userId);
       ctx.session.type = 'balance';
-      await ctx.reply('Хотите получить статистику транзакций? Выберите параметр: ', actionButtonsStatistics());
+      await ctx.reply(WANT_STATISTICS_MESSAGE, actionButtonsStatistics());
       this.logger.log('Баланс command executed');
     } catch (error) {
       this.logger.error('Error in listCommand:', error);
-      await ctx.reply('Произошла ошибка при выполнении команды. Пожалуйста, попробуйте еще раз позже.');
+      await ctx.reply(ERROR_MESSAGE);
     }
   }
   @On('text')
@@ -214,21 +217,21 @@ export class AppUpdate {
     const message = ctx.message as MyMessage;
     const userId = ctx.from.id;
     const text = message.text;
-    const regex = /^([a-zA-Zа-яА-Я]+(?:\s+[a-zA-Zа-яА-Я]+)?)\s+([\d.]+)$/;
+    const regex = /^([a-zA-Zа-яА-ЯіІ]+(?:\s+[a-zA-Zа-яА-ЯіІ]+)?)\s+([\d.]+)$/;
     const matches = text.match(regex);
     if (!matches) {
-      await ctx.reply('Пожалуйста, введите корректные данные.');
+      await ctx.reply(INVALID_DATA_MESSAGE);
       return;
     }
     const transactionName = matches[1].trim().toLowerCase();
     const amount = Number(matches[matches.length - 1]);
     if (!transactionName || isNaN(amount) || amount <= 0) {
-      await ctx.reply('Пожалуйста, введите корректные данные.');
+      await ctx.reply(INVALID_DATA_MESSAGE);
       return;
     }
     const words = transactionName.split(' ');
     if (words.length > 2) {
-      await ctx.reply('Пожалуйста, укажите одно или два слова в поле "Наименование транзакции".');
+      await ctx.reply(INVALID_TRANSACTION_NAME_MESSAGE);
       return;
     }
     const transactionType = ctx.session.type === 'income' ? TransactionType.INCOME : TransactionType.EXPENSE;
@@ -246,7 +249,7 @@ export class AppUpdate {
       this.logger.log('textCommand executed');
     } catch (error) {
       this.logger.error('Error in textCommand:', error);
-      await ctx.reply('Произошла ошибка при выполнении команды. Пожалуйста, попробуйте еще раз позже.');
+      await ctx.reply(ERROR_MESSAGE);
     }
   }
 }
