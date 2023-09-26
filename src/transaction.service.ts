@@ -257,7 +257,7 @@ export class TransactionService {
           message += '\n\n<b>📈Доля додатних транзакцій⤵️:</b>\n';
           for (const [name, sum] of Object.entries(positiveTransactionSums)) {
             const percentage = ((sum / totalPositiveAmount) * 100).toFixed(2);
-            message += `${name}: ${percentage}%\n`;
+            message += `${name}: ${percentage}% (${sum} грн.)\n`;
           }
         }
 
@@ -265,7 +265,7 @@ export class TransactionService {
           message += "\n<b>📉Доля від'ємних транзакцій⤵️:</b>\n";
           for (const [name, sum] of Object.entries(negativeTransactionSums)) {
             const percentage = ((sum / totalNegativeAmount) * 100).toFixed(2);
-            message += `${name}: ${percentage}%\n`;
+            message += `${name}: ${percentage}% (${sum} грн.)\n`;
           }
         }
       }
