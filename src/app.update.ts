@@ -222,7 +222,6 @@ export class AppUpdate {
     }
   }
 
-
   @On('text')
   async textCommand(ctx: Context) {
     if (ctx.session.type !== 'income' && ctx.session.type !== 'expense') {
