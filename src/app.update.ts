@@ -1,5 +1,5 @@
 import { TransactionService } from './transaction.service';
-import { Action, Hears, InjectBot, On, Start, Update } from 'nestjs-telegraf';
+import { Action, Command, Hears, InjectBot, On, Start, Update } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import {
   actionButtonsMonths,
@@ -56,6 +56,7 @@ export class AppUpdate {
       await ctx.reply(ERROR_MESSAGE);
     }
   }
+  @Command('transactions')
   @Hears('Транзакція 💸')
   async aboutCommand(ctx: Context) {
     await ctx.deleteMessage();
@@ -195,6 +196,7 @@ export class AppUpdate {
       this.logger.log('callbackQuery is undefined');
     }
   }
+  @Command('balans')
   @Hears('Баланс 💰')
   async listCommand(ctx: Context) {
     try {
@@ -202,13 +204,24 @@ export class AppUpdate {
       const userId = ctx.from.id;
       await this.balanceService.getBalance(userId);
       ctx.session.type = 'balance';
-      await ctx.reply(WANT_STATISTICS_MESSAGE, actionButtonsStatistics());
       this.logger.log('Баланс command executed');
     } catch (error) {
       this.logger.error('Error in listCommand:', error);
       await ctx.reply(ERROR_MESSAGE);
     }
   }
+  @Command('statistics')
+  async statisticsCommand(ctx: Context) {
+    try {
+      await ctx.deleteMessage();
+      await ctx.reply(WANT_STATISTICS_MESSAGE, actionButtonsStatistics());
+      this.logger.log('statistics command executed');
+    } catch (error) {
+      this.logger.error('Error in statisticsCommand:', error);
+      await ctx.reply(ERROR_MESSAGE);
+    }
+  }
+
   @On('text')
   async textCommand(ctx: Context) {
     if (ctx.session.type !== 'income' && ctx.session.type !== 'expense') {
