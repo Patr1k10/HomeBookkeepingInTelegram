@@ -231,39 +231,43 @@ export class AppUpdate {
     const message = ctx.message as MyMessage;
     const userId = ctx.from.id;
     const text = message.text;
-    const regex = /^([a-zA-Zа-яА-ЯіІ]+(?:\s+[a-zA-Zа-яА-ЯіІ]+)?)\s+([\d.]+)$/;
-    const matches = text.match(regex);
-    if (!matches) {
-      await ctx.reply(INVALID_DATA_MESSAGE);
-      return;
+    const transactions = text.split(',').map((t) => t.trim());
+
+    for (const transaction of transactions) {
+      const regex = /^([a-zA-Zа-яА-ЯіІ]+(?:\s+[a-zA-Zа-яА-ЯіІ]+)?)\s+([\d.]+)$/;
+      const matches = transaction.match(regex);
+      if (!matches) {
+        await ctx.reply(INVALID_DATA_MESSAGE);
+        return;
+      }
+      const transactionName = matches[1].trim().toLowerCase();
+      const amount = Number(matches[2]);
+      if (!transactionName || isNaN(amount) || amount <= 0) {
+        await ctx.reply(INVALID_DATA_MESSAGE);
+        return;
+      }
+      const words = transactionName.split(' ');
+      if (words.length > 2) {
+        await ctx.reply(INVALID_TRANSACTION_NAME_MESSAGE);
+        return;
+      }
+      const transactionType = ctx.session.type === 'income' ? TransactionType.INCOME : TransactionType.EXPENSE;
+
+      try {
+        await this.transactionService.createTransaction({
+          userId,
+          transactionName,
+          transactionType,
+          amount,
+        });
+        await this.balanceService.updateBalance(userId, amount, transactionType);
+        await this.balanceService.getBalance(userId);
+        this.logger.log('textCommand executed');
+      } catch (error) {
+        this.logger.error('Error in textCommand:', error);
+        await ctx.reply(ERROR_MESSAGE);
+      }
     }
-    const transactionName = matches[1].trim().toLowerCase();
-    const amount = Number(matches[matches.length - 1]);
-    if (!transactionName || isNaN(amount) || amount <= 0) {
-      await ctx.reply(INVALID_DATA_MESSAGE);
-      return;
-    }
-    const words = transactionName.split(' ');
-    if (words.length > 2) {
-      await ctx.reply(INVALID_TRANSACTION_NAME_MESSAGE);
-      return;
-    }
-    const transactionType = ctx.session.type === 'income' ? TransactionType.INCOME : TransactionType.EXPENSE;
-    try {
-      await this.transactionService.createTransaction({
-        userId,
-        transactionName,
-        transactionType,
-        amount,
-      });
-      await this.balanceService.updateBalance(userId, amount, transactionType);
-      await this.balanceService.getBalance(userId);
-      await ctx.deleteMessage();
-      delete ctx.session.type;
-      this.logger.log('textCommand executed');
-    } catch (error) {
-      this.logger.error('Error in textCommand:', error);
-      await ctx.reply(ERROR_MESSAGE);
-    }
+    delete ctx.session.type;
   }
 }
