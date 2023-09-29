@@ -217,7 +217,7 @@ export class TransactionService {
     }
     return result;
   }
-  private async sendFormattedTransactions(userId: number, transactions: Transaction[]): Promise<void> {
+  async sendFormattedTransactions(userId: number, transactions: Transaction[]): Promise<void> {
     let totalPositiveAmount = 0;
     let totalNegativeAmount = 0;
     const positiveTransactionSums: { [key: string]: number } = {};
@@ -249,7 +249,7 @@ export class TransactionService {
       let message = formattedTransactions.join('\n');
 
       if (i === transactionGroups.length - 1) {
-        message += `\n---------------------------------------\n<b>Усього:</b> ${
+        message += `\n------------------------------------\n<b>Усього:</b> ${
           totalPositiveAmount - totalNegativeAmount
         } грн.`;
 
@@ -257,7 +257,7 @@ export class TransactionService {
           message += '\n\n<b>📈Доля додатних транзакцій⤵️:</b>\n';
           for (const [name, sum] of Object.entries(positiveTransactionSums)) {
             const percentage = ((sum / totalPositiveAmount) * 100).toFixed(2);
-            message += `<b>${name}</b>: ${percentage}% (${sum} грн.)\n`;
+            message += this.formatMessage(name, percentage, sum);
           }
         }
 
@@ -265,12 +265,17 @@ export class TransactionService {
           message += "\n<b>📉Доля від'ємних транзакцій⤵️:</b>\n";
           for (const [name, sum] of Object.entries(negativeTransactionSums)) {
             const percentage = ((sum / totalNegativeAmount) * 100).toFixed(2);
-            message += `<b>${name}</b>: ${percentage}% (${sum} грн.)\n`;
+            message += this.formatMessage(name, percentage, sum);
           }
         }
       }
 
       await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
     }
+  }
+
+  formatMessage(name: string, percentage: string, sum: number): string {
+    const paddedName = name.padEnd(12, ' ');
+    return `<code>${paddedName}: ${percentage}% (${sum} грн.)</code>\n`;
   }
 }

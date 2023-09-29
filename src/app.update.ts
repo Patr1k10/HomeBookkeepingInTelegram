@@ -57,7 +57,7 @@ export class AppUpdate {
     }
   }
   @Command('transactions')
-  @Hears('Транзакція 💸')
+  @Hears('Транзакції 💸')
   async aboutCommand(ctx: Context) {
     await ctx.deleteMessage();
     delete ctx.session.type;
@@ -211,6 +211,7 @@ export class AppUpdate {
     }
   }
   @Command('statistics')
+  @Hears('Статистика 📊')
   async statisticsCommand(ctx: Context) {
     try {
       await ctx.deleteMessage();

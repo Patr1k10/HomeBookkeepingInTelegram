@@ -2,7 +2,12 @@ import { Markup } from 'telegraf';
 
 export function actionButtonsStart() {
   return Markup.keyboard(
-    [Markup.button.callback('Баланс 💰', 'Баланс'), Markup.button.callback('Транзакція 💸', 'Транзакція')],
+    [
+      Markup.button.callback('Баланс 💰', 'Баланс'),
+      Markup.button.callback('Транзакції 💸', 'Транзакції'),
+      Markup.button.callback('Статистика 📊', 'Статистика'),
+      Markup.button.callback('Родина👨‍👩‍👧‍👧(у розробці)', 'Родина'),
+    ],
     {
       columns: 2,
     },
