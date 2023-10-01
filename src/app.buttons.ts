@@ -1,12 +1,13 @@
 import { Markup } from 'telegraf';
+import { BUTTONS } from './constants/buttons.const';
 
-export function actionButtonsStart() {
+export function actionButtonsStart(language: string = 'ua') {
   return Markup.keyboard(
     [
-      Markup.button.callback('Баланс 💰', 'Баланс'),
-      Markup.button.callback('Транзакції 💸', 'Транзакції'),
-      Markup.button.callback('Статистика 📊', 'Статистика'),
-      Markup.button.callback('Родина👨‍👩‍👧‍👧(у розробці)', 'Родина'),
+      Markup.button.callback(BUTTONS[language].BALANCE, 'Баланс'),
+      Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'Транзакції'),
+      Markup.button.callback(BUTTONS[language].STATISTICS, 'Статистика'),
+      Markup.button.callback(BUTTONS[language].FAMILY, 'Родина'),
     ],
     {
       columns: 2,
@@ -14,31 +15,41 @@ export function actionButtonsStart() {
   ).resize();
 }
 
-export function actionButtonsTransaction() {
+export function languageSet() {
+  return Markup.inlineKeyboard(
+    [Markup.button.callback('Українська🇺🇦', 'setLanguage:ua'), Markup.button.callback('English🇬🇧', 'setLanguage:en')],
+    {
+      columns: 2,
+    },
+  );
+}
+
+export function actionButtonsTransaction(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
-      Markup.button.callback('Надходження 💹', 'Приход'),
-      Markup.button.callback('Витрати 🛍️', 'Расход'),
-      Markup.button.callback('Видалення останніх️❌', 'Удаление последних️'),
+      Markup.button.callback(BUTTONS[language].INCOME, 'Приход'),
+      Markup.button.callback(BUTTONS[language].EXPENSE, 'Расход'),
+      Markup.button.callback(BUTTONS[language].DELETE_LAST, 'Удаление последних️'),
     ],
     { columns: 2 },
   );
 }
 
-export function actionButtonsStatistics() {
+export function actionButtonsStatistics(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
-      Markup.button.callback('За сьогодні', 'За сегодня'),
-      Markup.button.callback('За тиждень🗓️', 'За неделю'),
-      Markup.button.callback('За місяць🗓️', 'За месяц'),
-      Markup.button.callback('Вибрати місяць📤️', 'Выбрать месяц'),
-      Markup.button.callback('Мої надходження💵', 'Мои приходы'),
-      Markup.button.callback('Мої витрати🧾', 'Мои расходы'),
-      Markup.button.callback('За категорією🗃️', 'По категории'),
+      Markup.button.callback(BUTTONS[language].TODAY, 'За сегодня'),
+      Markup.button.callback(BUTTONS[language].WEEK, 'За неделю'),
+      Markup.button.callback(BUTTONS[language].MONTH, 'За месяц'),
+      Markup.button.callback(BUTTONS[language].SELECT_MONTH, 'Выбрать месяц'),
+      Markup.button.callback(BUTTONS[language].MY_INCOME, 'Мои приходы'),
+      Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'Мои расходы'),
+      Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'По категории'),
     ],
     { columns: 2 },
   );
 }
+
 export function actionButtonsTransactionNames(transactionNames: string[]) {
   const buttons = [];
   for (const name of transactionNames) {
@@ -47,21 +58,20 @@ export function actionButtonsTransactionNames(transactionNames: string[]) {
   return Markup.inlineKeyboard(buttons, { columns: 2 });
 }
 
-export function actionButtonsMonths() {
-  const months = [
-    'Січень',
-    'Лютий',
-    'Березень',
-    'Квітень',
-    'Травень',
-    'Червень',
-    'Липень',
-    'Серпень',
-    'Вересень',
-    'Жовтень',
-    'Листопад',
-    'Грудень',
+export function actionButtonsMonths(language: string = 'ua') {
+  const buttons = [
+    Markup.button.callback(BUTTONS[language].JANUARY, 'Month:1'),
+    Markup.button.callback(BUTTONS[language].FEBRUARY, 'Month:2'),
+    Markup.button.callback(BUTTONS[language].MARCH, 'Month:3'),
+    Markup.button.callback(BUTTONS[language].APRIL, 'Month:4'),
+    Markup.button.callback(BUTTONS[language].MAY, 'Month:5'),
+    Markup.button.callback(BUTTONS[language].JUNE, 'Month:6'),
+    Markup.button.callback(BUTTONS[language].JULY, 'Month:7'),
+    Markup.button.callback(BUTTONS[language].AUGUST, 'Month:8'),
+    Markup.button.callback(BUTTONS[language].SEPTEMBER, 'Month:9'),
+    Markup.button.callback(BUTTONS[language].OCTOBER, 'Month:10'),
+    Markup.button.callback(BUTTONS[language].NOVEMBER, 'Month:11'),
+    Markup.button.callback(BUTTONS[language].DECEMBER, 'Month:12'),
   ];
-  const buttons = months.map((month, index) => Markup.button.callback(month, `Month:${index + 1}`));
   return Markup.inlineKeyboard(buttons, { columns: 3 });
 }
