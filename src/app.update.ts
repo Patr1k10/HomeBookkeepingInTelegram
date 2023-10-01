@@ -15,6 +15,7 @@ import { Context, CustomCallbackQuery } from './interface/context.interfsce';
 import { BalanceService } from './balance.service';
 import { Logger } from '@nestjs/common';
 import {
+  BALANCE_MESSAGE,
   ENTER_EXPENSE_MESSAGE,
   ENTER_INCOME_MESSAGE,
   ERROR_MESSAGE,
@@ -295,6 +296,7 @@ export class AppUpdate {
           amount,
         });
         await this.balanceService.updateBalance(userId, amount, transactionType);
+        await ctx.reply(BALANCE_MESSAGE[ctx.session.language || 'ua']);
         const balance = await this.balanceService.getOrCreateBalance(userId);
         const balanceMessage = getBalanceMessage(balance.balance, ctx.session.language || 'ua');
         await ctx.replyWithHTML(balanceMessage);
