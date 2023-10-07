@@ -17,6 +17,44 @@ To get started, select "Transaction," and then decide on the type: "Income" or "
   },
 };
 
+export const HELP_MESSAGE = {
+  en: `<b>📘 Guide to using your financial bot. 📘</b>
+
+<i>This bot is designed to effectively manage your finances.</i> It offers the following main commands:
+
+- <b>/transactions 💸:</b> Allows you to view and manage your transactions.
+- <b>/balance 💰:</b> Shows your current balance.
+- <b>/statistics 📊:</b> Provides statistics of your financial activity.
+- <b>/language 🌐:</b> To change the interface language.
+
+👇 <i>Additional Options:</i>
+- <b>Income:</b> To add an income.
+- <b>Expense:</b> To add an expense.
+- <b>Delete Last️:</b> To delete the last transactions.
+
+🔧 <i>If you have any questions or suggestions, feel free to contact us.</i>
+
+📩 <b>For additional help or questions, please email us at: <a href="mailto:help.tgbot@icloud.com">help.tgbot@icloud.com</a></b> 📩`,
+
+  ua: `<b>📘 Інструкція з використання вашого фінансового бота. 📘</b>
+
+<i>Цей бот створений для ефективного управління вашими фінансами.</i> Він пропонує наступні основні команди:
+
+- <b>/transactions 💸:</b> Дозволяє переглядати та управляти вашими транзакціями.
+- <b>/balance 💰:</b> Показує ваш поточний баланс.
+- <b>/statistics 📊:</b> Видає статистику вашої фінансової активності.
+- <b>/language 🌐:</b> Зміна мови інтерфейсу.
+
+👇 <i>Додаткові опції:</i>
+- <b>Приход:</b> Додавання доходу.
+- <b>Расход:</b> Додавання витрат.
+- <b>Удаление последних️:</b> Видалення останніх транзакцій.
+
+🔧 <i>Якщо у вас є питання або пропозиції, не соромтесь звертатися.</i>
+
+📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: <a href="mailto:help.tgbot@icloud.com">help.tgbot@icloud.com</a></b> 📩`,
+};
+
 export const ERROR_MESSAGE = {
   en: '⛔️ An error occurred while executing the command. Please try again later. ⛔️',
   ua: '⛔️ Сталася помилка під час виконання команди. Будь ласка, спробуйте ще раз пізніше. ⛔️',
