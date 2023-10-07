@@ -8,9 +8,9 @@ import { ERROR_MESSAGE, HELP_MESSAGE, START_MESSAGE } from './constants/messages
 
 @Update()
 export class AppUpdate {
+  private readonly logger: Logger = new Logger(AppUpdate.name);
   constructor(
     private readonly balanceService: BalanceService,
-    private readonly logger: Logger,
   ) {}
 
   @Start()

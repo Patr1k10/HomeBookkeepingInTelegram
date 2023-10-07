@@ -6,9 +6,10 @@ import { ERROR_MESSAGE, getBalanceMessage } from '../constants/messages';
 
 @Update()
 export class BalanceHandler {
+  private readonly logger: Logger = new Logger(BalanceHandler.name);
   constructor(
     private readonly balanceService: BalanceService,
-    private readonly logger: Logger,
+
   ) {}
 
   @Command('balance')

@@ -33,13 +33,13 @@ const sessions = new LocalSession({ database: 'session_db.json' });
     ]),
   ],
   providers: [
+    Logger,
     AppUpdate,
     StatisticsHandler,
     BalanceHandler,
     TransactionHandler,
     TransactionService,
     BalanceService,
-    Logger,
   ],
   exports: [],
 })

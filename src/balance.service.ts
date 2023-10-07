@@ -9,11 +9,12 @@ import { IContext } from './interface/context.interface';
 
 @Injectable()
 export class BalanceService {
+  private readonly logger: Logger = new Logger(BalanceService.name);
   constructor(
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
     @InjectModel('Transaction')
-    private readonly logger: Logger,
-    @InjectBot() private readonly bot: Telegraf<IContext>,
+    @InjectBot()
+    private readonly bot: Telegraf<IContext>,
   ) {}
   async getOrCreateBalance(userId: number): Promise<Balance> {
     let balance = await this.balanceModel.findOne({ userId }).exec();
@@ -48,6 +49,7 @@ export class BalanceService {
       } else if (transactionType === TransactionType.EXPENSE) {
         balance.balance -= amount;
       }
+      this.logger.log(`Updated balance for user ${userId}`);
 
       await balance.save();
       this.logger.log(`Updated balance for user ${userId}`);

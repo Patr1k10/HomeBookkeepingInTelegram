@@ -4,19 +4,19 @@ import { Model } from 'mongoose';
 import { Balance, TransactionType } from './mongodb/shemas';
 import { CreateTransactionDto } from './dto/balance.dto';
 import { Transaction } from './interface/transaction.interface';
-import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
 import { IContext } from './interface/context.interface';
 import { BalanceService } from './balance.service';
 import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_E, TOTAL_MESSAGES } from './constants/messages';
+import { Telegraf } from 'telegraf';
 
 @Injectable()
 export class TransactionService {
+  private readonly logger: Logger = new Logger(TransactionService.name);
   constructor(
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
-    private readonly logger: Logger,
     @InjectBot() private readonly bot: Telegraf<IContext>,
     private readonly balanceService: BalanceService,
   ) {}
@@ -198,7 +198,6 @@ export class TransactionService {
       await this.transactionModel.deleteOne({ _id: transactionId }).exec();
 
       this.logger.log(`Deleted transaction with ID: ${transactionId}`);
-
     } catch (error) {
       this.logger.error(`Error in deleteTransactionById: ${error}`);
       throw error;
