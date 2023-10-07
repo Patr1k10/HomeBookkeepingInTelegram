@@ -21,10 +21,10 @@ import { BalanceService } from '../balance.service';
 
 @Update()
 export class TransactionHandler {
+  private readonly logger: Logger = new Logger(TransactionHandler.name);
   constructor(
     private readonly transactionService: TransactionService,
     private readonly balanceService: BalanceService,
-    private readonly logger: Logger,
   ) {}
 
   @Command('transactions')
@@ -133,7 +133,7 @@ export class TransactionHandler {
         await ctx.replyWithHTML(balanceMessage);
         this.logger.log('textCommand executed');
       } catch (error) {
-        this.logger.error('Error in textCommand:', error);
+        // this.logger.error('Error in textCommand:', error);
         await ctx.reply(ERROR_MESSAGE[ctx.session.language || 'ua']);
       }
     }

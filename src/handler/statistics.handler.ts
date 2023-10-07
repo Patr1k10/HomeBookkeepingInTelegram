@@ -13,9 +13,9 @@ import {
 
 @Update()
 export class StatisticsHandler {
+  private readonly logger: Logger = new Logger(StatisticsHandler.name);
   constructor(
     private readonly transactionService: TransactionService,
-    private readonly logger: Logger,
   ) {}
 
   @Command('statistics')
