@@ -6,7 +6,7 @@ import { CreateTransactionDto } from './dto/balance.dto';
 import { Transaction } from './interface/transaction.interface';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
-import { Context } from './interface/context.interfsce';
+import { IContext } from './interface/context.interface';
 import { BalanceService } from './balance.service';
 import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_E, TOTAL_MESSAGES } from './constants/messages';
 
@@ -17,7 +17,7 @@ export class TransactionService {
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
     private readonly logger: Logger,
-    @InjectBot() private readonly bot: Telegraf<Context>,
+    @InjectBot() private readonly bot: Telegraf<IContext>,
     private readonly balanceService: BalanceService,
   ) {}
 
@@ -198,7 +198,7 @@ export class TransactionService {
       await this.transactionModel.deleteOne({ _id: transactionId }).exec();
 
       this.logger.log(`Deleted transaction with ID: ${transactionId}`);
-      await this.bot.telegram.sendMessage(userId, 'Транзакція видалена');
+
     } catch (error) {
       this.logger.error(`Error in deleteTransactionById: ${error}`);
       throw error;
@@ -275,7 +275,7 @@ export class TransactionService {
 
         if (Object.keys(negativeTransactionSums).length > 0) {
           const localizedMessage = this.getLocalizedMessage('NEGATIVE_TRANSACTIONS', language);
-          message += localizedMessage;
+          message += `${localizedMessage}${totalNegativeAmount}\n`;
           for (const [name, sum] of Object.entries(negativeTransactionSums)) {
             const percentage = ((sum / totalNegativeAmount) * 100).toFixed(2);
             message += this.formatMessage(name, percentage, sum);

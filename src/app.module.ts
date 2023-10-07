@@ -9,6 +9,9 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseConfigService } from './mongodb/mongoose-config.service';
 import { Balance, BalanceSchema, Transaction, TransactionSchema } from './mongodb/shemas';
 import { BalanceService } from './balance.service';
+import { TransactionHandler } from './handler/transaction.handler';
+import { BalanceHandler } from './handler/balance.handler';
+import { StatisticsHandler } from './handler/statistics.handler';
 
 dotenv.config();
 
@@ -29,7 +32,15 @@ const sessions = new LocalSession({ database: 'session_db.json' });
       { name: Transaction.name, schema: TransactionSchema },
     ]),
   ],
-  providers: [TransactionService, AppUpdate, BalanceService, Logger],
+  providers: [
+    AppUpdate,
+    StatisticsHandler,
+    BalanceHandler,
+    TransactionHandler,
+    TransactionService,
+    BalanceService,
+    Logger,
+  ],
   exports: [],
 })
 export class AppModule {}

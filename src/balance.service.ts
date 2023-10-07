@@ -3,19 +3,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Balance, TransactionType } from './mongodb/shemas';
 import { CreateBalanceDto } from './dto/balance.dto';
-import { Transaction } from './interface/transaction.interface';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
-import { Context } from './interface/context.interfsce';
+import { IContext } from './interface/context.interface';
 
 @Injectable()
 export class BalanceService {
   constructor(
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
     @InjectModel('Transaction')
-    private readonly transactionModel: Model<Transaction>,
     private readonly logger: Logger,
-    @InjectBot() private readonly bot: Telegraf<Context>,
+    @InjectBot() private readonly bot: Telegraf<IContext>,
   ) {}
   async getOrCreateBalance(userId: number): Promise<Balance> {
     let balance = await this.balanceModel.findOne({ userId }).exec();
