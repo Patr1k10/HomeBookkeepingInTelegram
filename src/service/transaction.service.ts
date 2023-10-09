@@ -1,14 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Balance, TransactionType } from './mongodb/shemas';
-import { CreateTransactionDto } from './dto/balance.dto';
-import { Transaction } from './interface/transaction.interface';
+import { Transaction } from '../interface/transaction.interface';
 import { InjectBot } from 'nestjs-telegraf';
-import { IContext } from './interface/context.interface';
+import { IContext } from '../interface/context.interface';
 import { BalanceService } from './balance.service';
-import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_E, TOTAL_MESSAGES } from './constants/messages';
+import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_E, TOTAL_MESSAGES } from '../constants/messages';
 import { Telegraf } from 'telegraf';
+import { Balance } from '../shemas/balance.shemas';
+import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { CreateTransactionDto } from '../dto/transaction.dto';
 
 @Injectable()
 export class TransactionService {

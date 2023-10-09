@@ -2,16 +2,14 @@ import { Action, Command, Help, Start, Update } from 'nestjs-telegraf';
 
 import { actionButtonsStart, languageSet } from './app.buttons';
 import { IContext, CustomCallbackQuery } from './interface/context.interface';
-import { BalanceService } from './balance.service';
+import { BalanceService } from './service/balance.service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, HELP_MESSAGE, START_MESSAGE } from './constants/messages';
 
 @Update()
 export class AppUpdate {
   private readonly logger: Logger = new Logger(AppUpdate.name);
-  constructor(
-    private readonly balanceService: BalanceService,
-  ) {}
+  constructor(private readonly balanceService: BalanceService) {}
 
   @Start()
   async startCommand(ctx: IContext) {

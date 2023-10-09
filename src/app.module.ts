@@ -1,17 +1,18 @@
 import { Logger, Module } from '@nestjs/common';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { AppUpdate } from './app.update';
-import { TransactionService } from './transaction.service';
+import { TransactionService } from './service/transaction.service';
 import * as LocalSession from 'telegraf-session-local';
 import * as dotenv from 'dotenv';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseConfigService } from './mongodb/mongoose-config.service';
-import { Balance, BalanceSchema, Transaction, TransactionSchema } from './mongodb/shemas';
-import { BalanceService } from './balance.service';
+import { BalanceService } from './service/balance.service';
 import { TransactionHandler } from './handler/transaction.handler';
 import { BalanceHandler } from './handler/balance.handler';
 import { StatisticsHandler } from './handler/statistics.handler';
+import { Balance, BalanceSchema } from './shemas/balance.shemas';
+import { Transaction, TransactionSchema } from './shemas/transaction.shemas';
 
 dotenv.config();
 

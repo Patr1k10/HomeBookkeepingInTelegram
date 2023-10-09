@@ -1,5 +1,4 @@
-import { TransactionType } from '../mongodb/shemas';
-import { TransactionService } from '../transaction.service';
+import { TransactionService } from '../service/transaction.service';
 import { Logger } from '@nestjs/common';
 import { Action, Command, Hears, Update } from 'nestjs-telegraf';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
@@ -10,13 +9,12 @@ import {
   SELECT_MONTH_MESSAGE,
   WANT_STATISTICS_MESSAGE,
 } from '../constants/messages';
+import { TransactionType } from '../shemas/enum/transactionType.enam';
 
 @Update()
 export class StatisticsHandler {
   private readonly logger: Logger = new Logger(StatisticsHandler.name);
-  constructor(
-    private readonly transactionService: TransactionService,
-  ) {}
+  constructor(private readonly transactionService: TransactionService) {}
 
   @Command('statistics')
   @Hears(/Статистика 📊|Statistics 📊/)
