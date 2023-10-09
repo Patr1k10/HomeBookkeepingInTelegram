@@ -8,7 +8,7 @@ import { IContext } from '../interface/context.interface';
 import { BalanceService } from './balance.service';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_E } from '../constants/messages';
+import { PERIOD_E } from '../constants/messages';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);
@@ -126,6 +126,4 @@ export class StatisticsService {
       throw error;
     }
   }
-
-
 }

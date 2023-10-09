@@ -1,4 +1,3 @@
-import { TransactionService } from '../service/transaction.service';
 import { Logger } from '@nestjs/common';
 import { Action, Command, Hears, Update } from 'nestjs-telegraf';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
@@ -15,9 +14,7 @@ import { StatisticsService } from '../service/statistics.service';
 @Update()
 export class StatisticsHandler {
   private readonly logger: Logger = new Logger(StatisticsHandler.name);
-  constructor(
-    private readonly statisticsService: StatisticsService,
-  ) {}
+  constructor(private readonly statisticsService: StatisticsService) {}
 
   @Command('statistics')
   @Hears(/Статистика 📊|Statistics 📊/)
