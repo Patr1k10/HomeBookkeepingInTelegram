@@ -10,6 +10,4 @@ export class Balance extends Document {
   balance: number;
 }
 
-
-
 export const BalanceSchema = SchemaFactory.createForClass(Balance);
