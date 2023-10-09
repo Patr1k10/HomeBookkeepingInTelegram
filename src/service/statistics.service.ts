@@ -5,7 +5,6 @@ import { Transaction } from '../interface/transaction.interface';
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { IContext } from '../interface/context.interface';
-import { BalanceService } from './balance.service';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { PERIOD_E } from '../constants/messages';
