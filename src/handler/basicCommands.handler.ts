@@ -1,10 +1,10 @@
 import { Action, Command, Help, Start, Update } from 'nestjs-telegraf';
 
-import { actionButtonsStart, languageSet } from './app.buttons';
-import { IContext, CustomCallbackQuery } from './interface/context.interface';
-import { BalanceService } from './service/balance.service';
+import { actionButtonsStart, languageSet } from '../battons/app.buttons';
+import { IContext, CustomCallbackQuery } from '../interface/context.interface';
+import { BalanceService } from '../service/balance.service';
 import { Logger } from '@nestjs/common';
-import { ERROR_MESSAGE, HELP_MESSAGE, START_MESSAGE } from './constants/messages';
+import { ERROR_MESSAGE, HELP_MESSAGE, START_MESSAGE } from '../constants/messages';
 
 @Update()
 export class AppUpdate {

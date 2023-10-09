@@ -1,6 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { TelegrafModule } from 'nestjs-telegraf';
-import { AppUpdate } from './app.update';
+import { AppUpdate } from './handler/basicCommands.handler';
 import { TransactionService } from './service/transaction.service';
 import * as LocalSession from 'telegraf-session-local';
 import * as dotenv from 'dotenv';
@@ -13,6 +13,8 @@ import { BalanceHandler } from './handler/balance.handler';
 import { StatisticsHandler } from './handler/statistics.handler';
 import { Balance, BalanceSchema } from './shemas/balance.shemas';
 import { Transaction, TransactionSchema } from './shemas/transaction.shemas';
+import { MessageService } from './service/message.service';
+import { StatisticsService } from './service/statistics.service';
 
 dotenv.config();
 
@@ -41,6 +43,8 @@ const sessions = new LocalSession({ database: 'session_db.json' });
     TransactionHandler,
     TransactionService,
     BalanceService,
+    MessageService,
+    StatisticsService,
   ],
   exports: [],
 })

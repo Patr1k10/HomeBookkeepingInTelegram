@@ -13,7 +13,7 @@ import {
   SELECT_TRANSACTION_MESSAGE,
   TRANSACTION_DELETED_MESSAGE,
 } from '../constants/messages';
-import { actionButtonsTransaction } from '../app.buttons';
+import { actionButtonsTransaction } from '../battons/app.buttons';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { MyMessage } from '../interface/my-message.interface';
 
