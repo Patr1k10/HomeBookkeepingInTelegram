@@ -16,7 +16,6 @@ export class StatisticsService {
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
     @InjectBot() private readonly bot: Telegraf<IContext>,
-    private readonly balanceService: BalanceService,
     private readonly messageService: MessageService,
   ) {}
 
