@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Balance, TransactionType } from './mongodb/shemas';
-import { CreateBalanceDto } from './dto/balance.dto';
+import { CreateBalanceDto } from '../dto/balance.dto';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
-import { IContext } from './interface/context.interface';
+import { IContext } from '../interface/context.interface';
+import { Balance } from '../shemas/balance.shemas';
+import { TransactionType } from '../shemas/enum/transactionType.enam';
 
 @Injectable()
 export class BalanceService {

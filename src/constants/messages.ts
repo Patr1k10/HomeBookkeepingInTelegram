@@ -34,7 +34,7 @@ export const HELP_MESSAGE = {
 
 🔧 <i>If you have any questions or suggestions, feel free to contact us.</i>
 
-📩 <b>For additional help or questions, please email us at: <a href="mailto:help.tgbot@icloud.com">help.tgbot@icloud.com</a></b> 📩`,
+📩 <b>For additional help or questions, please email us at: help.tgbot@icloud.com</b> 📩`,
 
   ua: `<b>📘 Інструкція з використання вашого фінансового бота. 📘</b>
 
@@ -52,7 +52,7 @@ export const HELP_MESSAGE = {
 
 🔧 <i>Якщо у вас є питання або пропозиції, не соромтесь звертатися.</i>
 
-📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: <a href="mailto:help.tgbot@icloud.com">help.tgbot@icloud.com</a></b> 📩`,
+📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: help.tgbot@icloud.com</b> 📩`,
 };
 
 export const ERROR_MESSAGE = {

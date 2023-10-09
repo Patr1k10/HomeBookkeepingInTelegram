@@ -1,5 +1,5 @@
 import { Markup } from 'telegraf';
-import { BUTTONS } from './constants/buttons.const';
+import { BUTTONS } from '../constants/buttons.const';
 
 export function actionButtonsStart(language: string = 'ua') {
   return Markup.keyboard(

@@ -1,5 +1,5 @@
 import { Command, Hears, Update } from 'nestjs-telegraf';
-import { BalanceService } from '../balance.service';
+import { BalanceService } from '../service/balance.service';
 import { Logger } from '@nestjs/common';
 import { IContext } from '../interface/context.interface';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants/messages';
@@ -7,10 +7,7 @@ import { ERROR_MESSAGE, getBalanceMessage } from '../constants/messages';
 @Update()
 export class BalanceHandler {
   private readonly logger: Logger = new Logger(BalanceHandler.name);
-  constructor(
-    private readonly balanceService: BalanceService,
-
-  ) {}
+  constructor(private readonly balanceService: BalanceService) {}
 
   @Command('balance')
   @Hears(/Balance 💰|Баланс 💰/)

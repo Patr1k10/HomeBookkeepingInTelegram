@@ -1,19 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-
-export enum TransactionType {
-  INCOME = 'Доход',
-  EXPENSE = 'Расход',
-}
-
-@Schema()
-export class Balance extends Document {
-  @Prop({ required: true })
-  userId: number;
-
-  @Prop({ required: true })
-  balance: number;
-}
+import { TransactionType } from './enum/transactionType.enam';
 
 @Schema()
 export class Transaction extends Document {
@@ -33,5 +20,4 @@ export class Transaction extends Document {
   timestamp: Date;
 }
 
-export const BalanceSchema = SchemaFactory.createForClass(Balance);
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
