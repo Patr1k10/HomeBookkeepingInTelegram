@@ -1,7 +1,6 @@
 import { Action, Command, Hears, On, Update } from 'nestjs-telegraf';
 import { TransactionService } from '../service/transaction.service';
 import { Logger } from '@nestjs/common';
-
 import {
   BALANCE_MESSAGE,
   ENTER_EXPENSE_MESSAGE,
@@ -60,7 +59,7 @@ export class TransactionHandler {
   async deleteLastCommand(ctx: IContext) {
     const userId = ctx.from.id;
     ctx.session.type = 'delete';
-    await this.transactionService.showLastNTransactionsWithDeleteOption(userId, 10, ctx.session.language || 'ua');
+    await this.transactionService.showLastNTransactionsWithDeleteOption(userId, 20, ctx.session.language || 'ua');
   }
   @Action(/delete_(.+)/)
   async handleCallbackQuery(ctx: IContext) {
@@ -130,7 +129,11 @@ export class TransactionHandler {
         await this.balanceService.updateBalance(userId, amount, transactionType);
         await ctx.reply(BALANCE_MESSAGE[ctx.session.language || 'ua']);
         const balance = await this.balanceService.getOrCreateBalance(userId);
-        const balanceMessage = getBalanceMessage(balance.balance, ctx.session.language || 'ua');
+        const balanceMessage = getBalanceMessage(
+          balance.balance,
+          ctx.session.language || 'ua',
+          ctx.session.currency || 'UAH',
+        );
         await ctx.replyWithHTML(balanceMessage);
         this.logger.log('textCommand executed');
       } catch (error) {

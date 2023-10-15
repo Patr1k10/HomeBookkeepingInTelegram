@@ -26,6 +26,8 @@ export const BUTTONS = {
     OCTOBER: 'Жовтень',
     NOVEMBER: 'Листопад',
     DECEMBER: 'Грудень',
+    YES: 'ТАК✅',
+    NO: 'НІ❌',
   },
   en: {
     BALANCE: 'Balance 💰',
@@ -54,5 +56,7 @@ export const BUTTONS = {
     OCTOBER: 'October',
     NOVEMBER: 'November',
     DECEMBER: 'December',
+    YES: 'YES✅',
+    NO: 'NO❌',
   },
 };

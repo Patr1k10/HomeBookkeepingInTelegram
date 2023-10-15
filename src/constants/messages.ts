@@ -26,6 +26,7 @@ export const HELP_MESSAGE = {
 - <b>/balance 💰:</b> Shows your current balance.
 - <b>/statistics 📊:</b> Provides statistics of your financial activity.
 - <b>/language 🌐:</b> To change the interface language.
+- <b>/reset 🔄:</b> Deletes all your data and resets your account.
 
 👇 <i>Additional Options:</i>
 - <b>Income:</b> To add an income.
@@ -44,6 +45,7 @@ export const HELP_MESSAGE = {
 - <b>/balance 💰:</b> Показує ваш поточний баланс.
 - <b>/statistics 📊:</b> Видає статистику вашої фінансової активності.
 - <b>/language 🌐:</b> Зміна мови інтерфейсу.
+- <b>/reset 🔄:</b> Видаляє всі ваші дані та скидає аккаунт.
 
 👇 <i>Додаткові опції:</i>
 - <b>Приход:</b> Додавання доходу.
@@ -110,19 +112,21 @@ export const BALANCE_MESSAGE = {
   ua: 'Ваш баланс оновлено✅',
 };
 
-export const getBalanceMessage = (balance: number, language: string) => {
+export const getBalanceMessage = (balance: number, language: string, currency: string) => {
+  const setCurrency = CURRNCY[currency];
   const messages = {
-    en: `<b>Your balance: ${balance} </b>🗃️`,
-    ua: `<b>Твій баланс: ${balance} </b>🗃️`,
+    en: `<b>Your balance: ${balance}${setCurrency} </b>🗃️`,
+    ua: `<b>Твій баланс: ${balance}${setCurrency} </b>🗃️`,
   };
 
   return messages[language];
 };
 
 export const DELETE_LAST_MESSAGE = {
-  en: 'Select the transactions to delete🗑️:',
-  ua: 'Оберіть транзакції для видалення🗑️:',
+  en: 'If you made a mistake or just want to delete a transaction, select the transactions to delete🗑️:',
+  ua: 'Якщо ви зробили помилку або просто хочете видалити транзакцію, оберіть транзакції для видалення🗑️:',
 };
+
 export const DELETE_LAST_MESSAGE2 = {
   en: '⛔️There are no available transactions to delete.⛔️:',
   ua: '⛔️Немає доступних транзакцій для видалення.⛔️:',
@@ -132,11 +136,15 @@ export const PERIOD_E = {
   en: '⛔️There are no transactions for this period⛔️',
   ua: '⛔️Немає транзакцій за цей період⛔️',
 };
+export const PERIOD_NULL = {
+  en: 'Currently, you have no transactions',
+  ua: 'Наразі у вас немає транзакцій',
+};
 
 export const TOTAL_MESSAGES = {
   TOTAL_AMOUNT: {
-    en: '\n------------------------------------\n<b>Total:</b>',
-    ua: '\n------------------------------------\n<b>Усього:</b>',
+    en: '\n------------------------------------\n<b>Grand Total:</b>',
+    ua: '\n------------------------------------\n<b>Загальний підсумок:</b>',
   },
   POSITIVE_TRANSACTIONS: {
     en: '<b>📈Positive transactions⤵️:</b>\n',
@@ -146,4 +154,23 @@ export const TOTAL_MESSAGES = {
     en: '<b>📉Negative transactions⤵️:</b>\n',
     ua: "<b>📉Доля від'ємних транзакцій⤵️:</b>\n",
   },
+};
+export const RESETS_ALL = {
+  en: {
+    CONFIRM_RESET: 'All your data will be permanently deleted. If you agree, enter `RESET`.',
+    RESET_SUCCESSFUL: 'Deletion was successful.',
+    RESET_CANCELED: 'Deletion of your data has been canceled.',
+    ARE_YOU_SURE: 'Are you sure? All your data will be deleted.',
+  },
+  ua: {
+    CONFIRM_RESET: 'Всі ваші дані будуть видалені назавжди. Якщо ви згодні, введіть `RESET`.',
+    RESET_SUCCESSFUL: 'Видалення пройшло успішно.',
+    RESET_CANCELED: 'Видалення ваших даних скасовано.',
+    ARE_YOU_SURE: 'Ви впевнені? Всі ваші дані будуть видалені.',
+  },
+};
+
+export const CURRNCY = {
+  USD: '$',
+  UAH: 'грн.',
 };

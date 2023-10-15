@@ -59,4 +59,13 @@ export class BalanceService {
       throw error;
     }
   }
+  async deleteAllBalancesOfUser(userId: number): Promise<void> {
+    try {
+      await this.balanceModel.deleteMany({ userId }).exec();
+      this.logger.log(`Deleted all balances for user ${userId}`);
+    } catch (error) {
+      this.logger.error('Error deleting all balances for user', error);
+      throw error;
+    }
+  }
 }

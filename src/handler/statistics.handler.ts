@@ -4,6 +4,7 @@ import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { actionButtonsMonths, actionButtonsStatistics, actionButtonsTransactionNames } from '../battons/app.buttons';
 import {
   ERROR_MESSAGE,
+  PERIOD_NULL,
   SELECT_CATEGORY_MESSAGE,
   SELECT_MONTH_MESSAGE,
   WANT_STATISTICS_MESSAGE,
@@ -36,22 +37,37 @@ export class StatisticsHandler {
   async incomeListCommand(ctx: IContext) {
     this.logger.log('приходы command executed');
     const userId = ctx.from.id;
-    await this.statisticsService.getTransactionsByType(userId, TransactionType.INCOME, ctx.session.language || 'ua');
+    await this.statisticsService.getTransactionsByType(
+      userId,
+      TransactionType.INCOME,
+      ctx.session.language || 'ua',
+      ctx.session.currency || 'UAH',
+    );
   }
 
   @Action('Мои расходы')
   async expenseListCommand(ctx: IContext) {
     this.logger.log('расходы command executed');
     const userId = ctx.from.id;
-    await this.statisticsService.getTransactionsByType(userId, TransactionType.EXPENSE, ctx.session.language || 'ua');
+    await this.statisticsService.getTransactionsByType(
+      userId,
+      TransactionType.EXPENSE,
+      ctx.session.language || 'ua',
+      ctx.session.currency || 'UAH',
+    );
   }
   @Action('По категории')
   async categoryListCommand(ctx: IContext) {
     const userId = ctx.from.id;
     const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(userId);
+    if (uniqueTransactionNames === null) {
+      await ctx.reply(PERIOD_NULL[ctx.session.language]);
+      return;
+    }
     const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames);
     await ctx.reply(SELECT_CATEGORY_MESSAGE[ctx.session.language || 'ua'], transactionNameButtons);
   }
+
   @Action(/TransactionName:(.+)/)
   async transactionNameCommand(ctx: IContext) {
     this.logger.log('transactionName command executed');
@@ -65,6 +81,7 @@ export class StatisticsHandler {
         userId,
         selectedTransactionName,
         ctx.session.language || 'ua',
+        ctx.session.currency || 'UAH',
       );
     } else {
       this.logger.log('callbackQuery is undefined');
@@ -74,21 +91,33 @@ export class StatisticsHandler {
   async todayListCommand(ctx: IContext) {
     this.logger.log('today command executed');
     const userId = ctx.from.id;
-    await this.statisticsService.getFormattedTransactionsForToday(userId, ctx.session.language || 'ua');
+    await this.statisticsService.getFormattedTransactionsForToday(
+      userId,
+      ctx.session.language || 'ua',
+      ctx.session.currency || 'UAH',
+    );
     this.logger.log('today command executed');
   }
   @Action('За неделю')
   async weekListCommand(ctx: IContext) {
     this.logger.log('week command executed');
     const userId = ctx.from.id;
-    await this.statisticsService.getFormattedTransactionsForWeek(userId, ctx.session.language || 'ua');
+    await this.statisticsService.getFormattedTransactionsForWeek(
+      userId,
+      ctx.session.language || 'ua',
+      ctx.session.currency || 'UAH',
+    );
     this.logger.log('week command executed');
   }
   @Action('За месяц')
   async monthListCommand(ctx: IContext) {
     this.logger.log('month command executed');
     const userId = ctx.from.id;
-    await this.statisticsService.getFormattedTransactionsForMonth(userId, ctx.session.language || 'ua');
+    await this.statisticsService.getFormattedTransactionsForMonth(
+      userId,
+      ctx.session.language || 'ua',
+      ctx.session.currency || 'UAH',
+    );
     this.logger.log('month command executed');
   }
   @Action('Выбрать месяц')
@@ -116,7 +145,13 @@ export class StatisticsHandler {
       toDate.setDate(0);
       toDate.setHours(23, 59, 59, 999);
 
-      await this.statisticsService.getTransactionsByPeriod(userId, fromDate, toDate, ctx.session.language || 'ua');
+      await this.statisticsService.getTransactionsByPeriod(
+        userId,
+        fromDate,
+        toDate,
+        ctx.session.language || 'ua',
+        ctx.session.currency || 'UAH',
+      );
     } else {
       this.logger.log('callbackQuery is undefined');
     }

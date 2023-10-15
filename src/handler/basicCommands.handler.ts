@@ -1,15 +1,19 @@
-import { Action, Command, Help, Start, Update } from 'nestjs-telegraf';
+import { Action, Command, Hears, Help, Start, Update } from 'nestjs-telegraf';
 
-import { actionButtonsStart, languageSet } from '../battons/app.buttons';
+import { actionButtonsStart, currencySet, languageSet, resetButton } from '../battons/app.buttons';
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service/balance.service';
 import { Logger } from '@nestjs/common';
-import { ERROR_MESSAGE, HELP_MESSAGE, START_MESSAGE } from '../constants/messages';
+import { ERROR_MESSAGE, HELP_MESSAGE, RESETS_ALL, START_MESSAGE } from '../constants/messages';
+import { TransactionService } from '../service/transaction.service';
 
 @Update()
 export class AppUpdate {
   private readonly logger: Logger = new Logger(AppUpdate.name);
-  constructor(private readonly balanceService: BalanceService) {}
+  constructor(
+    private readonly balanceService: BalanceService,
+    private readonly transactionService: TransactionService,
+  ) {}
 
   @Start()
   async startCommand(ctx: IContext) {
@@ -32,6 +36,23 @@ export class AppUpdate {
       await ctx.answerCbQuery(ERROR_MESSAGE[ctx.session.language || 'ua']);
     }
   }
+  @Action('USD')
+  async usdCommand(ctx: IContext) {
+    ctx.session.currency = 'USD';
+    await ctx.replyWithHTML(
+      START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
+      actionButtonsStart(ctx.session.language),
+    );
+  }
+
+  @Action('UAH')
+  async uahCommand(ctx: IContext) {
+    ctx.session.currency = 'UAH';
+    await ctx.replyWithHTML(
+      START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
+      actionButtonsStart(ctx.session.language),
+    );
+  }
 
   @Action(/setLanguage:(.+)/)
   async setLanguage(ctx: IContext) {
@@ -40,10 +61,7 @@ export class AppUpdate {
       const callbackData = callbackQuery.data;
       const parts = callbackData.split(':');
       ctx.session.language = parts[1];
-      await ctx.replyWithHTML(
-        START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
-        actionButtonsStart(ctx.session.language),
-      );
+      await ctx.reply('Оберіть валюту / Choose currency', currencySet());
       this.logger.log('setLanguage command executed');
     } else {
       this.logger.log('callbackQuery is undefined');
@@ -70,5 +88,35 @@ export class AppUpdate {
       this.logger.error('Error in languageCommand:', error);
       await ctx.reply(ERROR_MESSAGE[ctx.session.language || 'ua']);
     }
+  }
+  @Command('reset')
+  async resetCommand(ctx: IContext) {
+    await ctx.reply(RESETS_ALL[ctx.session.language].ARE_YOU_SURE, resetButton(ctx.session.language));
+  }
+  @Action('yes')
+  async yesCommand(ctx: IContext) {
+    await ctx.reply(RESETS_ALL[ctx.session.language].CONFIRM_RESET);
+    ctx.session.type = 'delete';
+  }
+  @Action('no')
+  async noCommand(ctx: IContext) {
+    await ctx.reply(RESETS_ALL[ctx.session.language].RESET_CANCELED);
+    delete ctx.session.type;
+  }
+  @Hears('RESET')
+  async resetAll(ctx: IContext) {
+    if (ctx.session.type !== 'delete') {
+      return;
+    }
+    const userId = ctx.from.id;
+    await this.balanceService.deleteAllBalancesOfUser(userId);
+    await this.transactionService.deleteAllTransactionsOfUser(userId);
+    await ctx.reply(RESETS_ALL[ctx.session.language].RESET_SUCCESSFUL);
+    await this.balanceService.createBalance({ userId });
+    await ctx.replyWithHTML(
+      START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
+      actionButtonsStart(ctx.session.language),
+    );
+    delete ctx.session.type;
   }
 }
