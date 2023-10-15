@@ -23,6 +23,15 @@ export function languageSet() {
     },
   );
 }
+
+export function currencySet() {
+  return Markup.inlineKeyboard(
+    [Markup.button.callback('Українська🇺🇦 гривня', 'UAH'), Markup.button.callback('United States Dollar﹩', 'USD')],
+    {
+      columns: 1,
+    },
+  );
+}
 export function resetButton(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [Markup.button.callback(BUTTONS[language].YES, 'yes'), Markup.button.callback(BUTTONS[language].NO, 'no')],

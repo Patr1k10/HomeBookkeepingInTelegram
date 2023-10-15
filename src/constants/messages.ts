@@ -112,19 +112,21 @@ export const BALANCE_MESSAGE = {
   ua: 'Ваш баланс оновлено✅',
 };
 
-export const getBalanceMessage = (balance: number, language: string) => {
+export const getBalanceMessage = (balance: number, language: string, currency: string) => {
+  const setCurrency = CURRNCY[currency];
   const messages = {
-    en: `<b>Your balance: ${balance} </b>🗃️`,
-    ua: `<b>Твій баланс: ${balance} </b>🗃️`,
+    en: `<b>Your balance: ${balance}${setCurrency} </b>🗃️`,
+    ua: `<b>Твій баланс: ${balance}${setCurrency} </b>🗃️`,
   };
 
   return messages[language];
 };
 
 export const DELETE_LAST_MESSAGE = {
-  en: 'Select the transactions to delete🗑️:',
-  ua: 'Оберіть транзакції для видалення🗑️:',
+  en: 'If you made a mistake or just want to delete a transaction, select the transactions to delete🗑️:',
+  ua: 'Якщо ви зробили помилку або просто хочете видалити транзакцію, оберіть транзакції для видалення🗑️:',
 };
+
 export const DELETE_LAST_MESSAGE2 = {
   en: '⛔️There are no available transactions to delete.⛔️:',
   ua: '⛔️Немає доступних транзакцій для видалення.⛔️:',
@@ -134,11 +136,15 @@ export const PERIOD_E = {
   en: '⛔️There are no transactions for this period⛔️',
   ua: '⛔️Немає транзакцій за цей період⛔️',
 };
+export const PERIOD_NULL = {
+  en: 'Currently, you have no transactions',
+  ua: 'Наразі у вас немає транзакцій',
+};
 
 export const TOTAL_MESSAGES = {
   TOTAL_AMOUNT: {
-    en: '\n------------------------------------\n<b>Total:</b>',
-    ua: '\n------------------------------------\n<b>Усього:</b>',
+    en: '\n------------------------------------\n<b>Grand Total:</b>',
+    ua: '\n------------------------------------\n<b>Загальний підсумок:</b>',
   },
   POSITIVE_TRANSACTIONS: {
     en: '<b>📈Positive transactions⤵️:</b>\n',
@@ -162,4 +168,9 @@ export const RESETS_ALL = {
     RESET_CANCELED: 'Видалення ваших даних скасовано.',
     ARE_YOU_SURE: 'Ви впевнені? Всі ваші дані будуть видалені.',
   },
+};
+
+export const CURRNCY = {
+  USD: '$',
+  UAH: 'грн.',
 };

@@ -5,6 +5,7 @@ export interface IContext extends ContextTelegraf {
     id?: string;
     type?: 'done' | 'edit' | 'remove' | 'income' | 'expense' | 'balance' | 'delete';
     language?: string;
+    currency?: string;
   };
 }
 

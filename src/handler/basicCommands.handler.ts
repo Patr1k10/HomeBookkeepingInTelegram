@@ -1,6 +1,6 @@
 import { Action, Command, Hears, Help, Start, Update } from 'nestjs-telegraf';
 
-import { actionButtonsStart, languageSet, resetButton } from '../battons/app.buttons';
+import { actionButtonsStart, currencySet, languageSet, resetButton } from '../battons/app.buttons';
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service/balance.service';
 import { Logger } from '@nestjs/common';
@@ -36,6 +36,23 @@ export class AppUpdate {
       await ctx.answerCbQuery(ERROR_MESSAGE[ctx.session.language || 'ua']);
     }
   }
+  @Action('USD')
+  async usdCommand(ctx: IContext) {
+    ctx.session.currency = 'USD';
+    await ctx.replyWithHTML(
+      START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
+      actionButtonsStart(ctx.session.language),
+    );
+  }
+
+  @Action('UAH')
+  async uahCommand(ctx: IContext) {
+    ctx.session.currency = 'UAH';
+    await ctx.replyWithHTML(
+      START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
+      actionButtonsStart(ctx.session.language),
+    );
+  }
 
   @Action(/setLanguage:(.+)/)
   async setLanguage(ctx: IContext) {
@@ -44,10 +61,7 @@ export class AppUpdate {
       const callbackData = callbackQuery.data;
       const parts = callbackData.split(':');
       ctx.session.language = parts[1];
-      await ctx.replyWithHTML(
-        START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
-        actionButtonsStart(ctx.session.language),
-      );
+      await ctx.reply('Оберіть валюту / Choose currency', currencySet());
       this.logger.log('setLanguage command executed');
     } else {
       this.logger.log('callbackQuery is undefined');

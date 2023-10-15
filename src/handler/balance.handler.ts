@@ -17,7 +17,11 @@ export class BalanceHandler {
       await ctx.deleteMessage();
       const userId = ctx.from.id;
       const balance = await this.balanceService.getOrCreateBalance(userId);
-      const balanceMessage = getBalanceMessage(balance.balance, ctx.session.language || 'ua');
+      const balanceMessage = getBalanceMessage(
+        balance.balance,
+        ctx.session.language || 'ua',
+        ctx.session.currency || 'UAH',
+      );
       await ctx.replyWithHTML(balanceMessage, actionButtonsStart(ctx.session.language));
       ctx.session.type = 'balance';
       this.logger.log('Баланс command executed');
