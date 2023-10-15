@@ -56,7 +56,7 @@ export const BUTTONS = {
     OCTOBER: 'October',
     NOVEMBER: 'November',
     DECEMBER: 'December',
-    YES: "YES✅",
-    NO: "NO❌"
+    YES: 'YES✅',
+    NO: 'NO❌',
   },
 };

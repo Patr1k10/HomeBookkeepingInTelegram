@@ -26,6 +26,7 @@ export const HELP_MESSAGE = {
 - <b>/balance 💰:</b> Shows your current balance.
 - <b>/statistics 📊:</b> Provides statistics of your financial activity.
 - <b>/language 🌐:</b> To change the interface language.
+- <b>/reset 🔄:</b> Deletes all your data and resets your account.
 
 👇 <i>Additional Options:</i>
 - <b>Income:</b> To add an income.
@@ -44,6 +45,7 @@ export const HELP_MESSAGE = {
 - <b>/balance 💰:</b> Показує ваш поточний баланс.
 - <b>/statistics 📊:</b> Видає статистику вашої фінансової активності.
 - <b>/language 🌐:</b> Зміна мови інтерфейсу.
+- <b>/reset 🔄:</b> Видаляє всі ваші дані та скидає аккаунт.
 
 👇 <i>Додаткові опції:</i>
 - <b>Приход:</b> Додавання доходу.
