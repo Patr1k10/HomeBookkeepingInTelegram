@@ -147,3 +147,17 @@ export const TOTAL_MESSAGES = {
     ua: "<b>📉Доля від'ємних транзакцій⤵️:</b>\n",
   },
 };
+export const RESETS_ALL = {
+  en: {
+    CONFIRM_RESET: 'All your data will be permanently deleted. If you agree, enter `RESET`.',
+    RESET_SUCCESSFUL: 'Deletion was successful.',
+    RESET_CANCELED: 'Deletion of your data has been canceled.',
+    ARE_YOU_SURE: 'Are you sure? All your data will be deleted.',
+  },
+  ua: {
+    CONFIRM_RESET: 'Всі ваші дані будуть видалені назавжди. Якщо ви згодні, введіть `RESET`.',
+    RESET_SUCCESSFUL: 'Видалення пройшло успішно.',
+    RESET_CANCELED: 'Видалення ваших даних скасовано.',
+    ARE_YOU_SURE: 'Ви впевнені? Всі ваші дані будуть видалені.',
+  },
+};

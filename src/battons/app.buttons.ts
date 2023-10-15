@@ -23,6 +23,14 @@ export function languageSet() {
     },
   );
 }
+export function resetButton(language: string = 'ua') {
+  return Markup.inlineKeyboard(
+    [Markup.button.callback(BUTTONS[language].YES, 'yes'), Markup.button.callback(BUTTONS[language].NO, 'no')],
+    {
+      columns: 2,
+    },
+  );
+}
 
 export function actionButtonsTransaction(language: string = 'ua') {
   return Markup.inlineKeyboard(

@@ -10,3 +10,8 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
+
+// TODO: реализовать семейный доступ
+// TODO: реализовать сброс аккаунта
+// TODO: реализовать улучшений вывод статистики
+// TODO: подключить гпт чат для советов по финансам

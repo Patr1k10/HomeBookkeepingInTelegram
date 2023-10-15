@@ -95,4 +95,14 @@ export class TransactionService {
       throw error;
     }
   }
+  async deleteAllTransactionsOfUser(userId: number): Promise<void> {
+    try {
+      await this.transactionModel.deleteMany({ userId }).exec();
+      this.logger.log(`Deleted all transactions for user ${userId}`);
+    } catch (error) {
+      this.logger.error('Error deleting all transactions for user', error);
+      throw error;
+    }
+  }
+
 }
