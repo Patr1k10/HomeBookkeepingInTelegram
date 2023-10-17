@@ -1,5 +1,5 @@
 import { Command, Hears, Update } from 'nestjs-telegraf';
-import { BalanceService } from '../service/balance.service';
+import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { IContext } from '../interface/context.interface';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants/messages';

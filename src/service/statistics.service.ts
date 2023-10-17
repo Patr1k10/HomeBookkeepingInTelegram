@@ -20,17 +20,22 @@ export class StatisticsService {
 
   async getTransactionsByType(
     userId: number,
+    groupIds: number[],
     transactionType: TransactionType,
     language: string,
     currency: string,
   ): Promise<void> {
     try {
-      const transactions = await this.transactionModel.find({ userId, transactionType }).exec();
+      const query =
+        groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, transactionType } : { userId, transactionType };
+
+      const transactions = await this.transactionModel.find(query).exec();
+
       if (transactions.length > 0) {
-        this.logger.log(`Retrieved ${transactions.length} transactions for user ${userId}`);
+        this.logger.log(`Retrieved ${transactions.length} transactions`);
         await this.messageService.sendFormattedTransactions(userId, transactions, language, currency);
       } else {
-        this.logger.log(`No transactions of type ${transactionType} found for user ${userId}`);
+        this.logger.log(`No transactions of type ${transactionType} found`);
         await this.bot.telegram.sendMessage(userId, `⛔️Немає транзакцій даного типу (${transactionType})⛔️`);
       }
     } catch (error) {
@@ -38,16 +43,20 @@ export class StatisticsService {
       throw error;
     }
   }
+
   async getTransactions(
     userId: number,
+    groupIds: number[],
     query: any,
     noTransactionsMessage: string,
     logMessage: string,
     language: string,
     currency: string,
   ): Promise<void> {
+    const adaptedQuery = groupIds.length > 0 ? { userId: { $in: groupIds }, ...query } : { userId, ...query };
+
     try {
-      const transactions = await this.transactionModel.find(query).exec();
+      const transactions = await this.transactionModel.find(adaptedQuery).exec();
       if (transactions.length > 0) {
         this.logger.log(
           logMessage.replace('{count}', transactions.length.toString()).replace('{userId}', userId.toString()),
@@ -65,13 +74,15 @@ export class StatisticsService {
 
   async getTransactionsByTransactionName(
     userId: number,
+    groupIds: number[],
     transactionName: string,
     language: string,
     currency: string,
   ): Promise<void> {
     await this.getTransactions(
       userId,
-      { userId, transactionName },
+      groupIds,
+      { transactionName },
       `⛔️Немає транзакцій з ім'ям (${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
       language,
@@ -79,12 +90,18 @@ export class StatisticsService {
     );
   }
 
-  async getFormattedTransactionsForToday(userId: number, language: string, currency: string): Promise<void> {
+  async getFormattedTransactionsForToday(
+    userId: number,
+    groupIds: number[],
+    language: string,
+    currency: string,
+  ): Promise<void> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     await this.getTransactions(
       userId,
-      { userId, timestamp: { $gte: today } },
+      groupIds,
+      { timestamp: { $gte: today } },
       PERIOD_E[language],
       `Retrieved {count} transactions for today for user {userId}`,
       language,
@@ -92,13 +109,19 @@ export class StatisticsService {
     );
   }
 
-  async getFormattedTransactionsForWeek(userId: number, language: string, currency: string): Promise<void> {
+  async getFormattedTransactionsForWeek(
+    userId: number,
+    groupIds: number[],
+    language: string,
+    currency: string,
+  ): Promise<void> {
     const today = new Date();
     const weekAgo = new Date();
     weekAgo.setDate(today.getDate() - 7);
     await this.getTransactions(
       userId,
-      { userId, timestamp: { $gte: weekAgo, $lte: today } },
+      groupIds,
+      { timestamp: { $gte: weekAgo, $lte: today } },
       PERIOD_E[language],
       `Retrieved {count} transactions for the week for user {userId}`,
       language,
@@ -106,13 +129,19 @@ export class StatisticsService {
     );
   }
 
-  async getFormattedTransactionsForMonth(userId: number, language: string, currency: string): Promise<void> {
+  async getFormattedTransactionsForMonth(
+    userId: number,
+    groupIds: number[],
+    language: string,
+    currency: string,
+  ): Promise<void> {
     const today = new Date();
     const monthAgo = new Date();
     monthAgo.setDate(today.getDate() - 30);
     await this.getTransactions(
       userId,
-      { userId, timestamp: { $gte: monthAgo, $lte: today } },
+      groupIds,
+      { timestamp: { $gte: monthAgo, $lte: today } },
       PERIOD_E[language],
       `Retrieved {count} transactions for the month for user {userId}`,
       language,
@@ -121,29 +150,32 @@ export class StatisticsService {
   }
   async getTransactionsByPeriod(
     userId: number,
+    groupIds: number[],
     fromDate: Date,
     toDate: Date,
     language: string,
     currency: string,
   ): Promise<void> {
-    const query = { userId, timestamp: { $gte: fromDate, $lte: toDate } };
-    const transactions = await this.transactionModel.find(query).exec();
-
-    if (transactions.length > 0) {
-      this.logger.log(`Retrieved ${transactions.length} transactions for the period for user ${userId}`);
-      await this.messageService.sendFormattedTransactions(userId, transactions, language, currency);
-    } else {
-      this.logger.log(`No transactions found for the period for user ${userId}`);
-      await this.bot.telegram.sendMessage(userId, PERIOD_E[language]);
-    }
+    await this.getTransactions(
+      userId,
+      groupIds,
+      { timestamp: { $gte: fromDate, $lte: toDate } },
+      `⛔️Немає транзакцій за період⛔️`,
+      `Retrieved {count} transactions for the period for user {userId}`,
+      language,
+      currency,
+    );
   }
-  async getUniqueTransactionNames(userId: number): Promise<string[] | null> {
+
+  async getUniqueTransactionNames(userId: number, groupIds: number[]): Promise<string[] | null> {
     try {
-      const result = await this.transactionModel.distinct('transactionName', { userId }).exec();
+      const query = groupIds.length > 0 ? { userId: { $in: groupIds } } : { userId };
+      const result = await this.transactionModel.distinct('transactionName', query).exec();
       return result.length > 0 ? result : null;
     } catch (error) {
       this.logger.error('Error getting unique transaction names', error);
       throw error;
     }
   }
+
 }

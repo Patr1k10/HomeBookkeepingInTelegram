@@ -39,6 +39,7 @@ export class StatisticsHandler {
     const userId = ctx.from.id;
     await this.statisticsService.getTransactionsByType(
       userId,
+      ctx.session.group,
       TransactionType.INCOME,
       ctx.session.language || 'ua',
       ctx.session.currency || 'UAH',
@@ -51,6 +52,7 @@ export class StatisticsHandler {
     const userId = ctx.from.id;
     await this.statisticsService.getTransactionsByType(
       userId,
+      ctx.session.group,
       TransactionType.EXPENSE,
       ctx.session.language || 'ua',
       ctx.session.currency || 'UAH',
@@ -59,7 +61,7 @@ export class StatisticsHandler {
   @Action('По категории')
   async categoryListCommand(ctx: IContext) {
     const userId = ctx.from.id;
-    const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(userId);
+    const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(userId, ctx.session.group);
     if (uniqueTransactionNames === null) {
       await ctx.reply(PERIOD_NULL[ctx.session.language]);
       return;
@@ -79,6 +81,7 @@ export class StatisticsHandler {
       const userId = ctx.from.id;
       await this.statisticsService.getTransactionsByTransactionName(
         userId,
+        ctx.session.group,
         selectedTransactionName,
         ctx.session.language || 'ua',
         ctx.session.currency || 'UAH',
@@ -93,6 +96,7 @@ export class StatisticsHandler {
     const userId = ctx.from.id;
     await this.statisticsService.getFormattedTransactionsForToday(
       userId,
+      ctx.session.group,
       ctx.session.language || 'ua',
       ctx.session.currency || 'UAH',
     );
@@ -104,6 +108,7 @@ export class StatisticsHandler {
     const userId = ctx.from.id;
     await this.statisticsService.getFormattedTransactionsForWeek(
       userId,
+      ctx.session.group,
       ctx.session.language || 'ua',
       ctx.session.currency || 'UAH',
     );
@@ -115,6 +120,7 @@ export class StatisticsHandler {
     const userId = ctx.from.id;
     await this.statisticsService.getFormattedTransactionsForMonth(
       userId,
+      ctx.session.group,
       ctx.session.language || 'ua',
       ctx.session.currency || 'UAH',
     );
@@ -147,6 +153,7 @@ export class StatisticsHandler {
 
       await this.statisticsService.getTransactionsByPeriod(
         userId,
+        ctx.session.group,
         fromDate,
         toDate,
         ctx.session.language || 'ua',
