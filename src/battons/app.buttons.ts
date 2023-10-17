@@ -92,3 +92,18 @@ export function actionButtonsMonths(language: string = 'ua') {
   ];
   return Markup.inlineKeyboard(buttons, { columns: 3 });
 }
+
+export function groupButton() {
+  return Markup.inlineKeyboard(
+    [
+      Markup.button.callback('Отримати ID', 'get_id'),
+      Markup.button.callback('Створити родину', 'create_group'),
+      Markup.button.callback('Додати до родини', 'add_to_group'),
+      Markup.button.callback('Вийти з розини', 'live_group'),
+      Markup.button.callback('Видалити з родини', 'delete_group'),
+    ],
+    {
+      columns: 2,
+    },
+  );
+}

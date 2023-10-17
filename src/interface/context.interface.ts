@@ -6,6 +6,8 @@ export interface IContext extends ContextTelegraf {
     type?: 'done' | 'edit' | 'remove' | 'income' | 'expense' | 'balance' | 'delete';
     language?: string;
     currency?: string;
+    group?: number[];
+    awaitingUserIdInput?: boolean;
   };
 }
 

@@ -8,8 +8,8 @@ import { ERROR_MESSAGE, HELP_MESSAGE, RESETS_ALL, START_MESSAGE } from '../const
 import { TransactionService } from '../service/transaction.service';
 
 @Update()
-export class AppUpdate {
-  private readonly logger: Logger = new Logger(AppUpdate.name);
+export class BasicCommandsHandler {
+  private readonly logger: Logger = new Logger(BasicCommandsHandler.name);
   constructor(
     private readonly balanceService: BalanceService,
     private readonly transactionService: TransactionService,
