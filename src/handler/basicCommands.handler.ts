@@ -67,6 +67,7 @@ export class BasicCommandsHandler {
     }
   }
   @Help()
+  @Hears(/Help⛑️|Допомога⛑️/)
   async helpCommand(ctx: IContext) {
     try {
       await ctx.deleteMessage();

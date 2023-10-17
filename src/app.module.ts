@@ -30,7 +30,7 @@ const sessions = new LocalSession({ database: 'session_db.json' });
       { name: Transaction.name, schema: TransactionSchema },
     ]),
   ],
-  providers: [Logger, ...Object.values(handlers), ...Object.values(services)],
+  providers: [Logger, ...Object.values(services), ...Object.values(handlers)],
   exports: [],
 })
 export class AppModule {}
