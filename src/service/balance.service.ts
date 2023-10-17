@@ -84,5 +84,4 @@ export class BalanceService {
 
     return balance;
   }
-
 }

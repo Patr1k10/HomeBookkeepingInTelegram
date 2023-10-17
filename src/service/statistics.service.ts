@@ -177,5 +177,4 @@ export class StatisticsService {
       throw error;
     }
   }
-
 }

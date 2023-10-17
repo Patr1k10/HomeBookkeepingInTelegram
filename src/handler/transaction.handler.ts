@@ -1,5 +1,5 @@
 import { Action, Command, Hears, On, Update } from 'nestjs-telegraf';
-import { TransactionService } from '../service/transaction.service';
+import { TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import {
   BALANCE_MESSAGE,
@@ -15,8 +15,7 @@ import {
 import { actionButtonsTransaction } from '../battons/app.buttons';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { MyMessage } from '../interface/my-message.interface';
-
-import { BalanceService } from '../service/balance.service';
+import { BalanceService } from '../service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 
 @Update()

@@ -1,6 +1,6 @@
 import { Action, Command, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { CustomCallbackQuery, IContext } from '../interface/context.interface';
+import { IContext } from '../interface/context.interface';
 import { groupButton } from '../battons/app.buttons';
 import { MyMessage } from '../interface/my-message.interface';
 import { Telegraf } from 'telegraf';
@@ -16,14 +16,16 @@ export class FamilyHandler {
     private readonly bot: Telegraf<IContext>,
   ) {}
 
-  @Hears('Родина👨‍👩‍👧‍👧(у розробці)')
+  @Hears('Родина👨‍👩‍👧‍👦(у розробці)')
   @Command('group')
   async groupCommand(ctx: IContext) {
+    this.logger.log('Executing groupCommand');
     await ctx.reply(FAMILY_TEXT[ctx.session.language].FAMILY_MENU, groupButton(ctx.session.language));
   }
 
   @Action('get_id')
   async getId(ctx: IContext) {
+    this.logger.log('Executing getId');
     const userId = ctx.from.id;
     const message = FAMILY_TEXT[ctx.session.language].YOUR_ID;
     await ctx.reply(`${message} ${userId}`);
@@ -31,6 +33,7 @@ export class FamilyHandler {
 
   @Action('create_group')
   async createGroup(ctx: IContext) {
+    this.logger.log('Executing createGroup');
     const userId = ctx.from.id;
     if (!ctx.session.group) {
       ctx.session.group = [];
@@ -43,12 +46,14 @@ export class FamilyHandler {
 
   @Action('add_to_group')
   async addToGroup(ctx: IContext) {
+    this.logger.log('Executing addToGroup');
     await ctx.reply(FAMILY_TEXT[ctx.session.language].ENTER_USER_ID);
     ctx.session.awaitingUserIdInput = true;
   }
 
   @Hears(/^\d+$/)
   async addUserId(ctx: IContext) {
+    this.logger.log('Executing addUserId');
     if (ctx.session.awaitingUserIdInput) {
       const message = ctx.message as MyMessage;
       const inputId = parseInt(message.text, 10);
@@ -70,6 +75,7 @@ export class FamilyHandler {
   }
 
   async sendInvite(ctx: IContext, inputId: number) {
+    this.logger.log('Executing sendInvite');
     const opts = {
       reply_markup: {
         inline_keyboard: [
@@ -83,6 +89,7 @@ export class FamilyHandler {
 
   @Action(/^accept_invite:\d+$/)
   async acceptInvite(ctx: IContext) {
+    this.logger.log('Executing acceptInvite');
     const userId = ctx.from.id;
 
     if (!ctx.session.group) {
@@ -97,6 +104,7 @@ export class FamilyHandler {
 
   @Action(/^decline_invite:\d+$/)
   async declineInvite(ctx: IContext) {
+    this.logger.log('Executing declineInvite');
     const userId = ctx.from.id;
 
     if (ctx.session.group && ctx.session.group.includes(userId)) {
@@ -108,16 +116,12 @@ export class FamilyHandler {
 
   @Action('delete_group')
   async deleteGroup(ctx: IContext) {
+    this.logger.log('Executing deleteGroup');
     if (ctx.session.group && ctx.session.group.length > 0) {
       ctx.session.group = [];
       await ctx.reply(FAMILY_TEXT[ctx.session.language].GROUP_DELETED);
     } else {
       await ctx.reply(FAMILY_TEXT[ctx.session.language].GROUP_EMPTY);
     }
-  }
-
-  @Action('help_pliz')
-  async help(ctx: IContext) {
-    await ctx.reply('jgh');
   }
 }
