@@ -92,3 +92,17 @@ export function actionButtonsMonths(language: string = 'ua') {
   ];
   return Markup.inlineKeyboard(buttons, { columns: 3 });
 }
+
+export function groupButton(language: string) {
+  return Markup.inlineKeyboard(
+    [
+      Markup.button.callback(BUTTONS[language].GET_ID, 'get_id'),
+      Markup.button.callback(BUTTONS[language].CREATE_GROUP, 'create_group'),
+      Markup.button.callback(BUTTONS[language].ADD_TO_GROUP, 'add_to_group'),
+      Markup.button.callback(BUTTONS[language].DELETE_FROM_GROUP, 'delete_from_group'),
+    ],
+    {
+      columns: 2,
+    },
+  );
+}

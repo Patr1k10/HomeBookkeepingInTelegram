@@ -6,6 +6,8 @@ export interface IContext extends ContextTelegraf {
     type?: 'done' | 'edit' | 'remove' | 'income' | 'expense' | 'balance' | 'delete';
     language?: string;
     currency?: string;
+    group?: number[];
+    awaitingUserIdInput?: boolean;
   };
 }
 
@@ -20,6 +22,7 @@ export interface CustomCallbackQuery {
   };
   message: {
     message_id: number;
+    text: string;
     // Другие свойства message
   };
   chat_instance: string;

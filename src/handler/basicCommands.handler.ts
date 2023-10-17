@@ -1,15 +1,14 @@
 import { Action, Command, Hears, Help, Start, Update } from 'nestjs-telegraf';
-
 import { actionButtonsStart, currencySet, languageSet, resetButton } from '../battons/app.buttons';
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
-import { BalanceService } from '../service/balance.service';
+import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, HELP_MESSAGE, RESETS_ALL, START_MESSAGE } from '../constants/messages';
-import { TransactionService } from '../service/transaction.service';
+import { TransactionService } from '../service';
 
 @Update()
-export class AppUpdate {
-  private readonly logger: Logger = new Logger(AppUpdate.name);
+export class BasicCommandsHandler {
+  private readonly logger: Logger = new Logger(BasicCommandsHandler.name);
   constructor(
     private readonly balanceService: BalanceService,
     private readonly transactionService: TransactionService,
@@ -68,6 +67,7 @@ export class AppUpdate {
     }
   }
   @Help()
+  @Hears(/Help⛑️|Допомога⛑️/)
   async helpCommand(ctx: IContext) {
     try {
       await ctx.deleteMessage();

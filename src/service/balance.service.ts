@@ -50,7 +50,6 @@ export class BalanceService {
       } else if (transactionType === TransactionType.EXPENSE) {
         balance.balance -= amount;
       }
-      this.logger.log(`Updated balance for user ${userId}`);
 
       await balance.save();
       this.logger.log(`Updated balance for user ${userId}`);
@@ -67,5 +66,22 @@ export class BalanceService {
       this.logger.error('Error deleting all balances for user', error);
       throw error;
     }
+  }
+  async getBalance(userId: number, groupIds?: number[]): Promise<number> {
+    let balance = 0;
+
+    if (groupIds && groupIds.length > 0) {
+      // Поиск и суммирование балансов по groupIds
+      const balances = await this.balanceModel.find({ userId: { $in: groupIds } }).exec();
+      balance = balances.reduce((acc, curr) => acc + curr.balance, 0);
+    } else {
+      // Поиск баланса по userId
+      const userBalance = await this.balanceModel.findOne({ userId }).exec();
+      if (userBalance) {
+        balance = userBalance.balance;
+      }
+    }
+
+    return balance;
   }
 }

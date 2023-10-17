@@ -11,5 +11,4 @@ async function bootstrap() {
 }
 bootstrap();
 
-// TODO: реализовать семейный доступ
 // TODO: подключить гпт чат для советов по финансам
