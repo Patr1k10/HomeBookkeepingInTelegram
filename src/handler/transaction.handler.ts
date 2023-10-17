@@ -128,12 +128,8 @@ export class TransactionHandler {
         });
         await this.balanceService.updateBalance(userId, amount, transactionType);
         await ctx.reply(BALANCE_MESSAGE[ctx.session.language || 'ua']);
-        const balance = await this.balanceService.getOrCreateBalance(userId);
-        const balanceMessage = getBalanceMessage(
-          balance.balance,
-          ctx.session.language || 'ua',
-          ctx.session.currency || 'UAH',
-        );
+        const balance = await this.balanceService.getBalance(userId, ctx.session.group);
+        const balanceMessage = getBalanceMessage(balance, ctx.session.language || 'ua', ctx.session.currency || 'UAH');
         await ctx.replyWithHTML(balanceMessage);
         this.logger.log('textCommand executed');
       } catch (error) {
