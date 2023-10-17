@@ -10,7 +10,7 @@ import {
   WANT_STATISTICS_MESSAGE,
 } from '../constants/messages';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { StatisticsService } from '../service/statistics.service';
+import { StatisticsService } from '../service';
 
 @Update()
 export class StatisticsHandler {

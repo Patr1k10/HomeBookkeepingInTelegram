@@ -22,6 +22,7 @@ export interface CustomCallbackQuery {
   };
   message: {
     message_id: number;
+    text: string;
     // Другие свойства message
   };
   chat_instance: string;
