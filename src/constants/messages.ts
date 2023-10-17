@@ -38,6 +38,7 @@ export const HELP_MESSAGE = {
 2️⃣ <i>Ask your partner for their ID, obtainable through the family menu.</i>
 3️⃣ <i>Press 'Create Family'.</i>
 4️⃣ <i>Add a family member using the received ID.</i>
+5️⃣ <i>The family member must confirm the invitation.</i>
 🔄 <i>This will combine your balance and transactions. If you change your mind, your data will remain yours.</i>
 🚫 <i>You can remove family access at any time, and your balance and transactions will revert to being only yours.</i>\`,
 
@@ -65,6 +66,7 @@ export const HELP_MESSAGE = {
 2️⃣ <i>Запитайте у вашого партнера ID, який можна отримати через сімейне меню.</i>
 3️⃣ <i>Натисніть 'Створити сім’ю'.</i>
 4️⃣ <i>Додайте учасника сім'ї, використовуючи отриманий ID.</i>
+5️⃣ <i>Учасник повинен підтвердити запрошення.</i>
 🔄 <i>Це об'єднає ваш баланс та транзакції. Але якщо ви передумаєте, ваші дані залишаться вашими.</i>
 🚫 <i>Ви можете видалити сімейний доступ в будь-який момент, і ваш баланс та транзакції залишаться вашими.</i>\`
 };
