@@ -111,16 +111,16 @@ export class BasicCommandsHandler {
   }
   @Command('reset')
   async resetCommand(ctx: IContext) {
-    await ctx.reply(RESETS_ALL[ctx.session.language].ARE_YOU_SURE, resetButton(ctx.session.language));
+    await ctx.reply(RESETS_ALL[ctx.session.language || 'ua'].ARE_YOU_SURE, resetButton(ctx.session.language));
   }
   @Action('yes')
   async yesCommand(ctx: IContext) {
-    await ctx.reply(RESETS_ALL[ctx.session.language].CONFIRM_RESET);
+    await ctx.reply(RESETS_ALL[ctx.session.language || 'ua'].CONFIRM_RESET);
     ctx.session.type = 'delete';
   }
   @Action('no')
   async noCommand(ctx: IContext) {
-    await ctx.reply(RESETS_ALL[ctx.session.language].RESET_CANCELED);
+    await ctx.reply(RESETS_ALL[ctx.session.language || 'ua'].RESET_CANCELED);
     delete ctx.session.type;
   }
   @Hears('RESET')
@@ -131,11 +131,11 @@ export class BasicCommandsHandler {
     const userId = ctx.from.id;
     await this.balanceService.deleteAllBalancesOfUser(userId);
     await this.transactionService.deleteAllTransactionsOfUser(userId);
-    await ctx.reply(RESETS_ALL[ctx.session.language].RESET_SUCCESSFUL);
+    await ctx.reply(RESETS_ALL[ctx.session.language || 'ua'].RESET_SUCCESSFUL);
     await this.balanceService.createBalance({ userId });
     await ctx.replyWithHTML(
       START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
-      actionButtonsStart(ctx.session.language),
+      actionButtonsStart(ctx.session.language || 'ua'),
     );
     delete ctx.session.type;
   }

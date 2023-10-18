@@ -61,29 +61,42 @@ export class MessageService {
       }
     });
 
+    const sortedPositive = Object.entries(positiveTransactionSums)
+      .sort(([, a], [, b]) => b - a)
+      .map(([name, sum]) => ({
+        name,
+        sum,
+        percentage: ((sum / totalPositiveAmount) * 100).toFixed(2),
+      }));
+
+    const sortedNegative = Object.entries(negativeTransactionSums)
+      .sort(([, a], [, b]) => b - a)
+      .map(([name, sum]) => ({
+        name,
+        sum,
+        percentage: ((sum / totalNegativeAmount) * 100).toFixed(2),
+      }));
+
     let message = '';
     const setCurrency = CURRNCY[currency];
 
-    const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
-    message += `${localizedMessage}${totalPositiveAmount - totalNegativeAmount}${setCurrency}\n`;
-
-    if (Object.keys(positiveTransactionSums).length > 0) {
+    if (sortedPositive.length > 0) {
       const localizedMessage = this.getLocalizedMessage('POSITIVE_TRANSACTIONS', language);
       message += `${localizedMessage}${totalPositiveAmount}${setCurrency}\n`;
-      for (const [name, sum] of Object.entries(positiveTransactionSums)) {
-        const percentage = ((sum / totalPositiveAmount) * 100).toFixed(2);
+      for (const { name, sum, percentage } of sortedPositive) {
         message += this.formatMessage(name, percentage, sum, currency);
       }
     }
 
-    if (Object.keys(negativeTransactionSums).length > 0) {
+    if (sortedNegative.length > 0) {
       const localizedMessage = this.getLocalizedMessage('NEGATIVE_TRANSACTIONS', language);
-      message += `${localizedMessage}${totalNegativeAmount}${setCurrency}\n`;
-      for (const [name, sum] of Object.entries(negativeTransactionSums)) {
-        const percentage = ((sum / totalNegativeAmount) * 100).toFixed(2);
+      message += `${localizedMessage}${totalNegativeAmount}${setCurrency}`;
+      for (const { name, sum, percentage } of sortedNegative) {
         message += this.formatMessage(name, percentage, sum, currency);
       }
     }
+    const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
+    message += `${localizedMessage}${totalPositiveAmount - totalNegativeAmount}${setCurrency}`;
 
     await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
   }
