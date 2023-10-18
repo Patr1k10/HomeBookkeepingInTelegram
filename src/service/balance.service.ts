@@ -7,6 +7,10 @@ import { InjectBot } from 'nestjs-telegraf';
 import { IContext } from '../interface/context.interface';
 import { Balance } from '../shemas/balance.shemas';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
+import * as dotenv from 'dotenv';
+import * as process from 'process';
+
+dotenv.config();
 
 @Injectable()
 export class BalanceService {
@@ -14,9 +18,7 @@ export class BalanceService {
 
   constructor(
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
-    @InjectModel('Transaction')
-    @InjectBot()
-    private readonly bot: Telegraf<IContext>,
+
   ) {}
 
   async getOrCreateBalance(userId: number): Promise<Balance> {
@@ -75,11 +77,9 @@ export class BalanceService {
     let balance = 0;
 
     if (groupIds && groupIds.length > 0) {
-      // Поиск и суммирование балансов по groupIds
       const balances = await this.balanceModel.find({ userId: { $in: groupIds } }).exec();
       balance = balances.reduce((acc, curr) => acc + curr.balance, 0);
     } else {
-      // Поиск баланса по userId
       const userBalance = await this.balanceModel.findOne({ userId }).exec();
       if (userBalance) {
         balance = userBalance.balance;
