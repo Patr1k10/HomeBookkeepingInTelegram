@@ -1,9 +1,5 @@
 // messages.ts
 
-
-
-
-
 export const ERROR_MESSAGE = {
   en: '⛔️ An error occurred while executing the command. Please try again later. ⛔️',
   ua: '⛔️ Сталася помилка під час виконання команди. Будь ласка, спробуйте ще раз пізніше. ⛔️',
@@ -141,4 +137,3 @@ export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
 
   return messages[language];
 };
-

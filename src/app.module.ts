@@ -1,7 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { TelegrafModule } from 'nestjs-telegraf';
 import * as services from './service';
-import * as LocalSession from 'telegraf-session-local';
 import * as dotenv from 'dotenv';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -13,7 +12,6 @@ import { createMongoSessionMiddleware } from './middleware/mongo.session.middlew
 
 dotenv.config();
 
-const sessions = new LocalSession({ database: 'session_db.json' });
 
 @Module({
   imports: [

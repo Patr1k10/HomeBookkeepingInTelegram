@@ -1,4 +1,4 @@
-import { Middleware} from 'telegraf';
+import { Middleware } from 'telegraf';
 import { Mongo } from '@telegraf/session/mongodb';
 import * as dotenv from 'dotenv';
 import { IContext } from '../interface/context.interface';
