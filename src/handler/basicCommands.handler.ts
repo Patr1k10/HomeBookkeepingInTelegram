@@ -21,11 +21,13 @@ export class BasicCommandsHandler {
     try {
       const userId = ctx.from.id;
       const user = ctx.from;
+      const count = await this.balanceService.countAllBalances();
       this.logger.log(`
       User ID: ${user.id}
       First Name: ${user.first_name}
       Last Name: ${user.last_name}
-      Username: ${user.username}`);
+      Username: ${user.username}
+      All Users: ${count}`);
       await this.balanceService.createBalance({ userId });
       await ctx.reply('Оберіть мову / Choose language', languageSet());
 

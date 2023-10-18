@@ -53,7 +53,8 @@ export class StatisticsService {
     language: string,
     currency: string,
   ): Promise<void> {
-    const adaptedQuery = groupIds.length > 0 ? { userId: { $in: groupIds }, ...query } : { userId, ...query };
+    const adaptedQuery =
+      groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, ...query } : { userId, ...query };
 
     try {
       const transactions = await this.transactionModel.find(adaptedQuery).exec();
@@ -169,7 +170,8 @@ export class StatisticsService {
 
   async getUniqueTransactionNames(userId: number, groupIds: number[]): Promise<string[] | null> {
     try {
-      const query = groupIds.length > 0 ? { userId: { $in: groupIds } } : { userId };
+      const query = groupIds && groupIds.length > 0 ? { userId: { $in: groupIds } } : { userId };
+
       const result = await this.transactionModel.distinct('transactionName', query).exec();
       return result.length > 0 ? result : null;
     } catch (error) {

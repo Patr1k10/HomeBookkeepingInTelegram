@@ -11,12 +11,14 @@ import { TransactionType } from '../shemas/enum/transactionType.enam';
 @Injectable()
 export class BalanceService {
   private readonly logger: Logger = new Logger(BalanceService.name);
+
   constructor(
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
     @InjectModel('Transaction')
     @InjectBot()
     private readonly bot: Telegraf<IContext>,
   ) {}
+
   async getOrCreateBalance(userId: number): Promise<Balance> {
     let balance = await this.balanceModel.findOne({ userId }).exec();
     if (!balance) {
@@ -58,6 +60,7 @@ export class BalanceService {
       throw error;
     }
   }
+
   async deleteAllBalancesOfUser(userId: number): Promise<void> {
     try {
       await this.balanceModel.deleteMany({ userId }).exec();
@@ -67,6 +70,7 @@ export class BalanceService {
       throw error;
     }
   }
+
   async getBalance(userId: number, groupIds?: number[]): Promise<number> {
     let balance = 0;
 
@@ -81,7 +85,17 @@ export class BalanceService {
         balance = userBalance.balance;
       }
     }
-
     return balance;
+  }
+
+  async countAllBalances(): Promise<number> {
+    try {
+      const count = await this.balanceModel.countDocuments().exec();
+      this.logger.log(`Total number of balances in the database: ${count}`);
+      return count;
+    } catch (error) {
+      this.logger.error('Error counting all balances', error);
+      throw error;
+    }
   }
 }
