@@ -2,13 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateBalanceDto } from '../dto/balance.dto';
-import { Telegraf } from 'telegraf';
-import { InjectBot } from 'nestjs-telegraf';
-import { IContext } from '../interface/context.interface';
 import { Balance } from '../shemas/balance.shemas';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import * as dotenv from 'dotenv';
-import * as process from 'process';
 
 dotenv.config();
 
