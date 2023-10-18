@@ -1,4 +1,4 @@
-import { Action, Command, Hears, Help, Start, Update } from 'nestjs-telegraf';
+import { Action, Command, Hears, Help, InjectBot, Start, Update } from 'nestjs-telegraf';
 import { actionButtonsStart, currencySet, languageSet, resetButton } from '../battons/app.buttons';
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service';
@@ -7,6 +7,10 @@ import { ERROR_MESSAGE, RESETS_ALL } from '../constants/messages';
 import { TransactionService } from '../service';
 import { START_MESSAGE } from '../constants/start.messages';
 import { HELP_MESSAGE } from '../constants/help.massages';
+import { Telegraf } from 'telegraf';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Update()
 export class BasicCommandsHandler {
@@ -14,6 +18,8 @@ export class BasicCommandsHandler {
   constructor(
     private readonly balanceService: BalanceService,
     private readonly transactionService: TransactionService,
+    @InjectBot()
+    private readonly bot: Telegraf<IContext>,
   ) {}
 
   @Start()
@@ -22,13 +28,23 @@ export class BasicCommandsHandler {
       const userId = ctx.from.id;
       const user = ctx.from;
       const count = await this.balanceService.countAllBalances();
+      const bosId = process.env.BOSID;
       this.logger.log(`
       User ID: ${user.id}
       First Name: ${user.first_name}
       Last Name: ${user.last_name}
       Username: ${user.username}
-      All Users: ${count}`);
+      Count Users: ${count}`);
       await this.balanceService.createBalance({ userId });
+      await this.bot.telegram.sendMessage(
+        bosId,
+        `New User created:
+      User ID: ${user.id}
+      First Name: ${user.first_name}
+      Last Name: ${user.last_name}
+      Username: ${user.username}
+      Count Users: ${count}`,
+      );
       await ctx.reply('Оберіть мову / Choose language', languageSet());
 
       await ctx.deleteMessage();
@@ -36,7 +52,7 @@ export class BasicCommandsHandler {
       this.logger.log('startCommand executed successfully');
     } catch (error) {
       this.logger.error('Error in startCommand:', error);
-      await ctx.answerCbQuery(ERROR_MESSAGE[ctx.session.language || 'ua']);
+      await ctx.reply(ERROR_MESSAGE[ctx.session.language || 'ua']);
     }
   }
   @Action('USD')

@@ -17,7 +17,7 @@ export class FamilyHandler {
     private readonly bot: Telegraf<IContext>,
   ) {}
 
-  @Hears('Родина👨‍👩‍👧‍👧')
+  @Hears(/Family👨‍👩‍👧‍👧|Родина👨‍👩‍👧‍👧/)
   @Command('group')
   async groupCommand(ctx: IContext) {
     this.logger.log('Executing groupCommand');
