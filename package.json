@@ -28,13 +28,17 @@
     "@nestjs/mongoose": "^10.0.1",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.0",
+    "@telegraf/session": "^2.0.0-beta.6",
     "dotenv": "^16.3.1",
+    "mongodb": "^5.9.0",
     "mongoose": "^7.5.1",
     "nestjs-telegraf": "^2.7.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "telegraf": "^4.13.1",
-    "telegraf-session-local": "^2.1.1"
+    "telegraf-mongo-adapter": "^1.0.4",
+    "telegraf-session-local": "^2.1.1",
+    "telegraf-session-mongodb": "^2.0.2"
   },
   "devDependencies": {
     "@nestjs/schematics": "^10.0.0",
