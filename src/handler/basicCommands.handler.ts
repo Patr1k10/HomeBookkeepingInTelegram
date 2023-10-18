@@ -3,8 +3,10 @@ import { actionButtonsStart, currencySet, languageSet, resetButton } from '../ba
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
-import { ERROR_MESSAGE, HELP_MESSAGE, RESETS_ALL, START_MESSAGE } from '../constants/messages';
+import { ERROR_MESSAGE, RESETS_ALL } from '../constants/messages';
 import { TransactionService } from '../service';
+import { START_MESSAGE } from '../constants/start.messages';
+import { HELP_MESSAGE } from '../constants/help.massages';
 
 @Update()
 export class BasicCommandsHandler {

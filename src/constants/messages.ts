@@ -1,81 +1,5 @@
 // messages.ts
 
-export const START_MESSAGE = {
-  en: {
-    WELCOME_MESSAGE: `<b>👋 Hello! Welcome to your financial assistant. 📘</b>
-
-<i>This tool is designed for effective budget tracking.</i> With its help, you can easily monitor <b>Incomes 💰</b> and <b>Expenses 📉</b>, as well as get a summary of your current balance.
-
-To get started, select "Transaction," and then decide on the type: "Income" or "Expense". 📊`,
-  },
-  ua: {
-    WELCOME_MESSAGE: `<b>👋 Привіт! Ласкаво просимо до вашого фінансового помічника. 📘</b>
-
- <i>Цей інструмент створено для ефективного обліку вашого бюджету.</i> З його допомогою можна легко відслідковувати <b>Надходження 💰</b> та <b>Витрати 📉</b>, а також отримувати зведення за поточним балансом.
-
-Для початку роботи виберіть "Транзакція", а потім визначтеся з типом: "Надходження" або "Витрати". 📊`,
-  },
-};
-
-export const HELP_MESSAGE = {
-  en: `<b>📘 Guide to using your financial bot. 📘</b>
-
-<i>This bot is designed to effectively manage your finances.</i> It offers the following main commands:
-
-- <b>/transactions 💸:</b> Allows you to view and manage your transactions.
-- <b>/balance 💰:</b> Shows your current balance.
-- <b>/statistics 📊:</b> Provides statistics of your financial activity.
-- <b>/language 🌐:</b> To change the interface language.
-- <b>/reset 🔄:</b> Deletes all your data and resets your account.
-
-👇 <i>Additional Options:</i>
-- <b>Income:</b> To add an income.
-- <b>Expense:</b> To add an expense.
-- <b>Delete Last️:</b> To delete the last transactions.
-
-<b>👨‍👩‍👧‍👦 Family Access:</b>
-1️⃣ <i>Your and your partner's transactions will be combined into one.</i>
-2️⃣ <i>Ask your partner for their ID, obtainable through the family menu.</i>
-3️⃣ <i>Press 'Create Family'.</i>
-4️⃣ <i>Add a family member using the received ID.</i>
-5️⃣ <i>The family member must confirm the invitation.</i>
-🔄 <i>This will combine your balance and transactions. If you change your mind, your data will remain yours.</i>
-🚫 <i>You can remove family access at any time, and your balance and transactions will revert to being only yours.</i>\`,
-
-🔧 <i>If you have any questions or suggestions, feel free to contact us.</i>
-
-📩 <b>For additional help or questions, please email us at: help.tgbot@icloud.com</b> 📩`,
-
-  ua: `<b>📘 Інструкція з використання вашого фінансового бота. 📘</b>
-
-<i>Цей бот створений для ефективного управління вашими фінансами.</i> Він пропонує наступні основні команди:
-
-- <b>/transactions 💸:</b> Дозволяє переглядати та управляти вашими транзакціями.
-- <b>/balance 💰:</b> Показує ваш поточний баланс.
-- <b>/statistics 📊:</b> Видає статистику вашої фінансової активності.
-- <b>/language 🌐:</b> Зміна мови інтерфейсу.
-- <b>/reset 🔄:</b> Видаляє всі ваші дані та скидає аккаунт.
-
-👇 <i>Додаткові опції:</i>
-- <b>Приход:</b> Додавання доходу.
-- <b>Расход:</b> Додавання витрат.
-- <b>Удаление последних️:</b> Видалення останніх транзакцій.
-
-<b>👨‍👩‍👧‍👦 Сімейний доступ:</b>
-1️⃣ <i>Ваші та транзакції вашого партнера об'єднаються в одну.</i>
-2️⃣ <i>Запитайте у вашого партнера ID, який можна отримати через сімейне меню.</i>
-3️⃣ <i>Натисніть 'Створити сім’ю'.</i>
-4️⃣ <i>Додайте учасника сім'ї, використовуючи отриманий ID.</i>
-5️⃣ <i>Учасник повинен підтвердити запрошення.</i>
-🔄 <i>Це об'єднає ваш баланс та транзакції. Але якщо ви передумаєте, ваші дані залишаться вашими.</i>
-🚫 <i>Ви можете видалити сімейний доступ в будь-який момент, і ваш баланс та транзакції залишаться вашими.</i>\`
-};
-
-🔧 <i>Якщо у вас є питання або пропозиції, не соромтесь звертатися.</i>
-
-📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: help.tgbot@icloud.com</b> 📩`,
-};
-
 export const ERROR_MESSAGE = {
   en: '⛔️ An error occurred while executing the command. Please try again later. ⛔️',
   ua: '⛔️ Сталася помилка під час виконання команди. Будь ласка, спробуйте ще раз пізніше. ⛔️',
@@ -192,4 +116,24 @@ export const RESETS_ALL = {
 export const CURRNCY = {
   USD: '$',
   UAH: 'грн.',
+};
+
+export const INVITATION_ACCEPTED_MESSAGE = (inputId: number, language: string) => {
+  const messages = {
+    en: `You have accepted the invitation from user with ID ${inputId}`,
+    ua: `Ви прийняли запрошення від користувача з ID ${inputId}`,
+    // ... другие языки
+  };
+
+  return messages[language];
+};
+
+export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
+  const messages = {
+    en: `You have been invited to the group by user: ${userId}. Do you accept?`,
+    ua: `Ви були запрошені в групу користувачем: ${userId}. Приймаєте?`,
+    // ... другие языки
+  };
+
+  return messages[language];
 };
