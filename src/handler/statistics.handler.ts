@@ -22,10 +22,12 @@ export class StatisticsHandler {
   async statisticsCommand(ctx: IContext) {
     try {
       await ctx.deleteMessage();
-      await ctx.reply(
+      const sentMessage = await ctx.reply(
         WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
         actionButtonsStatistics(ctx.session.language),
       );
+      ctx.session.lastBotMessage = sentMessage.message_id;
+
       this.logger.log('statistics command executed');
     } catch (error) {
       this.logger.error('Error in statisticsCommand:', error);

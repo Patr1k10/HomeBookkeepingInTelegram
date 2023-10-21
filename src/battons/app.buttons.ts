@@ -2,17 +2,20 @@ import { Markup } from 'telegraf';
 import { BUTTONS } from '../constants/buttons.const';
 
 export function actionButtonsStart(language: string = 'ua') {
-  return Markup.keyboard(
+  return Markup.inlineKeyboard(
     [
-      Markup.button.callback(BUTTONS[language].BALANCE, 'Баланс'),
+      Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
       Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'Транзакції'),
       Markup.button.callback(BUTTONS[language].STATISTICS, 'Статистика'),
       Markup.button.callback(BUTTONS[language].FAMILY, 'Родина'),
+      Markup.button.callback(BUTTONS[language].HELP, 'help'),
+      Markup.button.callback(BUTTONS[language].LANGUAGE, 'language'),
+      Markup.button.callback(BUTTONS[language].RESET, 'reset'),
     ],
     {
       columns: 2,
     },
-  ).resize();
+  );
 }
 
 export function languageSet() {
@@ -27,11 +30,10 @@ export function languageSet() {
 export function currencySet() {
   return Markup.inlineKeyboard(
     [Markup.button.callback('Українська🇺🇦 гривня', 'UAH'), Markup.button.callback('United States Dollar﹩', 'USD')],
-    {
-      columns: 1,
-    },
+    { columns: 1 },
   );
 }
+
 export function resetButton(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [Markup.button.callback(BUTTONS[language].YES, 'yes'), Markup.button.callback(BUTTONS[language].NO, 'no')],

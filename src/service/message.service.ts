@@ -90,13 +90,13 @@ export class MessageService {
 
     if (sortedNegative.length > 0) {
       const localizedMessage = this.getLocalizedMessage('NEGATIVE_TRANSACTIONS', language);
-      message += `${localizedMessage}${totalNegativeAmount}${setCurrency}`;
+      message += `${localizedMessage}${totalNegativeAmount}${setCurrency}\n`;
       for (const { name, sum, percentage } of sortedNegative) {
         message += this.formatMessage(name, percentage, sum, currency);
       }
     }
     const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
-    message += `${localizedMessage}${totalPositiveAmount - totalNegativeAmount}${setCurrency}`;
+    message += `${localizedMessage}${totalPositiveAmount - totalNegativeAmount}${setCurrency}\n`;
 
     await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
   }
