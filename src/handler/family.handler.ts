@@ -1,7 +1,7 @@
 import { Action, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
-import { actionButtonsStart, groupButton } from '../battons/app.buttons';
+import { backFamilyButton, groupButton } from '../battons/app.buttons';
 import { MyMessage } from '../interface/my-message.interface';
 import { Telegraf } from 'telegraf';
 import { FAMILY_TEXT } from '../constants/familyText.constants';
@@ -38,13 +38,12 @@ export class FamilyHandler {
       ctx.session.lastBotMessage,
       null,
       `${message} ${ctx.from.id}`,
-      groupButton(ctx.session.language || 'ua'),
+      backFamilyButton(ctx.session.language || 'ua'),
     );
   }
 
   @Action('add_to_group')
   async addToGroup(ctx: IContext) {
-    // await ctx.deleteMessage();
     this.logger.log('Executing addToGroup');
     if (!ctx.session.group) {
       ctx.session.group = [];
@@ -57,6 +56,7 @@ export class FamilyHandler {
       ctx.session.lastBotMessage,
       null,
       FAMILY_TEXT[ctx.session.language || 'ua'].ENTER_USER_ID,
+      backFamilyButton(ctx.session.language || 'ua'),
     );
 
     ctx.session.awaitingUserIdInput = true;
@@ -160,7 +160,7 @@ export class FamilyHandler {
         ctx.session.lastBotMessage,
         null,
         FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_DELETED,
-        groupButton(ctx.session.language || 'ua'),
+        backFamilyButton(ctx.session.language || 'ua'),
       );
     } else {
       await ctx.telegram.editMessageText(
@@ -168,17 +168,19 @@ export class FamilyHandler {
         ctx.session.lastBotMessage,
         null,
         FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_EMPTY,
-        groupButton(ctx.session.language || 'ua'),
+        backFamilyButton(ctx.session.language || 'ua'),
       );
     }
   }
-  @Action('back')
-  async back(ctx: IContext) {
-    await ctx.telegram.editMessageReplyMarkup(
+  @Action('backF')
+  async backT(ctx: IContext) {
+    delete ctx.session.type;
+    await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
       null,
-      actionButtonsStart(ctx.session.language || 'ua').reply_markup,
+      FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU,
+      groupButton(ctx.session.language || 'ua'),
     );
   }
 }

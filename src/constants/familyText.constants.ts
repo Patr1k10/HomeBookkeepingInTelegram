@@ -1,6 +1,6 @@
 export const FAMILY_TEXT = {
   ua: {
-    FAMILY_MENU: 'Родинне меню спочатку скористуйтесь /help :🔽 ',
+    FAMILY_MENU: '🔽Родинне меню спочатку скористуйтесь :🔽 ',
     YOUR_ID: 'Твій 🆔:',
     GROUP_CREATED: 'Група створена, ваш 🆔 додано',
     ENTER_USER_ID: 'Будь ласка, введіть 🆔 користувача, якого ви хочете додати до групи.',
@@ -13,7 +13,7 @@ export const FAMILY_TEXT = {
     GROUP_EMPTY: 'Група вже порожня або не існує',
   },
   en: {
-    FAMILY_MENU: 'Family menu use first /help:🔽 ',
+    FAMILY_MENU: '🔽Family menu use first:🔽 ',
     YOUR_ID: 'Your 🆔:',
     GROUP_CREATED: 'Group created, your 🆔 has been added',
     ENTER_USER_ID: 'Please enter the user 🆔 you want to add to the group.',

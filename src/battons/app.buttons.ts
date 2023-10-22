@@ -5,7 +5,7 @@ export function actionButtonsStart(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
       Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
-      Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'Транзакції'),
+      Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'transactions'),
       Markup.button.callback(BUTTONS[language].STATISTICS, 'statistics'),
       Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
       Markup.button.callback(BUTTONS[language].HELP, 'help'),
@@ -46,9 +46,10 @@ export function resetButton(language: string = 'ua') {
 export function actionButtonsTransaction(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
-      Markup.button.callback(BUTTONS[language].INCOME, 'Приход'),
-      Markup.button.callback(BUTTONS[language].EXPENSE, 'Расход'),
-      Markup.button.callback(BUTTONS[language].DELETE_LAST, 'Удаление последних️'),
+      Markup.button.callback(BUTTONS[language].INCOME, 'income'),
+      Markup.button.callback(BUTTONS[language].EXPENSE, 'expense'),
+      Markup.button.callback(BUTTONS[language].DELETE_LAST, 'delete_last'),
+      Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
     { columns: 2 },
   );
@@ -58,9 +59,9 @@ export function actionButtonsStatistics(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
       Markup.button.callback(BUTTONS[language].TODAY, 'today'),
-      Markup.button.callback(BUTTONS[language].WEEK, 'За неделю'),
-      Markup.button.callback(BUTTONS[language].MONTH, 'За месяц'),
-      Markup.button.callback(BUTTONS[language].SELECT_MONTH, 'Выбрать месяц'),
+      Markup.button.callback(BUTTONS[language].WEEK, 'on_week'),
+      Markup.button.callback(BUTTONS[language].MONTH, 'on_month'),
+      Markup.button.callback(BUTTONS[language].SELECT_MONTH, 'select_month'),
       Markup.button.callback(BUTTONS[language].MY_INCOME, 'my_income'),
       Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'my_expense'),
       Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'by_category'),
@@ -72,18 +73,23 @@ export function actionButtonsStatistics(language: string = 'ua') {
 export function backStatisticButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backS')]);
 }
+export function backFamilyButton(language: string = 'ua') {
+  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backF')]);
+}
 
 export function backStartButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
 }
-
-export function actionButtonsTransactionNames(transactionNames: string[]) {
+export function backTranButton(language: string = 'ua') {
+  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backT')]);
+}
+export function actionButtonsTransactionNames(transactionNames: string[], language: string = 'ua') {
   const buttons = [];
   for (const name of transactionNames) {
     buttons.push(Markup.button.callback(name, `TransactionName:${name}`));
   }
 
-  buttons.push(Markup.button.callback('Back↩️', 'back'));
+  buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'backS'));
 
   return Markup.inlineKeyboard(buttons, { columns: 2 });
 }
@@ -113,6 +119,7 @@ export function groupButton(language: string = 'ua') {
       Markup.button.callback(BUTTONS[language].GET_ID, 'get_id'),
       Markup.button.callback(BUTTONS[language].ADD_TO_GROUP, 'add_to_group'),
       Markup.button.callback(BUTTONS[language].DELETE_FROM_GROUP, 'remove_group'),
+      Markup.button.callback(BUTTONS[language].HELP, 'help'),
       Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
     {

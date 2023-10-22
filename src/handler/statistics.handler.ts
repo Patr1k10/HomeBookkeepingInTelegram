@@ -52,7 +52,7 @@ export class StatisticsHandler {
       );
       return;
     }
-    const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames);
+    const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames, ctx.session.language);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -81,19 +81,19 @@ export class StatisticsHandler {
     await this.statisticsService.getFormattedTransactionsForToday(ctx);
     this.logger.log('today command executed');
   }
-  @Action('За неделю')
+  @Action('on_week')
   async weekListCommand(ctx: IContext) {
     this.logger.log('week command executed');
     await this.statisticsService.getFormattedTransactionsForWeek(ctx);
     this.logger.log('week command executed');
   }
-  @Action('За месяц')
+  @Action('on_month')
   async monthListCommand(ctx: IContext) {
     this.logger.log('month command executed');
     await this.statisticsService.getFormattedTransactionsForMonth(ctx);
     this.logger.log('month command executed');
   }
-  @Action('Выбрать месяц')
+  @Action('select_month')
   async monthListMenuCommand(ctx: IContext) {
     this.logger.log('month menu command executed');
     await ctx.telegram.editMessageText(
@@ -130,11 +130,13 @@ export class StatisticsHandler {
   }
   @Action('backS')
   async backS(ctx: IContext) {
-    await ctx.telegram.editMessageReplyMarkup(
+    delete ctx.session.type;
+    await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
       null,
-      actionButtonsStatistics(ctx.session.language).reply_markup,
+      WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
+      actionButtonsStatistics(ctx.session.language),
     );
   }
 }

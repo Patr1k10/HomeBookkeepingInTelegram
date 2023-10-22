@@ -1,4 +1,7 @@
-// messages.ts
+export const MAIN_MENU = {
+  en: 'Main menu⤵️',
+  ua: 'Головне меню⤵️',
+};
 
 export const ERROR_MESSAGE = {
   en: '⛔️ An error occurred while executing the command. Please try again later. ⛔️',
@@ -51,8 +54,8 @@ export const SELECT_MONTH_MESSAGE = {
 };
 
 export const BALANCE_MESSAGE = {
-  en: 'Your balance has been updated✅',
-  ua: 'Ваш баланс оновлено✅',
+  en: 'Balance has been updated✅',
+  ua: 'Баланс оновлено✅',
 };
 
 export const getBalanceMessage = (balance: number, language: string, currency: string) => {

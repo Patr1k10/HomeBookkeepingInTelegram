@@ -9,6 +9,7 @@ import { Telegraf } from 'telegraf';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { CreateTransactionDto } from '../dto/transaction.dto';
 import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2 } from '../constants/messages';
+import { BUTTONS } from '../constants/buttons.const';
 
 @Injectable()
 export class TransactionService {
@@ -22,7 +23,6 @@ export class TransactionService {
 
   async createTransaction(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
     try {
-      // ...
       const transactionType = createTransactionDto.transactionType;
       let amount = createTransactionDto.amount;
       if (transactionType === TransactionType.EXPENSE) {
@@ -69,7 +69,9 @@ export class TransactionService {
       throw error;
     }
   }
-  async showLastNTransactionsWithDeleteOption(userId: number, count: number, language: string): Promise<void> {
+  async showLastNTransactionsWithDeleteOption(ctx: IContext, count: number): Promise<void> {
+    const language = ctx.session.language;
+    const userId = ctx.from.id;
     try {
       const transactions = await this.transactionModel.find({ userId }).sort({ timestamp: -1 }).limit(count).exec();
 
@@ -84,8 +86,14 @@ export class TransactionService {
           callback_data: `delete_${transaction._id}`,
         },
       ]);
+      buttons.push([
+        {
+          text: BUTTONS[language].BACK,
+          callback_data: 'backT',
+        },
+      ]);
 
-      await this.bot.telegram.sendMessage(userId, DELETE_LAST_MESSAGE[language], {
+      await this.bot.telegram.editMessageText(userId, ctx.session.lastBotMessage, null, DELETE_LAST_MESSAGE[language], {
         reply_markup: {
           inline_keyboard: buttons,
         },

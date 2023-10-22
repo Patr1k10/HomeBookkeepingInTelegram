@@ -3,7 +3,7 @@ import { actionButtonsStart, backStartButton, currencySet, languageSet, resetBut
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
-import { ERROR_MESSAGE, RESETS_ALL } from '../constants/messages';
+import { ERROR_MESSAGE, MAIN_MENU, RESETS_ALL } from '../constants/messages';
 import { TransactionService } from '../service';
 import { START_MESSAGE } from '../constants/start.messages';
 import { HELP_MESSAGE } from '../constants/help.massages';
@@ -184,5 +184,17 @@ export class BasicCommandsHandler {
     ctx.session.lastBotMessage = sendMessage.message_id;
 
     delete ctx.session.type;
+  }
+
+  @Action('back')
+  async back(ctx: IContext) {
+    delete ctx.session.type
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      MAIN_MENU[ctx.session.language || 'ua'],
+      actionButtonsStart(ctx.session.language || 'ua'),
+    );
   }
 }
