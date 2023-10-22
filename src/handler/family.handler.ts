@@ -1,7 +1,7 @@
 import { Action, Command, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
-import { groupButton } from '../battons/app.buttons';
+import { actionButtonsStart, groupButton } from '../battons/app.buttons';
 import { MyMessage } from '../interface/my-message.interface';
 import { Telegraf } from 'telegraf';
 import { FAMILY_TEXT } from '../constants/familyText.constants';
@@ -17,45 +17,48 @@ export class FamilyHandler {
     private readonly bot: Telegraf<IContext>,
   ) {}
 
-  @Hears(/Family👨‍👩‍👧‍👧|Родина👨‍👩‍👧‍👧/)
-  @Command('group')
+  @Action('family')
   async groupCommand(ctx: IContext) {
     this.logger.log('Executing groupCommand');
-    await ctx.reply(FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU, groupButton(ctx.session.language));
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU,
+      groupButton(ctx.session.language || 'ua'),
+    );
   }
 
   @Action('get_id')
   async getId(ctx: IContext) {
     this.logger.log('Executing getId');
-    const userId = ctx.from.id;
-    const message = FAMILY_TEXT[ctx.session.language].YOUR_ID;
-    await ctx.reply(`${message} ${userId}`);
+    const message = FAMILY_TEXT[ctx.session.language || 'ua'].YOUR_ID;
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      `${message} ${ctx.from.id}`,
+      groupButton(ctx.session.language || 'ua'),
+    );
   }
-
-  // @Action('create_group')
-  // async createGroup(ctx: IContext) {
-  //   this.logger.log('Executing createGroup');
-  //   const userId = ctx.from.id;
-  //   if (!ctx.session.group) {
-  //     ctx.session.group = [];
-  //   }
-  //   if (!ctx.session.group.includes(userId)) {
-  //     ctx.session.group.push(userId);
-  //   }
-  //   await ctx.reply(FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_CREATED);
-  // }
 
   @Action('add_to_group')
   async addToGroup(ctx: IContext) {
+    // await ctx.deleteMessage();
     this.logger.log('Executing addToGroup');
-    const userId = ctx.from.id;
     if (!ctx.session.group) {
       ctx.session.group = [];
     }
-    if (!ctx.session.group.includes(userId)) {
-      ctx.session.group.push(userId);
+    if (!ctx.session.group.includes(ctx.from.id)) {
+      ctx.session.group.push(ctx.from.id);
     }
-    await ctx.reply(FAMILY_TEXT[ctx.session.language || 'ua'].ENTER_USER_ID);
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      FAMILY_TEXT[ctx.session.language || 'ua'].ENTER_USER_ID,
+    );
+
     ctx.session.awaitingUserIdInput = true;
   }
 
@@ -74,9 +77,23 @@ export class FamilyHandler {
       if (!ctx.session.group.includes(inputId)) {
         ctx.session.group.push(inputId);
         await this.sendInvite(ctx, inputId, userId);
-        await ctx.reply(`${FAMILY_TEXT[ctx.session.language || 'ua'].INVITE_SENT} ${inputId}.`);
+        await ctx.deleteMessage();
+        await ctx.telegram.editMessageText(
+          ctx.from.id,
+          ctx.session.lastBotMessage,
+          null,
+          `${FAMILY_TEXT[ctx.session.language || 'ua'].INVITE_SENT} ${inputId}.`,
+          groupButton(ctx.session.language || 'ua'),
+        );
       } else {
-        await ctx.reply(`${FAMILY_TEXT[ctx.session.language || 'ua'].ID_ALREADY_EXISTS}`);
+        await ctx.deleteMessage();
+        await ctx.telegram.editMessageText(
+          ctx.from.id,
+          ctx.session.lastBotMessage,
+          null,
+          `${FAMILY_TEXT[ctx.session.language || 'ua'].ID_ALREADY_EXISTS} ${inputId}.`,
+          groupButton(ctx.session.language || 'ua'),
+        );
       }
 
       ctx.session.awaitingUserIdInput = false;
@@ -101,7 +118,7 @@ export class FamilyHandler {
     const userId = ctx.from.id;
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     const inputId = parseInt(callbackQuery.message.text.split(':')[1], 10);
-    const message = INVITATION_ACCEPTED_MESSAGE(inputId, ctx.session.language);
+    const message = INVITATION_ACCEPTED_MESSAGE(inputId, ctx.session.language || 'ua');
 
     if (!ctx.session.group) {
       ctx.session.group = [];
@@ -111,19 +128,25 @@ export class FamilyHandler {
       ctx.session.group.push(inputId);
       ctx.session.group.push(userId);
     }
-    await ctx.reply(message);
+    await ctx.deleteMessage();
+    const sendMessage = await ctx.telegram.sendMessage(userId, message, groupButton(ctx.session.language || 'ua'));
+    ctx.session.lastBotMessage = sendMessage.message_id;
   }
 
   @Action(/^decline_invite:\d+$/)
   async declineInvite(ctx: IContext) {
     this.logger.log('Executing declineInvite');
     const userId = ctx.from.id;
-
     if (ctx.session.group && ctx.session.group.includes(userId)) {
       const index = ctx.session.group.indexOf(userId);
       ctx.session.group.splice(index, 1);
     }
-    await ctx.reply(FAMILY_TEXT[ctx.session.language || 'ua'].INVITATION_DECLINED);
+    const sendMessage = await ctx.telegram.sendMessage(
+      userId,
+      FAMILY_TEXT[ctx.session.language || 'ua'].INVITATION_DECLINED,
+      groupButton(ctx.session.language || 'ua'),
+    );
+    ctx.session.lastBotMessage = sendMessage.message_id;
   }
 
   @Action('remove_group')
@@ -132,9 +155,30 @@ export class FamilyHandler {
     this.logger.log('Executing deleteGroup');
     if (ctx.session.group && ctx.session.group.length > 0) {
       ctx.session.group = [];
-      await ctx.reply(FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_DELETED);
+      await ctx.telegram.editMessageText(
+        ctx.from.id,
+        ctx.session.lastBotMessage,
+        null,
+        FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_DELETED,
+        groupButton(ctx.session.language || 'ua'),
+      );
     } else {
-      await ctx.reply(FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_EMPTY);
+      await ctx.telegram.editMessageText(
+        ctx.from.id,
+        ctx.session.lastBotMessage,
+        null,
+        FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_EMPTY,
+        groupButton(ctx.session.language || 'ua'),
+      );
     }
+  }
+  @Action('back')
+  async back(ctx: IContext) {
+    await ctx.telegram.editMessageReplyMarkup(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      actionButtonsStart(ctx.session.language || 'ua').reply_markup,
+    );
   }
 }

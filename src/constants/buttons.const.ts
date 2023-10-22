@@ -37,6 +37,7 @@ export const BUTTONS = {
     HELP: 'Допомога⛑️',
     AGREE: 'Згоден✅',
     DISAGREE: 'Не згоден❌',
+    BACK: 'Назад↩️',
   },
   en: {
     BALANCE: 'Balance 💰',
@@ -76,5 +77,6 @@ export const BUTTONS = {
     HELP: 'Help⛑️',
     AGREE: 'Agree✅',
     DISAGREE: 'Disagree❌',
+    BACK: 'Back↩️',
   },
 };

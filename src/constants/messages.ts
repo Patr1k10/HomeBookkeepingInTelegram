@@ -122,7 +122,6 @@ export const INVITATION_ACCEPTED_MESSAGE = (inputId: number, language: string) =
   const messages = {
     en: `You have accepted the invitation from user with ID ${inputId}`,
     ua: `Ви прийняли запрошення від користувача з ID ${inputId}`,
-    // ... другие языки
   };
 
   return messages[language];

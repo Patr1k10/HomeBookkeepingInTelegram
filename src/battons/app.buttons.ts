@@ -7,7 +7,7 @@ export function actionButtonsStart(language: string = 'ua') {
       Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
       Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'Транзакції'),
       Markup.button.callback(BUTTONS[language].STATISTICS, 'Статистика'),
-      Markup.button.callback(BUTTONS[language].FAMILY, 'Родина'),
+      Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
       Markup.button.callback(BUTTONS[language].HELP, 'help'),
       Markup.button.callback(BUTTONS[language].LANGUAGE, 'language'),
       Markup.button.callback(BUTTONS[language].RESET, 'reset'),
@@ -99,9 +99,9 @@ export function groupButton(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
       Markup.button.callback(BUTTONS[language].GET_ID, 'get_id'),
-      // Markup.button.callback(BUTTONS[language].CREATE_GROUP, 'create_group'),
       Markup.button.callback(BUTTONS[language].ADD_TO_GROUP, 'add_to_group'),
       Markup.button.callback(BUTTONS[language].DELETE_FROM_GROUP, 'remove_group'),
+      Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
     {
       columns: 2,
