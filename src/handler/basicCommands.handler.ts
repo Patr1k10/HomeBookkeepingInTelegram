@@ -1,5 +1,5 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { actionButtonsStart, currencySet, languageSet, resetButton } from '../battons/app.buttons';
+import { actionButtonsStart, backStartButton, currencySet, languageSet, resetButton } from '../battons/app.buttons';
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
@@ -103,7 +103,7 @@ export class BasicCommandsHandler {
 
   @Action('help')
   async helpCommand(ctx: IContext) {
-    const markup = actionButtonsStart(ctx.session.language);
+    const markup = backStartButton(ctx.session.language);
     try {
       await ctx.telegram.editMessageText(
         ctx.from.id,

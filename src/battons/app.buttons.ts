@@ -6,7 +6,7 @@ export function actionButtonsStart(language: string = 'ua') {
     [
       Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
       Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'Транзакції'),
-      Markup.button.callback(BUTTONS[language].STATISTICS, 'Статистика'),
+      Markup.button.callback(BUTTONS[language].STATISTICS, 'statistics'),
       Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
       Markup.button.callback(BUTTONS[language].HELP, 'help'),
       Markup.button.callback(BUTTONS[language].LANGUAGE, 'language'),
@@ -57,16 +57,24 @@ export function actionButtonsTransaction(language: string = 'ua') {
 export function actionButtonsStatistics(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
-      Markup.button.callback(BUTTONS[language].TODAY, 'За сегодня'),
+      Markup.button.callback(BUTTONS[language].TODAY, 'today'),
       Markup.button.callback(BUTTONS[language].WEEK, 'За неделю'),
       Markup.button.callback(BUTTONS[language].MONTH, 'За месяц'),
       Markup.button.callback(BUTTONS[language].SELECT_MONTH, 'Выбрать месяц'),
-      Markup.button.callback(BUTTONS[language].MY_INCOME, 'Мои приходы'),
-      Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'Мои расходы'),
-      Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'По категории'),
+      Markup.button.callback(BUTTONS[language].MY_INCOME, 'my_income'),
+      Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'my_expense'),
+      Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'by_category'),
+      Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
     { columns: 2 },
   );
+}
+export function backStatisticButton(language: string = 'ua') {
+  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backS')]);
+}
+
+export function backStartButton(language: string = 'ua') {
+  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
 }
 
 export function actionButtonsTransactionNames(transactionNames: string[]) {
@@ -74,6 +82,9 @@ export function actionButtonsTransactionNames(transactionNames: string[]) {
   for (const name of transactionNames) {
     buttons.push(Markup.button.callback(name, `TransactionName:${name}`));
   }
+
+  buttons.push(Markup.button.callback('Back↩️', 'back'));
+
   return Markup.inlineKeyboard(buttons, { columns: 2 });
 }
 
@@ -91,6 +102,7 @@ export function actionButtonsMonths(language: string = 'ua') {
     Markup.button.callback(BUTTONS[language].OCTOBER, 'Month:10'),
     Markup.button.callback(BUTTONS[language].NOVEMBER, 'Month:11'),
     Markup.button.callback(BUTTONS[language].DECEMBER, 'Month:12'),
+    Markup.button.callback(BUTTONS[language].BACK, 'backS'),
   ];
   return Markup.inlineKeyboard(buttons, { columns: 3 });
 }

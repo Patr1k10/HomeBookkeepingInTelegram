@@ -3,6 +3,7 @@ import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { IContext } from '../interface/context.interface';
 import { CURRNCY, TOTAL_MESSAGES } from '../constants/messages';
+import { backStatisticButton } from '../battons/app.buttons';
 
 export class MessageService {
   constructor(
@@ -32,12 +33,10 @@ export class MessageService {
     }
     return result;
   }
-  async sendFormattedTransactions(
-    userId: number,
-    transactions: Transaction[],
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async sendFormattedTransactions(ctx: IContext, transactions: Transaction[]): Promise<void> {
+    const userId = ctx.from.id;
+    const language = ctx.session.language;
+    const currency = ctx.session.currency;
     let totalPositiveAmount = 0;
     let totalNegativeAmount = 0;
     const positiveTransactionSums: { [key: string]: number } = {};
@@ -98,7 +97,10 @@ export class MessageService {
     const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
     message += `${localizedMessage}${totalPositiveAmount - totalNegativeAmount}${setCurrency}\n`;
 
-    await this.bot.telegram.sendMessage(userId, message, { parse_mode: 'HTML' });
+    await this.bot.telegram.editMessageText(userId, ctx.session.lastBotMessage, null, message, {
+      parse_mode: 'HTML',
+      reply_markup: backStatisticButton(ctx.session.language).reply_markup,
+    });
   }
 
   formatMessage(name: string, percentage: string, sum: number, currency: string): string {
