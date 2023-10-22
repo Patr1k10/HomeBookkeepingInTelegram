@@ -188,7 +188,7 @@ export class BasicCommandsHandler {
 
   @Action('back')
   async back(ctx: IContext) {
-    delete ctx.session.type
+    delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,

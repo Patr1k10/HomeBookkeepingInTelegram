@@ -5,10 +5,8 @@ import {
   BALANCE_MESSAGE,
   ENTER_EXPENSE_MESSAGE,
   ENTER_INCOME_MESSAGE,
-  ERROR_MESSAGE,
   getBalanceMessage,
   INVALID_DATA_MESSAGE,
-  INVALID_TRANSACTION_NAME_MESSAGE,
   SELECT_TRANSACTION_MESSAGE,
   TRANSACTION_DELETED_MESSAGE,
 } from '../constants/messages';
@@ -113,30 +111,30 @@ export class TransactionHandler {
     const text = message.text;
     const transactions = text.split(',').map((t) => t.trim());
 
-    let errorMessageSent = false; // Флаг, чтобы отслеживать, было ли уже отправлено сообщение с ошибкой
+    let errorMessageSent = false;
 
     for (const transaction of transactions) {
       const regex = /^([a-zA-Zа-яА-ЯіІ]+(?:\s+[a-zA-Zа-яА-ЯіІ]+)?)\s+([\d.]+)$/;
       const matches = transaction.match(regex);
 
       if (!matches) {
-        errorMessageSent = true; // Устанавливаем флаг ошибки
-        continue; // Пропускаем текущую итерацию цикла
+        errorMessageSent = true;
+        continue;
       }
 
       const transactionName = matches[1].trim().toLowerCase();
       const amount = Number(matches[2]);
 
       if (!transactionName || isNaN(amount) || amount <= 0) {
-        errorMessageSent = true; // Устанавливаем флаг ошибки
-        continue; // Пропускаем текущую итерацию цикла
+        errorMessageSent = true;
+        continue;
       }
 
       const words = transactionName.split(' ');
 
       if (words.length > 2) {
-        errorMessageSent = true; // Устанавливаем флаг ошибки
-        continue; // Пропускаем текущую итерацию цикла
+        errorMessageSent = true;
+        continue;
       }
 
       const transactionType = ctx.session.type === 'income' ? TransactionType.INCOME : TransactionType.EXPENSE;
@@ -151,8 +149,7 @@ export class TransactionHandler {
         await this.balanceService.updateBalance(userId, amount, transactionType);
       } catch (error) {
         this.logger.error('Error creating transaction:', error);
-        errorMessageSent = true; // Устанавливаем флаг ошибки
-        continue; // Пропускаем текущую итерацию цикла
+        errorMessageSent = true;
       }
     }
 
