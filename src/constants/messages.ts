@@ -58,7 +58,7 @@ export const BALANCE_MESSAGE = {
   ua: 'Баланс оновлено✅',
 };
 
-export const getBalanceMessage = (balance: number, language: string, currency: string) => {
+export const getBalanceMessage = (balance: number, language: string = 'ua', currency: string = 'UAH') => {
   const setCurrency = CURRNCY[currency];
   const messages = {
     en: `<b>Your balance: ${balance}${setCurrency} </b>🗃️`,

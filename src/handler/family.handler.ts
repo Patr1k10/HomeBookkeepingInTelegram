@@ -7,6 +7,7 @@ import { Telegraf } from 'telegraf';
 import { FAMILY_TEXT } from '../constants/familyText.constants';
 import { BUTTONS } from '../constants/buttons.const';
 import { GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants/messages';
+import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 
 @Update()
 export class FamilyHandler {
@@ -19,6 +20,9 @@ export class FamilyHandler {
 
   @Action('family')
   async groupCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('Executing groupCommand');
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -31,6 +35,9 @@ export class FamilyHandler {
 
   @Action('get_id')
   async getId(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('Executing getId');
     const message = FAMILY_TEXT[ctx.session.language || 'ua'].YOUR_ID;
     await ctx.telegram.editMessageText(
@@ -44,6 +51,9 @@ export class FamilyHandler {
 
   @Action('add_to_group')
   async addToGroup(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('Executing addToGroup');
     if (!ctx.session.group) {
       ctx.session.group = [];
@@ -64,6 +74,9 @@ export class FamilyHandler {
 
   @Hears(/^\d+$/)
   async addUserId(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     const userId = ctx.from.id;
     this.logger.log('Executing addUserId');
     if (ctx.session.awaitingUserIdInput) {
@@ -151,6 +164,9 @@ export class FamilyHandler {
 
   @Action('remove_group')
   async deleteGroup(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     delete ctx.session.type;
     this.logger.log('Executing deleteGroup');
     if (ctx.session.group && ctx.session.group.length > 0) {
@@ -174,6 +190,9 @@ export class FamilyHandler {
   }
   @Action('backF')
   async backT(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,

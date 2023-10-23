@@ -7,7 +7,7 @@ import { Telegraf } from 'telegraf';
 import { IContext } from '../interface/context.interface';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { PERIOD_E } from '../constants/messages';
+import { PERIOD_E, PERIOD_NULL } from '../constants/messages';
 import { backStatisticButton } from '../battons/app.buttons';
 
 export class StatisticsService {
@@ -33,7 +33,13 @@ export class StatisticsService {
         await this.messageService.sendFormattedTransactions(ctx, transactions);
       } else {
         this.logger.log(`No transactions of type ${transactionType} found`);
-        await this.bot.telegram.sendMessage(userId, `⛔️Немає транзакцій даного типу (${transactionType})⛔️`);
+        await this.bot.telegram.editMessageText(
+          userId,
+          ctx.session.lastBotMessage,
+          null,
+          `${PERIOD_NULL[ctx.session.language]} (${transactionType})⛔️`,
+          backStatisticButton(ctx.session.language || 'ua'),
+        );
       }
     } catch (error) {
       this.logger.error('Error getting transactions by type', error);
@@ -75,7 +81,7 @@ export class StatisticsService {
     await this.getTransactions(
       ctx,
       { transactionName },
-      `⛔️Немає транзакцій з ім'ям (${transactionName})⛔️`,
+      `${PERIOD_NULL[ctx.session.language]}(${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
     );
   }
@@ -118,7 +124,7 @@ export class StatisticsService {
     await this.getTransactions(
       ctx,
       { timestamp: { $gte: fromDate, $lte: toDate } },
-      `⛔️Немає транзакцій за період⛔️`,
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the period for user {userId}`,
     );
   }

@@ -1,7 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { Action, Update } from 'nestjs-telegraf';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
-import { actionButtonsMonths, actionButtonsStatistics, actionButtonsTransactionNames } from '../battons/app.buttons';
+import {
+  actionButtonsMonths,
+  actionButtonsStatistics,
+  actionButtonsTransactionNames,
+  backStatisticButton,
+} from '../battons/app.buttons';
 import {
   PERIOD_NULL,
   SELECT_CATEGORY_MESSAGE,
@@ -10,6 +15,7 @@ import {
 } from '../constants/messages';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { StatisticsService } from '../service';
+import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 
 @Update()
 export class StatisticsHandler {
@@ -18,6 +24,9 @@ export class StatisticsHandler {
 
   @Action('statistics')
   async statisticsCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -30,17 +39,26 @@ export class StatisticsHandler {
 
   @Action('my_income')
   async incomeListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('my_income command executed');
     await this.statisticsService.getTransactionsByType(ctx, TransactionType.INCOME);
   }
 
   @Action('my_expense')
   async expenseListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('расходы command executed');
     await this.statisticsService.getTransactionsByType(ctx, TransactionType.EXPENSE);
   }
   @Action('by_category')
   async categoryListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(ctx);
     if (uniqueTransactionNames === null) {
       await ctx.telegram.editMessageText(
@@ -48,7 +66,7 @@ export class StatisticsHandler {
         ctx.session.lastBotMessage,
         null,
         PERIOD_NULL[ctx.session.language],
-        actionButtonsStatistics(ctx.session.language || 'ua'),
+        backStatisticButton(ctx.session.language || 'ua'),
       );
       return;
     }
@@ -64,6 +82,9 @@ export class StatisticsHandler {
 
   @Action(/TransactionName:(.+)/)
   async transactionNameCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('transactionName command executed');
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
@@ -77,24 +98,36 @@ export class StatisticsHandler {
   }
   @Action('today')
   async todayListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('today command executed');
     await this.statisticsService.getFormattedTransactionsForToday(ctx);
     this.logger.log('today command executed');
   }
   @Action('on_week')
   async weekListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('week command executed');
     await this.statisticsService.getFormattedTransactionsForWeek(ctx);
     this.logger.log('week command executed');
   }
   @Action('on_month')
   async monthListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('month command executed');
     await this.statisticsService.getFormattedTransactionsForMonth(ctx);
     this.logger.log('month command executed');
   }
   @Action('select_month')
   async monthListMenuCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('month menu command executed');
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -106,6 +139,9 @@ export class StatisticsHandler {
   }
   @Action(/Month:(.+)/)
   async specificMonthListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     this.logger.log('specific month command executed');
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
@@ -130,6 +166,9 @@ export class StatisticsHandler {
   }
   @Action('backS')
   async backS(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,

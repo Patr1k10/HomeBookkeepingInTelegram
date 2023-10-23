@@ -15,6 +15,7 @@ import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { MyMessage } from '../interface/my-message.interface';
 import { BalanceService } from '../service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 
 @Update()
 export class TransactionHandler {
@@ -26,6 +27,9 @@ export class TransactionHandler {
 
   @Action('transactions')
   async aboutCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     delete ctx.session.type;
     this.logger.log('transactions command executed');
     await ctx.telegram.editMessageText(
@@ -38,6 +42,9 @@ export class TransactionHandler {
   }
   @Action('income')
   async incomeCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     ctx.session.type = 'income';
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -52,6 +59,9 @@ export class TransactionHandler {
 
   @Action('expense')
   async expenseCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     ctx.session.type = 'expense';
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -65,12 +75,18 @@ export class TransactionHandler {
   }
   @Action('delete_last')
   async deleteLastCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     ctx.session.type = 'delete';
     const count = 20;
     await this.transactionService.showLastNTransactionsWithDeleteOption(ctx, count);
   }
   @Action(/delete_(.+)/)
   async handleCallbackQuery(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     try {
       if (ctx.session.type !== 'delete') {
         return;
@@ -78,10 +94,9 @@ export class TransactionHandler {
       const customCallbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
       if (customCallbackQuery && 'data' in customCallbackQuery) {
         const callbackData = customCallbackQuery.data;
-        const userId = ctx.from.id;
         if (callbackData.startsWith('delete_')) {
           const transactionIdToDelete = callbackData.replace('delete_', '');
-          await this.transactionService.deleteTransactionById(userId, transactionIdToDelete);
+          await this.transactionService.deleteTransactionById(ctx, transactionIdToDelete);
           await ctx.telegram.editMessageText(
             ctx.from.id,
             ctx.session.lastBotMessage,
@@ -102,6 +117,9 @@ export class TransactionHandler {
 
   @On('text')
   async textCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     if (ctx.session.type !== 'income' && ctx.session.type !== 'expense') {
       return;
     }
@@ -152,8 +170,6 @@ export class TransactionHandler {
         errorMessageSent = true;
       }
     }
-
-    // Если была ошибка, отправляем сообщение с ошибкой
     if (errorMessageSent) {
       await ctx.deleteMessage();
       await ctx.telegram.editMessageText(
@@ -164,7 +180,6 @@ export class TransactionHandler {
         backTranButton(ctx.session.language || 'ua'),
       );
     } else {
-      // Если ошибок не было, отправляем сообщение с успешной транзакцией
       await ctx.deleteMessage();
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
       const balanceMessage = getBalanceMessage(balance, ctx.session.language || 'ua', ctx.session.currency || 'UAH');
@@ -186,6 +201,9 @@ export class TransactionHandler {
 
   @Action('backT')
   async backT(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,

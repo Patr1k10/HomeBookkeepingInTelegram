@@ -7,6 +7,7 @@ import { ERROR_MESSAGE, MAIN_MENU, RESETS_ALL } from '../constants/messages';
 import { TransactionService } from '../service';
 import { START_MESSAGE } from '../constants/start.messages';
 import { HELP_MESSAGE } from '../constants/help.massages';
+import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 
 import * as dotenv from 'dotenv';
 
@@ -26,7 +27,7 @@ export class BasicCommandsHandler {
       const userId = ctx.from.id;
       const user = ctx.from;
       const count = await this.balanceService.countAllBalances();
-      // const bosId = process.env.BOSID;
+      const bosId = process.env.BOSID;
       this.logger.log(`
       User ID: ${user.id}
       First Name: ${user.first_name}
@@ -34,15 +35,15 @@ export class BasicCommandsHandler {
       Username: ${user.username}
       Count Users: ${count}`);
       await this.balanceService.createBalance({ userId });
-      // await this.bot.telegram.sendMessage(
-      //   bosId,
-      //   `New User created:
-      // User ID: ${user.id}
-      // First Name: ${user.first_name}
-      // Last Name: ${user.last_name}
-      // Username: ${user.username}
-      // Count Users: ${count}`,
-      // );
+      await ctx.telegram.sendMessage(
+        bosId,
+        `New User created:
+      User ID: ${user.id}
+      First Name: ${user.first_name}
+      Last Name: ${user.last_name}
+      Username: ${user.username}
+      Count Users: ${count}`,
+      );
       const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
       ctx.session.lastBotMessage = sentMessage.message_id;
 
@@ -56,6 +57,9 @@ export class BasicCommandsHandler {
   }
   @Action('USD')
   async usdCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     ctx.session.currency = 'USD';
     const markup = actionButtonsStart(ctx.session.language);
     await ctx.telegram.editMessageText(
@@ -69,6 +73,9 @@ export class BasicCommandsHandler {
 
   @Action('UAH')
   async uahCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     ctx.session.currency = 'UAH';
     const markup = actionButtonsStart(ctx.session.language);
     await ctx.telegram.editMessageText(
@@ -82,6 +89,9 @@ export class BasicCommandsHandler {
 
   @Action(/setLanguage:(.+)/)
   async setLanguage(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
       const callbackData = callbackQuery.data;
@@ -103,6 +113,9 @@ export class BasicCommandsHandler {
 
   @Action('help')
   async helpCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     const markup = backStartButton(ctx.session.language);
     try {
       await ctx.telegram.editMessageText(
@@ -121,6 +134,9 @@ export class BasicCommandsHandler {
   }
   @Action('language')
   async languageCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     try {
       await ctx.telegram.editMessageText(
         ctx.from.id,
@@ -137,6 +153,9 @@ export class BasicCommandsHandler {
   }
   @Action('reset')
   async resetCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -147,6 +166,9 @@ export class BasicCommandsHandler {
   }
   @Action('yes')
   async yesCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -157,6 +179,9 @@ export class BasicCommandsHandler {
   }
   @Action('no')
   async noCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -168,6 +193,9 @@ export class BasicCommandsHandler {
   }
   @Hears('RESET')
   async resetAll(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     if (ctx.session.type !== 'delete') {
       return;
     }
@@ -188,6 +216,9 @@ export class BasicCommandsHandler {
 
   @Action('back')
   async back(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
     delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,

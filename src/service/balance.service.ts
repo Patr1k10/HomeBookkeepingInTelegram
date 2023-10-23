@@ -12,10 +12,7 @@ dotenv.config();
 export class BalanceService {
   private readonly logger: Logger = new Logger(BalanceService.name);
 
-  constructor(
-    @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
-
-  ) {}
+  constructor(@InjectModel('Balance') private readonly balanceModel: Model<Balance>) {}
 
   async getOrCreateBalance(userId: number): Promise<Balance> {
     let balance = await this.balanceModel.findOne({ userId }).exec();

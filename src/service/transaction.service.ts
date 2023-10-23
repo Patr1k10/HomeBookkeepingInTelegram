@@ -8,8 +8,9 @@ import { BalanceService } from './balance.service';
 import { Telegraf } from 'telegraf';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { CreateTransactionDto } from '../dto/transaction.dto';
-import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2 } from '../constants/messages';
+import { DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_NULL } from '../constants/messages';
 import { BUTTONS } from '../constants/buttons.const';
+import { backTranButton } from '../battons/app.buttons';
 
 @Injectable()
 export class TransactionService {
@@ -43,13 +44,19 @@ export class TransactionService {
     }
   }
 
-  async deleteTransactionById(userId: number, transactionId: string): Promise<void> {
+  async deleteTransactionById(ctx: IContext, transactionId: string): Promise<void> {
+    const userId = ctx.from.id;
     try {
       const transaction = await this.transactionModel.findOne({ _id: transactionId, userId }).exec();
 
       if (!transaction) {
         this.logger.log(`Transaction not found for ID: ${transactionId}`);
-        await this.bot.telegram.sendMessage(userId, '⛔️Транзакція не знайдена⛔️');
+        await this.bot.telegram.editMessageText(
+          userId,
+          ctx.session.lastBotMessage,
+          null,
+          PERIOD_NULL[ctx.session.language],
+        );
         return;
       }
       const balance = await this.balanceService.getOrCreateBalance(userId);
@@ -76,7 +83,13 @@ export class TransactionService {
       const transactions = await this.transactionModel.find({ userId }).sort({ timestamp: -1 }).limit(count).exec();
 
       if (transactions.length === 0) {
-        await this.bot.telegram.sendMessage(userId, DELETE_LAST_MESSAGE2[language]);
+        await this.bot.telegram.editMessageText(
+          userId,
+          ctx.session.lastBotMessage,
+          null,
+          DELETE_LAST_MESSAGE2[language],
+          backTranButton(ctx.session.language || 'ua'),
+        );
         return;
       }
 
