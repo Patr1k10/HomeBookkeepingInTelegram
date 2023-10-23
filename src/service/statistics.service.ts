@@ -7,7 +7,8 @@ import { Telegraf } from 'telegraf';
 import { IContext } from '../interface/context.interface';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { PERIOD_E } from '../constants/messages';
+import { PERIOD_E, PERIOD_NULL } from '../constants/messages';
+import { backStatisticButton } from '../battons/app.buttons';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);
@@ -18,13 +19,9 @@ export class StatisticsService {
     private readonly messageService: MessageService,
   ) {}
 
-  async getTransactionsByType(
-    userId: number,
-    groupIds: number[],
-    transactionType: TransactionType,
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async getTransactionsByType(ctx: IContext, transactionType: TransactionType): Promise<void> {
+    const groupIds = ctx.session.group;
+    const userId = ctx.from.id;
     try {
       const query =
         groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, transactionType } : { userId, transactionType };
@@ -33,10 +30,16 @@ export class StatisticsService {
 
       if (transactions.length > 0) {
         this.logger.log(`Retrieved ${transactions.length} transactions`);
-        await this.messageService.sendFormattedTransactions(userId, transactions, language, currency);
+        await this.messageService.sendFormattedTransactions(ctx, transactions);
       } else {
         this.logger.log(`No transactions of type ${transactionType} found`);
-        await this.bot.telegram.sendMessage(userId, `⛔️Немає транзакцій даного типу (${transactionType})⛔️`);
+        await this.bot.telegram.editMessageText(
+          userId,
+          ctx.session.lastBotMessage,
+          null,
+          `${PERIOD_NULL[ctx.session.language]} (${transactionType})⛔️`,
+          backStatisticButton(ctx.session.language || 'ua'),
+        );
       }
     } catch (error) {
       this.logger.error('Error getting transactions by type', error);
@@ -44,15 +47,10 @@ export class StatisticsService {
     }
   }
 
-  async getTransactions(
-    userId: number,
-    groupIds: number[],
-    query: any,
-    noTransactionsMessage: string,
-    logMessage: string,
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async getTransactions(ctx: IContext, query: any, noTransactionsMessage: string, logMessage: string): Promise<void> {
+    const userId = ctx.from.id;
+    const groupIds = ctx.session.group;
+
     const adaptedQuery =
       groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, ...query } : { userId, ...query };
 
@@ -62,10 +60,16 @@ export class StatisticsService {
         this.logger.log(
           logMessage.replace('{count}', transactions.length.toString()).replace('{userId}', userId.toString()),
         );
-        await this.messageService.sendFormattedTransactions(userId, transactions, language, currency);
+        await this.messageService.sendFormattedTransactions(ctx, transactions);
       } else {
         this.logger.log(noTransactionsMessage.replace('{userId}', userId.toString()));
-        await this.bot.telegram.sendMessage(userId, noTransactionsMessage);
+        await this.bot.telegram.editMessageText(
+          userId,
+          ctx.session.lastBotMessage,
+          null,
+          noTransactionsMessage,
+          backStatisticButton(ctx.session.language || 'ua'),
+        );
       }
     } catch (error) {
       this.logger.error('Error getting transactions', error);
@@ -73,102 +77,61 @@ export class StatisticsService {
     }
   }
 
-  async getTransactionsByTransactionName(
-    userId: number,
-    groupIds: number[],
-    transactionName: string,
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async getTransactionsByTransactionName(ctx: IContext, transactionName: string): Promise<void> {
     await this.getTransactions(
-      userId,
-      groupIds,
+      ctx,
       { transactionName },
-      `⛔️Немає транзакцій з ім'ям (${transactionName})⛔️`,
+      `${PERIOD_NULL[ctx.session.language]}(${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
-      language,
-      currency,
     );
   }
 
-  async getFormattedTransactionsForToday(
-    userId: number,
-    groupIds: number[],
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async getFormattedTransactionsForToday(ctx: IContext): Promise<void> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     await this.getTransactions(
-      userId,
-      groupIds,
+      ctx,
       { timestamp: { $gte: today } },
-      PERIOD_E[language],
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for today for user {userId}`,
-      language,
-      currency,
     );
   }
 
-  async getFormattedTransactionsForWeek(
-    userId: number,
-    groupIds: number[],
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async getFormattedTransactionsForWeek(ctx: IContext): Promise<void> {
     const today = new Date();
     const weekAgo = new Date();
     weekAgo.setDate(today.getDate() - 7);
     await this.getTransactions(
-      userId,
-      groupIds,
+      ctx,
       { timestamp: { $gte: weekAgo, $lte: today } },
-      PERIOD_E[language],
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the week for user {userId}`,
-      language,
-      currency,
     );
   }
 
-  async getFormattedTransactionsForMonth(
-    userId: number,
-    groupIds: number[],
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async getFormattedTransactionsForMonth(ctx: IContext): Promise<void> {
     const today = new Date();
     const monthAgo = new Date();
     monthAgo.setDate(today.getDate() - 30);
     await this.getTransactions(
-      userId,
-      groupIds,
+      ctx,
       { timestamp: { $gte: monthAgo, $lte: today } },
-      PERIOD_E[language],
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the month for user {userId}`,
-      language,
-      currency,
     );
   }
-  async getTransactionsByPeriod(
-    userId: number,
-    groupIds: number[],
-    fromDate: Date,
-    toDate: Date,
-    language: string,
-    currency: string,
-  ): Promise<void> {
+  async getTransactionsByPeriod(ctx: IContext, fromDate: Date, toDate: Date): Promise<void> {
     await this.getTransactions(
-      userId,
-      groupIds,
+      ctx,
       { timestamp: { $gte: fromDate, $lte: toDate } },
-      `⛔️Немає транзакцій за період⛔️`,
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the period for user {userId}`,
-      language,
-      currency,
     );
   }
 
-  async getUniqueTransactionNames(userId: number, groupIds: number[]): Promise<string[] | null> {
+  async getUniqueTransactionNames(ctx: IContext): Promise<string[] | null> {
+    const groupIds = ctx.session.group;
+    const userId = ctx.from.id;
     try {
       const query = groupIds && groupIds.length > 0 ? { userId: { $in: groupIds } } : { userId };
 

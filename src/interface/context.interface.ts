@@ -8,6 +8,7 @@ export interface IContext extends ContextTelegraf {
     currency?: string;
     group?: number[];
     awaitingUserIdInput?: boolean;
+    lastBotMessage?: number;
   };
 }
 
