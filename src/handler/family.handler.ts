@@ -1,4 +1,4 @@
-import { Action, Hears, InjectBot, Update } from 'nestjs-telegraf';
+import { Action, InjectBot, On, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { backFamilyButton, groupButton } from '../battons/app.buttons';
@@ -72,7 +72,7 @@ export class FamilyHandler {
     ctx.session.awaitingUserIdInput = true;
   }
 
-  @Hears(/^\d+$/)
+  @On('text')
   async addUserId(ctx: IContext) {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
@@ -82,6 +82,17 @@ export class FamilyHandler {
     if (ctx.session.awaitingUserIdInput) {
       const message = ctx.message as MyMessage;
       const inputId = parseInt(message.text, 10);
+      if (isNaN(inputId)) {
+        await ctx.deleteMessage();
+        await ctx.telegram.editMessageText(
+          ctx.from.id,
+          ctx.session.lastBotMessage,
+          null,
+          FAMILY_TEXT[ctx.session.language || 'ua'].INVALID_INPUT,
+          backFamilyButton(ctx.session.language || 'ua'),
+        );
+        return;
+      }
 
       if (!ctx.session.group) {
         ctx.session.group = [];
@@ -123,7 +134,13 @@ export class FamilyHandler {
         ],
       },
     };
-    await this.bot.telegram.sendMessage(inputId, message, opts);
+
+    try {
+      await this.bot.telegram.sendMessage(inputId, message, opts);
+      console.log(`Сообщение успешно отправлено пользователю с ID ${inputId}`);
+    } catch (error) {
+      console.error(`Ошибка при отправке сообщения пользователю с ID ${inputId}: ${error.message}`);
+    }
   }
 
   @Action(/^accept_invite:\d+$/)
