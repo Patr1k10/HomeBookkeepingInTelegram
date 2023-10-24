@@ -1,4 +1,4 @@
-import { Action, Hears, InjectBot, On, Update } from 'nestjs-telegraf';
+import { Action, InjectBot, On, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { backFamilyButton, groupButton } from '../battons/app.buttons';
