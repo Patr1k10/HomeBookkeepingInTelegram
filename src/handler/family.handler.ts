@@ -71,7 +71,7 @@ export class FamilyHandler {
 
     ctx.session.awaitingUserIdInput = true;
   }
-
+  
   @Hears(/^\d+$/)
   async addUserId(ctx: IContext) {
     if (ctx.session.awaitingUserIdInput) {
@@ -178,6 +178,7 @@ export class FamilyHandler {
     );
     ctx.session.lastBotMessage = sendMessage.message_id;
   }
+
 
   @Action('remove_group')
   async deleteGroup(ctx: IContext) {
