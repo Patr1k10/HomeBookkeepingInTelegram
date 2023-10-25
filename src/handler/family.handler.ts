@@ -1,4 +1,4 @@
-import { Action, InjectBot, On, Update } from 'nestjs-telegraf';
+import { Action, Hears, InjectBot, On, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { backFamilyButton, groupButton } from '../battons/app.buttons';
@@ -72,14 +72,14 @@ export class FamilyHandler {
     ctx.session.awaitingUserIdInput = true;
   }
 
-  @On('text')
+  @Hears(/^\d+$/)
   async addUserId(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
-    const userId = ctx.from.id;
-    this.logger.log('Executing addUserId');
     if (ctx.session.awaitingUserIdInput) {
+      if (await checkAndUpdateLastBotMessage(ctx)) {
+        return;
+      }
+      const userId = ctx.from.id;
+      this.logger.log('Executing addUserId');
       const message = ctx.message as MyMessage;
       const inputId = parseInt(message.text, 10);
       if (isNaN(inputId)) {
@@ -210,6 +210,7 @@ export class FamilyHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,

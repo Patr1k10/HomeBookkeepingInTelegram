@@ -117,10 +117,10 @@ export class TransactionHandler {
 
   @On('text')
   async textCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
+    if (ctx.session.type !== 'income' && ctx.session.type !== 'expense') {
       return;
     }
-    if (ctx.session.type !== 'income' && ctx.session.type !== 'expense') {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
 
@@ -204,6 +204,7 @@ export class TransactionHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,

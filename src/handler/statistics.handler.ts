@@ -169,6 +169,7 @@ export class StatisticsHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(
       ctx.from.id,
