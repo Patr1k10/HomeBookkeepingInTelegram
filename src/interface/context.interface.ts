@@ -9,6 +9,7 @@ export interface IContext extends ContextTelegraf {
     group?: number[];
     awaitingUserIdInput?: boolean;
     lastBotMessage?: number;
+    lastActivity?: number;
   };
 }
 
