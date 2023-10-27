@@ -48,6 +48,7 @@ export class BalanceService {
         balance.balance -= amount;
       }
 
+      balance.lastActivity = new Date();
       await balance.save();
       this.logger.log(`Updated balance for user ${userId}`);
     } catch (error) {
@@ -76,6 +77,8 @@ export class BalanceService {
       const userBalance = await this.balanceModel.findOne({ userId }).exec();
       if (userBalance) {
         balance = userBalance.balance;
+        userBalance.lastActivity = new Date();
+        await userBalance.save();
       }
     }
     return balance;
@@ -88,6 +91,25 @@ export class BalanceService {
       return count;
     } catch (error) {
       this.logger.error('Error counting all balances', error);
+      throw error;
+    }
+  }
+
+  async countActiveUsersLast3Days(): Promise<number> {
+    try {
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Дата 3 дня назад
+
+      const activeUsersCount = await this.balanceModel
+        .countDocuments({
+          lastActivity: { $gte: threeDaysAgo },
+        })
+        .exec();
+
+      this.logger.log(`Number of active users in the last 3 days: ${activeUsersCount}`);
+      return activeUsersCount;
+    } catch (error) {
+      this.logger.error('Error counting active users in the last 3 days', error);
       throw error;
     }
   }
