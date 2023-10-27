@@ -8,6 +8,9 @@ export class Balance extends Document {
 
   @Prop({ required: true })
   balance: number;
+
+  @Prop({ default: Date.now })
+  lastActivity: Date;
 }
 
 export const BalanceSchema = SchemaFactory.createForClass(Balance);

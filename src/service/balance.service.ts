@@ -2,21 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateBalanceDto } from '../dto/balance.dto';
-import { Telegraf } from 'telegraf';
-import { InjectBot } from 'nestjs-telegraf';
-import { IContext } from '../interface/context.interface';
 import { Balance } from '../shemas/balance.shemas';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Injectable()
 export class BalanceService {
   private readonly logger: Logger = new Logger(BalanceService.name);
-  constructor(
-    @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
-    @InjectModel('Transaction')
-    @InjectBot()
-    private readonly bot: Telegraf<IContext>,
-  ) {}
+
+  constructor(@InjectModel('Balance') private readonly balanceModel: Model<Balance>) {}
+
   async getOrCreateBalance(userId: number): Promise<Balance> {
     let balance = await this.balanceModel.findOne({ userId }).exec();
     if (!balance) {
@@ -50,12 +47,69 @@ export class BalanceService {
       } else if (transactionType === TransactionType.EXPENSE) {
         balance.balance -= amount;
       }
-      this.logger.log(`Updated balance for user ${userId}`);
 
+      balance.lastActivity = new Date();
       await balance.save();
       this.logger.log(`Updated balance for user ${userId}`);
     } catch (error) {
       this.logger.error('Error updating balance', error);
+      throw error;
+    }
+  }
+
+  async deleteAllBalancesOfUser(userId: number): Promise<void> {
+    try {
+      await this.balanceModel.deleteMany({ userId }).exec();
+      this.logger.log(`Deleted all balances for user ${userId}`);
+    } catch (error) {
+      this.logger.error('Error deleting all balances for user', error);
+      throw error;
+    }
+  }
+
+  async getBalance(userId: number, groupIds?: number[]): Promise<number> {
+    let balance = 0;
+
+    if (groupIds && groupIds.length > 0) {
+      const balances = await this.balanceModel.find({ userId: { $in: groupIds } }).exec();
+      balance = balances.reduce((acc, curr) => acc + curr.balance, 0);
+    } else {
+      const userBalance = await this.balanceModel.findOne({ userId }).exec();
+      if (userBalance) {
+        balance = userBalance.balance;
+        userBalance.lastActivity = new Date();
+        await userBalance.save();
+      }
+    }
+    return balance;
+  }
+
+  async countAllBalances(): Promise<number> {
+    try {
+      const count = await this.balanceModel.countDocuments().exec();
+      this.logger.log(`Total number of balances in the database: ${count}`);
+      return count;
+    } catch (error) {
+      this.logger.error('Error counting all balances', error);
+      throw error;
+    }
+  }
+
+  async countActiveUsersLast3Days(): Promise<number> {
+    try {
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Дата 3 дня назад
+
+      const activeUsersCount = await this.balanceModel
+        .countDocuments({
+          lastActivity: { $gte: threeDaysAgo },
+        })
+        .exec();
+
+      this.logger.log(`Number of active users in the last 3 days: ${activeUsersCount}`);
+      return activeUsersCount;
+    } catch (error) {
+      this.logger.error('Error counting active users in the last 3 days', error);
       throw error;
     }
   }

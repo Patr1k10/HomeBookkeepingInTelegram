@@ -7,7 +7,8 @@ import { Telegraf } from 'telegraf';
 import { IContext } from '../interface/context.interface';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { PERIOD_E } from '../constants/messages';
+import { PERIOD_E, PERIOD_NULL } from '../constants/messages';
+import { backStatisticButton } from '../battons/app.buttons';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);
@@ -18,38 +19,57 @@ export class StatisticsService {
     private readonly messageService: MessageService,
   ) {}
 
-  async getTransactionsByType(userId: number, transactionType: TransactionType, language: string): Promise<void> {
+  async getTransactionsByType(ctx: IContext, transactionType: TransactionType): Promise<void> {
+    const groupIds = ctx.session.group;
+    const userId = ctx.from.id;
     try {
-      const transactions = await this.transactionModel.find({ userId, transactionType }).exec();
+      const query =
+        groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, transactionType } : { userId, transactionType };
+
+      const transactions = await this.transactionModel.find(query).exec();
+
       if (transactions.length > 0) {
-        this.logger.log(`Retrieved ${transactions.length} transactions for user ${userId}`);
-        await this.messageService.sendFormattedTransactions(userId, transactions, language);
+        this.logger.log(`Retrieved ${transactions.length} transactions`);
+        await this.messageService.sendFormattedTransactions(ctx, transactions);
       } else {
-        this.logger.log(`No transactions of type ${transactionType} found for user ${userId}`);
-        await this.bot.telegram.sendMessage(userId, `⛔️Немає транзакцій даного типу (${transactionType})⛔️`);
+        this.logger.log(`No transactions of type ${transactionType} found`);
+        await this.bot.telegram.editMessageText(
+          userId,
+          ctx.session.lastBotMessage,
+          null,
+          `${PERIOD_NULL[ctx.session.language]} (${transactionType})⛔️`,
+          backStatisticButton(ctx.session.language || 'ua'),
+        );
       }
     } catch (error) {
       this.logger.error('Error getting transactions by type', error);
       throw error;
     }
   }
-  async getTransactions(
-    userId: number,
-    query: any,
-    noTransactionsMessage: string,
-    logMessage: string,
-    language: string,
-  ): Promise<void> {
+
+  async getTransactions(ctx: IContext, query: any, noTransactionsMessage: string, logMessage: string): Promise<void> {
+    const userId = ctx.from.id;
+    const groupIds = ctx.session.group;
+
+    const adaptedQuery =
+      groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, ...query } : { userId, ...query };
+
     try {
-      const transactions = await this.transactionModel.find(query).exec();
+      const transactions = await this.transactionModel.find(adaptedQuery).exec();
       if (transactions.length > 0) {
         this.logger.log(
           logMessage.replace('{count}', transactions.length.toString()).replace('{userId}', userId.toString()),
         );
-        await this.messageService.sendFormattedTransactions(userId, transactions, language);
+        await this.messageService.sendFormattedTransactions(ctx, transactions);
       } else {
         this.logger.log(noTransactionsMessage.replace('{userId}', userId.toString()));
-        await this.bot.telegram.sendMessage(userId, noTransactionsMessage);
+        await this.bot.telegram.editMessageText(
+          userId,
+          ctx.session.lastBotMessage,
+          null,
+          noTransactionsMessage,
+          backStatisticButton(ctx.session.language || 'ua'),
+        );
       }
     } catch (error) {
       this.logger.error('Error getting transactions', error);
@@ -57,68 +77,66 @@ export class StatisticsService {
     }
   }
 
-  async getTransactionsByTransactionName(userId: number, transactionName: string, language: string): Promise<void> {
+  async getTransactionsByTransactionName(ctx: IContext, transactionName: string): Promise<void> {
     await this.getTransactions(
-      userId,
-      { userId, transactionName },
-      `⛔️Немає транзакцій з ім'ям (${transactionName})⛔️`,
+      ctx,
+      { transactionName },
+      `${PERIOD_NULL[ctx.session.language]}(${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
-      language,
     );
   }
 
-  async getFormattedTransactionsForToday(userId: number, language: string): Promise<void> {
+  async getFormattedTransactionsForToday(ctx: IContext): Promise<void> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     await this.getTransactions(
-      userId,
-      { userId, timestamp: { $gte: today } },
-      PERIOD_E[language],
+      ctx,
+      { timestamp: { $gte: today } },
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for today for user {userId}`,
-      language,
     );
   }
 
-  async getFormattedTransactionsForWeek(userId: number, language: string): Promise<void> {
+  async getFormattedTransactionsForWeek(ctx: IContext): Promise<void> {
     const today = new Date();
     const weekAgo = new Date();
     weekAgo.setDate(today.getDate() - 7);
     await this.getTransactions(
-      userId,
-      { userId, timestamp: { $gte: weekAgo, $lte: today } },
-      PERIOD_E[language],
+      ctx,
+      { timestamp: { $gte: weekAgo, $lte: today } },
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the week for user {userId}`,
-      language,
     );
   }
 
-  async getFormattedTransactionsForMonth(userId: number, language: string): Promise<void> {
+  async getFormattedTransactionsForMonth(ctx: IContext): Promise<void> {
     const today = new Date();
     const monthAgo = new Date();
     monthAgo.setDate(today.getDate() - 30);
     await this.getTransactions(
-      userId,
-      { userId, timestamp: { $gte: monthAgo, $lte: today } },
-      PERIOD_E[language],
+      ctx,
+      { timestamp: { $gte: monthAgo, $lte: today } },
+      PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the month for user {userId}`,
-      language,
     );
   }
-  async getTransactionsByPeriod(userId: number, fromDate: Date, toDate: Date, language: string): Promise<void> {
-    const query = { userId, timestamp: { $gte: fromDate, $lte: toDate } };
-    const transactions = await this.transactionModel.find(query).exec();
-
-    if (transactions.length > 0) {
-      this.logger.log(`Retrieved ${transactions.length} transactions for the period for user ${userId}`);
-      await this.messageService.sendFormattedTransactions(userId, transactions, language);
-    } else {
-      this.logger.log(`No transactions found for the period for user ${userId}`);
-      await this.bot.telegram.sendMessage(userId, PERIOD_E[language]);
-    }
+  async getTransactionsByPeriod(ctx: IContext, fromDate: Date, toDate: Date): Promise<void> {
+    await this.getTransactions(
+      ctx,
+      { timestamp: { $gte: fromDate, $lte: toDate } },
+      PERIOD_E[ctx.session.language],
+      `Retrieved {count} transactions for the period for user {userId}`,
+    );
   }
-  async getUniqueTransactionNames(userId: number): Promise<string[]> {
+
+  async getUniqueTransactionNames(ctx: IContext): Promise<string[] | null> {
+    const groupIds = ctx.session.group;
+    const userId = ctx.from.id;
     try {
-      return await this.transactionModel.distinct('transactionName', { userId }).exec();
+      const query = groupIds && groupIds.length > 0 ? { userId: { $in: groupIds } } : { userId };
+
+      const result = await this.transactionModel.distinct('transactionName', query).exec();
+      return result.length > 0 ? result : null;
     } catch (error) {
       this.logger.error('Error getting unique transaction names', error);
       throw error;

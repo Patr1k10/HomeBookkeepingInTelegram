@@ -1,58 +1,6 @@
-// messages.ts
-
-export const START_MESSAGE = {
-  en: {
-    WELCOME_MESSAGE: `<b>👋 Hello! Welcome to your financial assistant. 📘</b>
-
-<i>This tool is designed for effective budget tracking.</i> With its help, you can easily monitor <b>Incomes 💰</b> and <b>Expenses 📉</b>, as well as get a summary of your current balance.
-
-To get started, select "Transaction," and then decide on the type: "Income" or "Expense". 📊`,
-  },
-  ua: {
-    WELCOME_MESSAGE: `<b>👋 Привіт! Ласкаво просимо до вашого фінансового помічника. 📘</b>
-
- <i>Цей інструмент створено для ефективного обліку вашого бюджету.</i> З його допомогою можна легко відслідковувати <b>Надходження 💰</b> та <b>Витрати 📉</b>, а також отримувати зведення за поточним балансом.
-
-Для початку роботи виберіть "Транзакція", а потім визначтеся з типом: "Надходження" або "Витрати". 📊`,
-  },
-};
-
-export const HELP_MESSAGE = {
-  en: `<b>📘 Guide to using your financial bot. 📘</b>
-
-<i>This bot is designed to effectively manage your finances.</i> It offers the following main commands:
-
-- <b>/transactions 💸:</b> Allows you to view and manage your transactions.
-- <b>/balance 💰:</b> Shows your current balance.
-- <b>/statistics 📊:</b> Provides statistics of your financial activity.
-- <b>/language 🌐:</b> To change the interface language.
-
-👇 <i>Additional Options:</i>
-- <b>Income:</b> To add an income.
-- <b>Expense:</b> To add an expense.
-- <b>Delete Last️:</b> To delete the last transactions.
-
-🔧 <i>If you have any questions or suggestions, feel free to contact us.</i>
-
-📩 <b>For additional help or questions, please email us at: help.tgbot@icloud.com</b> 📩`,
-
-  ua: `<b>📘 Інструкція з використання вашого фінансового бота. 📘</b>
-
-<i>Цей бот створений для ефективного управління вашими фінансами.</i> Він пропонує наступні основні команди:
-
-- <b>/transactions 💸:</b> Дозволяє переглядати та управляти вашими транзакціями.
-- <b>/balance 💰:</b> Показує ваш поточний баланс.
-- <b>/statistics 📊:</b> Видає статистику вашої фінансової активності.
-- <b>/language 🌐:</b> Зміна мови інтерфейсу.
-
-👇 <i>Додаткові опції:</i>
-- <b>Приход:</b> Додавання доходу.
-- <b>Расход:</b> Додавання витрат.
-- <b>Удаление последних️:</b> Видалення останніх транзакцій.
-
-🔧 <i>Якщо у вас є питання або пропозиції, не соромтесь звертатися.</i>
-
-📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: help.tgbot@icloud.com</b> 📩`,
+export const MAIN_MENU = {
+  en: 'Main menu⤵️',
+  ua: 'Головне меню⤵️',
 };
 
 export const ERROR_MESSAGE = {
@@ -106,23 +54,25 @@ export const SELECT_MONTH_MESSAGE = {
 };
 
 export const BALANCE_MESSAGE = {
-  en: 'Your balance has been updated✅',
-  ua: 'Ваш баланс оновлено✅',
+  en: 'Balance has been updated✅',
+  ua: 'Баланс оновлено✅',
 };
 
-export const getBalanceMessage = (balance: number, language: string) => {
+export const getBalanceMessage = (balance: number, language: string = 'ua', currency: string = 'UAH') => {
+  const setCurrency = CURRNCY[currency];
   const messages = {
-    en: `<b>Your balance: ${balance} </b>🗃️`,
-    ua: `<b>Твій баланс: ${balance} </b>🗃️`,
+    en: `<b>Your balance: ${balance}${setCurrency} </b>🗃️`,
+    ua: `<b>Твій баланс: ${balance}${setCurrency} </b>🗃️`,
   };
 
   return messages[language];
 };
 
 export const DELETE_LAST_MESSAGE = {
-  en: 'Select the transactions to delete🗑️:',
-  ua: 'Оберіть транзакції для видалення🗑️:',
+  en: 'If you made a mistake or just want to delete a transaction, select the transactions to delete🗑️:',
+  ua: 'Якщо ви зробили помилку або просто хочете видалити транзакцію, оберіть транзакції для видалення🗑️:',
 };
+
 export const DELETE_LAST_MESSAGE2 = {
   en: '⛔️There are no available transactions to delete.⛔️:',
   ua: '⛔️Немає доступних транзакцій для видалення.⛔️:',
@@ -132,11 +82,15 @@ export const PERIOD_E = {
   en: '⛔️There are no transactions for this period⛔️',
   ua: '⛔️Немає транзакцій за цей період⛔️',
 };
+export const PERIOD_NULL = {
+  en: 'Currently, you have no transactions',
+  ua: 'Наразі у вас немає транзакцій',
+};
 
 export const TOTAL_MESSAGES = {
   TOTAL_AMOUNT: {
-    en: '\n------------------------------------\n<b>Total:</b>',
-    ua: '\n------------------------------------\n<b>Усього:</b>',
+    en: '\n------------------------------------\n<b>Grand Total:</b>',
+    ua: '\n------------------------------------\n<b>Загальний підсумок:</b>',
   },
   POSITIVE_TRANSACTIONS: {
     en: '<b>📈Positive transactions⤵️:</b>\n',
@@ -146,4 +100,42 @@ export const TOTAL_MESSAGES = {
     en: '<b>📉Negative transactions⤵️:</b>\n',
     ua: "<b>📉Доля від'ємних транзакцій⤵️:</b>\n",
   },
+};
+export const RESETS_ALL = {
+  en: {
+    CONFIRM_RESET: 'All your data will be permanently deleted. If you agree, enter `RESET`.',
+    RESET_SUCCESSFUL: 'Deletion was successful.',
+    RESET_CANCELED: 'Deletion of your data has been canceled.',
+    ARE_YOU_SURE: 'Are you sure? All your data will be deleted.',
+  },
+  ua: {
+    CONFIRM_RESET: 'Всі ваші дані будуть видалені назавжди. Якщо ви згодні, введіть `RESET`.',
+    RESET_SUCCESSFUL: 'Видалення пройшло успішно.',
+    RESET_CANCELED: 'Видалення ваших даних скасовано.',
+    ARE_YOU_SURE: 'Ви впевнені? Всі ваші дані будуть видалені.',
+  },
+};
+
+export const CURRNCY = {
+  USD: '$',
+  UAH: 'грн.',
+};
+
+export const INVITATION_ACCEPTED_MESSAGE = (inputId: number, language: string) => {
+  const messages = {
+    en: `You have accepted the invitation from user with ID ${inputId}`,
+    ua: `Ви прийняли запрошення від користувача з ID ${inputId}`,
+  };
+
+  return messages[language];
+};
+
+export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
+  const messages = {
+    en: `You have been invited to the group by user: ${userId}. Do you accept?`,
+    ua: `Ви були запрошені в групу користувачем: ${userId}. Приймаєте?`,
+    // ... другие языки
+  };
+
+  return messages[language];
 };

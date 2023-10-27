@@ -5,6 +5,11 @@ export interface IContext extends ContextTelegraf {
     id?: string;
     type?: 'done' | 'edit' | 'remove' | 'income' | 'expense' | 'balance' | 'delete';
     language?: string;
+    currency?: string;
+    group?: number[];
+    awaitingUserIdInput?: boolean;
+    lastBotMessage?: number;
+    lastActivity?: number;
   };
 }
 
@@ -19,6 +24,7 @@ export interface CustomCallbackQuery {
   };
   message: {
     message_id: number;
+    text: string;
     // Другие свойства message
   };
   chat_instance: string;
