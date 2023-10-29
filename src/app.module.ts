@@ -8,7 +8,7 @@ import { MongooseConfigService } from './mongodb/mongoose-config.service';
 import * as handlers from './handler/index';
 import { Balance, BalanceSchema } from './shemas/balance.shemas';
 import { Transaction, TransactionSchema } from './shemas/transaction.shemas';
-import { createSessionMiddleware } from './middleware/mongo.session.middleware';
+import { createSessionMiddleware } from './middleware/session.middleware';
 
 dotenv.config();
 
