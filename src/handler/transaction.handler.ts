@@ -132,7 +132,7 @@ export class TransactionHandler {
     let errorMessageSent = false;
 
     for (const transaction of transactions) {
-      const regex = /^([a-zA-Zа-яА-ЯіІ]+(?:\s+[a-zA-Zа-яА-ЯіІ]+)?)\s+([\d.]+)$/;
+      const regex = /^([a-zA-Zа-яА-ЯіІїЇєЄ`]+(?:\s+[a-zA-Zа-яА-ЯіІїЇєЄ`]+)?)\s+([\d.]+)$/;
       const matches = transaction.match(regex);
 
       if (!matches) {
