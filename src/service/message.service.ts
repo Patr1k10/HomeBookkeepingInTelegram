@@ -81,20 +81,24 @@ export class MessageService {
 
     if (sortedPositive.length > 0) {
       const localizedMessage = this.getLocalizedMessage('POSITIVE_TRANSACTIONS', language);
-      message += `${localizedMessage}${totalPositiveAmount}${setCurrency}\n`;
+      message += `${localizedMessage}`;
       for (const { name, sum, percentage } of sortedPositive) {
         message += this.formatMessage(name, percentage, sum, currency);
       }
+      message += `${totalPositiveAmount}${setCurrency}\n\n`; // Общая сумма додатних транзакций
     }
 
     if (sortedNegative.length > 0) {
       const localizedMessage = this.getLocalizedMessage('NEGATIVE_TRANSACTIONS', language);
-      message += `${localizedMessage}${totalNegativeAmount}${setCurrency}\n`;
+      message += `${localizedMessage}`;
       for (const { name, sum, percentage } of sortedNegative) {
         message += this.formatMessage(name, percentage, sum, currency);
       }
+      message += `${totalNegativeAmount}${setCurrency}`; // Общая сумма від'ємних транзакцій
     }
+
     const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
+    // General summary
     message += `${localizedMessage}${totalPositiveAmount - totalNegativeAmount}${setCurrency}\n`;
 
     await this.bot.telegram.editMessageText(userId, ctx.session.lastBotMessage, null, message, {
