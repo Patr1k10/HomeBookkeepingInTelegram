@@ -7,15 +7,11 @@ import {
   actionButtonsTransactionNames,
   backStatisticButton,
 } from '../battons/app.buttons';
-import {
-  PERIOD_NULL,
-  SELECT_CATEGORY_MESSAGE,
-  SELECT_MONTH_MESSAGE,
-  WANT_STATISTICS_MESSAGE,
-} from '../constants/messages';
+
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { StatisticsService } from '../service';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
+import { PERIOD_NULL, SELECT_CATEGORY_MESSAGE, SELECT_MONTH_MESSAGE, WANT_STATISTICS_MESSAGE } from '../constants';
 
 @Update()
 export class StatisticsHandler {

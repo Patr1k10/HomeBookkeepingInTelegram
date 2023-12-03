@@ -103,7 +103,7 @@ export class MessageService {
     });
   }
 
-  formatMessage(name: string, percentage: string, sum: number, currency: string): string {
+  formatMessage(name: string, percentage: string, sum: number, currency: string) {
     const paddedName = name.padEnd(12, ' ');
     const setCurrency = CURRNCY[currency];
     return `<code>${paddedName}: ${percentage}% (${sum}${setCurrency})</code>\n`;
