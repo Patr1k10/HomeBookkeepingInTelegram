@@ -2,8 +2,9 @@ import { Transaction } from '../interface/transaction.interface';
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { IContext } from '../interface/context.interface';
-import { CURRNCY, TOTAL_MESSAGES } from '../constants/messages';
+
 import { backStatisticButton } from '../battons/app.buttons';
+import { CURRNCY, TOTAL_MESSAGES } from '../constants';
 
 export class MessageService {
   constructor(
