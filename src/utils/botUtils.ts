@@ -1,5 +1,5 @@
-import { IContext } from '../interface/context.interface';
 import { languageSet } from '../battons/app.buttons';
+import { IContext } from '../interface';
 
 export async function checkAndUpdateLastBotMessage(ctx: IContext) {
   if (!ctx.session.lastBotMessage) {

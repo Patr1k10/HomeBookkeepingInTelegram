@@ -1,13 +1,12 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
 import { actionButtonsStart, backStartButton, currencySet, languageSet, resetButton } from '../battons/app.buttons';
-import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { TransactionService } from '../service';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
-
 import * as dotenv from 'dotenv';
 import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE } from '../constants';
+import { CustomCallbackQuery, IContext } from '../interface';
 
 dotenv.config();
 

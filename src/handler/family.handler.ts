@@ -1,11 +1,10 @@
 import { Action, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { backFamilyButton, groupButton } from '../battons/app.buttons';
-import { MyMessage } from '../interface/my-message.interface';
 import { Telegraf } from 'telegraf';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
+import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 
 @Update()
 export class FamilyHandler {
@@ -69,7 +68,7 @@ export class FamilyHandler {
 
     ctx.session.awaitingUserIdInput = true;
   }
-  
+
   @Hears(/^\d+$/)
   async addUserId(ctx: IContext) {
     if (ctx.session.awaitingUserIdInput) {
@@ -176,7 +175,6 @@ export class FamilyHandler {
     );
     ctx.session.lastBotMessage = sendMessage.message_id;
   }
-
 
   @Action('remove_group')
   async deleteGroup(ctx: IContext) {

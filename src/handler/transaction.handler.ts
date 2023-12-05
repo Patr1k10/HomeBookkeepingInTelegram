@@ -2,8 +2,6 @@ import { Action, On, Update } from 'nestjs-telegraf';
 import { TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { actionButtonsTransaction, backTranButton } from '../battons/app.buttons';
-import { CustomCallbackQuery, IContext } from '../interface/context.interface';
-import { MyMessage } from '../interface/my-message.interface';
 import { BalanceService } from '../service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
@@ -17,6 +15,7 @@ import {
   SELECT_TRANSACTION_MESSAGE,
   TRANSACTION_DELETED_MESSAGE,
 } from '../constants';
+import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 
 @Update()
 export class TransactionHandler {

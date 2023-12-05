@@ -1,10 +1,8 @@
-import { Transaction } from '../interface/transaction.interface';
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
-import { IContext } from '../interface/context.interface';
-
 import { backStatisticButton } from '../battons/app.buttons';
 import { CURRNCY, TOTAL_MESSAGES } from '../constants';
+import { IContext, Transaction } from '../interface';
 
 export class MessageService {
   constructor(
