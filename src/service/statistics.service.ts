@@ -7,8 +7,8 @@ import { Telegraf } from 'telegraf';
 import { IContext } from '../interface/context.interface';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { PERIOD_E, PERIOD_NULL } from '../constants/messages';
 import { backStatisticButton } from '../battons/app.buttons';
+import { PERIOD_E, PERIOD_NULL } from '../constants';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);

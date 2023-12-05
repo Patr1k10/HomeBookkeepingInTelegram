@@ -1,4 +1,4 @@
-import { SELECT_YEAR_MESSAGE } from './messages';
+
 
 export const BUTTONS = {
   ua: {
