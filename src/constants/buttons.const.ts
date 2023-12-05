@@ -1,5 +1,3 @@
-
-
 export const BUTTONS = {
   ua: {
     BALANCE: 'Баланс 💰',

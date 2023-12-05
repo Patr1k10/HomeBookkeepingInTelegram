@@ -1,14 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Transaction } from '../interface/transaction.interface';
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
-import { IContext } from '../interface/context.interface';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { backStatisticButton } from '../battons/app.buttons';
 import { PERIOD_E, PERIOD_NULL } from '../constants';
+
+import { IContext, Transaction } from '../interface';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);

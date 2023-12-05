@@ -1,10 +1,10 @@
 import { Action, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
-import { IContext } from '../interface/context.interface';
 import { backStartButton } from '../battons/app.buttons';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
+import { IContext } from '../interface';
 
 @Update()
 export class BalanceHandler {

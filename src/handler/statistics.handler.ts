@@ -1,6 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { Action, Update } from 'nestjs-telegraf';
-import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import {
   actionButtonsMonths,
   actionButtonsStatistics,
@@ -19,6 +18,7 @@ import {
   SELECT_YEAR_MESSAGE,
   WANT_STATISTICS_MESSAGE,
 } from '../constants';
+import { CustomCallbackQuery, IContext } from '../interface';
 
 @Update()
 export class StatisticsHandler {

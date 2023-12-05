@@ -2,8 +2,8 @@ import { Middleware } from 'telegraf';
 import { Mongo } from '@telegraf/session/mongodb';
 import { Redis } from '@telegraf/session/redis';
 import * as dotenv from 'dotenv';
-import { IContext } from '../interface/context.interface';
 import { createClient } from 'redis';
+import { IContext } from '../interface';
 
 dotenv.config();
 
