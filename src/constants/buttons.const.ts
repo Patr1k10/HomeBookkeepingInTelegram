@@ -1,3 +1,5 @@
+import { SELECT_YEAR_MESSAGE } from './messages';
+
 export const BUTTONS = {
   ua: {
     BALANCE: 'Баланс 💰',
@@ -38,6 +40,7 @@ export const BUTTONS = {
     AGREE: 'Згоден✅',
     DISAGREE: 'Не згоден❌',
     BACK: '↩️Повернутися',
+    SELECT_YEAR: 'Оберіть дату🗓️',
   },
   en: {
     BALANCE: 'Balance 💰',
@@ -78,5 +81,6 @@ export const BUTTONS = {
     AGREE: 'Agree✅',
     DISAGREE: 'Disagree❌',
     BACK: '↩️Back',
+    SELECT_YEAR: 'Selected date🗓️',
   },
 };

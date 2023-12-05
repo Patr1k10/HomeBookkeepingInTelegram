@@ -10,6 +10,7 @@ export interface IContext extends ContextTelegraf {
     awaitingUserIdInput?: boolean;
     lastBotMessage?: number;
     lastActivity?: number;
+    selectedYear?: number;
   };
 }
 

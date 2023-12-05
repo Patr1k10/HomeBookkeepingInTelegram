@@ -47,7 +47,12 @@ export class StatisticsService {
     }
   }
 
-  async getTransactions(ctx: IContext, query: any, noTransactionsMessage: string, logMessage: string): Promise<void> {
+  private async getTransactions(
+    ctx: IContext,
+    query: any,
+    noTransactionsMessage: string,
+    logMessage: string,
+  ): Promise<void> {
     const userId = ctx.from.id;
     const groupIds = ctx.session.group;
 
@@ -139,6 +144,16 @@ export class StatisticsService {
       return result.length > 0 ? result : null;
     } catch (error) {
       this.logger.error('Error getting unique transaction names', error);
+      throw error;
+    }
+  }
+  async getUniqueYears(userId: number): Promise<number[]> {
+    try {
+      const allDates = await this.transactionModel.find({ userId }, 'timestamp').exec();
+
+      return Array.from(new Set(allDates.map((date) => new Date(date.timestamp).getFullYear())));
+    } catch (error) {
+      this.logger.error('Error getting unique years', error);
       throw error;
     }
   }

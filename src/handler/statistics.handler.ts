@@ -5,13 +5,20 @@ import {
   actionButtonsMonths,
   actionButtonsStatistics,
   actionButtonsTransactionNames,
+  actionButtonsYears,
   backStatisticButton,
 } from '../battons/app.buttons';
 
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { StatisticsService } from '../service';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
-import { PERIOD_NULL, SELECT_CATEGORY_MESSAGE, SELECT_MONTH_MESSAGE, WANT_STATISTICS_MESSAGE } from '../constants';
+import {
+  PERIOD_NULL,
+  SELECT_CATEGORY_MESSAGE,
+  SELECT_MONTH_MESSAGE,
+  SELECT_YEAR_MESSAGE,
+  WANT_STATISTICS_MESSAGE,
+} from '../constants';
 
 @Update()
 export class StatisticsHandler {
@@ -119,6 +126,44 @@ export class StatisticsHandler {
     await this.statisticsService.getFormattedTransactionsForMonth(ctx);
     this.logger.log('month command executed');
   }
+
+  @Action('select_year')
+  async yearListMenuCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
+    this.logger.log('year menu command executed');
+
+    const uniqueYears = await this.statisticsService.getUniqueYears(ctx.from.id);
+
+    const yearButtons = actionButtonsYears(uniqueYears, ctx.session.language);
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      SELECT_YEAR_MESSAGE[ctx.session.language || 'ua'],
+      yearButtons,
+    );
+  }
+
+  @Action(/Year:(.+)/)
+  async specificYearListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
+    this.logger.log('specific year command executed');
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+
+      ctx.session.selectedYear = Number(parts[1]);
+
+      await this.monthListMenuCommand(ctx);
+    } else {
+      this.logger.log('callbackQuery is undefined');
+    }
+  }
   @Action('select_month')
   async monthListMenuCommand(ctx: IContext) {
     if (await checkAndUpdateLastBotMessage(ctx)) {
@@ -130,10 +175,10 @@ export class StatisticsHandler {
       ctx.session.lastBotMessage,
       null,
       SELECT_MONTH_MESSAGE[ctx.session.language || 'ua'],
-      actionButtonsMonths(ctx.session.language),
+      actionButtonsMonths(ctx.session.language, ctx.session.selectedYear),
     );
   }
-  @Action(/Month:(.+)/)
+  @Action(/Month:(\d+):(\d+)/)
   async specificMonthListCommand(ctx: IContext) {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
@@ -143,17 +188,11 @@ export class StatisticsHandler {
     if (callbackQuery) {
       const callbackData = callbackQuery.data;
       const parts = callbackData.split(':');
-      const selectedMonth = Number(parts[1]);
+      const selectedYear = Number(parts[1]);
+      const selectedMonth = Number(parts[2]);
 
-      const fromDate = new Date();
-      fromDate.setMonth(selectedMonth - 1);
-      fromDate.setDate(1);
-      fromDate.setHours(0, 0, 0, 0);
-
-      const toDate = new Date();
-      toDate.setMonth(selectedMonth);
-      toDate.setDate(0);
-      toDate.setHours(23, 59, 59, 999);
+      const fromDate = new Date(selectedYear, selectedMonth - 1, 1, 0, 0, 0, 0);
+      const toDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59, 999);
 
       await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
     } else {

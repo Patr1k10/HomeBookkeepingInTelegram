@@ -130,6 +130,11 @@ export const INVITATION_ACCEPTED_MESSAGE = (inputId: number, language: string) =
   return messages[language];
 };
 
+export const SELECT_YEAR_MESSAGE = {
+  en: 'Select Year',
+  ua: 'Оберіть рік',
+};
+
 export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
   const messages = {
     en: `You have been invited to the group by user: ${userId}. Do you accept?`,
