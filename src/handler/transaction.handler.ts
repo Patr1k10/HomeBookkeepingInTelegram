@@ -1,21 +1,22 @@
 import { Action, On, Update } from 'nestjs-telegraf';
 import { TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
-import {
-  BALANCE_MESSAGE,
-  ENTER_EXPENSE_MESSAGE,
-  ENTER_INCOME_MESSAGE,
-  getBalanceMessage,
-  INVALID_DATA_MESSAGE,
-  SELECT_TRANSACTION_MESSAGE,
-  TRANSACTION_DELETED_MESSAGE,
-} from '../constants/messages';
 import { actionButtonsTransaction, backTranButton } from '../battons/app.buttons';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { MyMessage } from '../interface/my-message.interface';
 import { BalanceService } from '../service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
+import {
+  BALANCE_MESSAGE,
+  ENTER_EXPENSE_MESSAGE,
+  ENTER_INCOME_MESSAGE,
+  getBalanceMessage,
+  INVALID_DATA_MESSAGE,
+  regex,
+  SELECT_TRANSACTION_MESSAGE,
+  TRANSACTION_DELETED_MESSAGE,
+} from '../constants';
 
 @Update()
 export class TransactionHandler {
@@ -132,7 +133,6 @@ export class TransactionHandler {
     let errorMessageSent = false;
 
     for (const transaction of transactions) {
-      const regex = /^([a-zA-Zа-яА-ЯіІїЇєЄҐґ`]+(?:\s+[a-zA-Zа-яА-ЯіІїЇєЄҐґ`]+)?)\s+([\d.]+)$/;
       const matches = transaction.match(regex);
 
       if (!matches) {
