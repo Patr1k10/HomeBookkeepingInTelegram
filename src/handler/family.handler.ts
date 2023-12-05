@@ -1,13 +1,11 @@
-import { Action, Hears, InjectBot, On, Update } from 'nestjs-telegraf';
+import { Action, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { CustomCallbackQuery, IContext } from '../interface/context.interface';
 import { backFamilyButton, groupButton } from '../battons/app.buttons';
 import { MyMessage } from '../interface/my-message.interface';
 import { Telegraf } from 'telegraf';
-import { FAMILY_TEXT } from '../constants/familyText.constants';
-import { BUTTONS } from '../constants/buttons.const';
-import { GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants/messages';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
+import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
 
 @Update()
 export class FamilyHandler {

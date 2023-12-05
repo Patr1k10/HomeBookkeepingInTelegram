@@ -3,13 +3,11 @@ import { actionButtonsStart, backStartButton, currencySet, languageSet, resetBut
 import { IContext, CustomCallbackQuery } from '../interface/context.interface';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
-import { ERROR_MESSAGE, MAIN_MENU, RESETS_ALL } from '../constants/messages';
 import { TransactionService } from '../service';
-import { START_MESSAGE } from '../constants/start.messages';
-import { HELP_MESSAGE } from '../constants/help.massages';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 
 import * as dotenv from 'dotenv';
+import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE } from '../constants';
 
 dotenv.config();
 
