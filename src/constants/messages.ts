@@ -14,13 +14,13 @@ export const SELECT_TRANSACTION_MESSAGE = {
 };
 
 export const ENTER_INCOME_MESSAGE = {
-  en: 'Enter the income name and amount separated by a space. To enter multiple transactions, separate them with a comma. \nExample: "Salary 100000, Bonus 5000"',
-  ua: 'Введіть найменування приходу та суму через пробіл. Для введення кількох транзакцій, розділіть їх комою. \nПриклад: "Зарплата 100000, Бонус 5000"',
+  en: 'Enter the income name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nExample: "Salary 100000, Bonus 5000"',
+  ua: 'Введіть найменування приходу та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПриклад: "Зарплата 100000, Бонус 5000"',
 };
 
 export const ENTER_EXPENSE_MESSAGE = {
-  en: 'Enter the expense name and amount separated by a space. To enter multiple transactions, separate them with a comma. \nExample: "Rent 2000, Groceries 500"',
-  ua: 'Введіть найменування витрати та суму через пробіл. Для введення кількох транзакцій, розділіть їх комою. \nПриклад: "Аренда 2000, Продукти 500"',
+  en: 'Enter the expense name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nExample: "Rent 2000, Groceries 500"',
+  ua: 'Введіть найменування витрати та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПриклад: "Аренда 2000, Продукти 500"',
 };
 
 export const TRANSACTION_DELETED_MESSAGE = {

@@ -1,5 +1,5 @@
 import { Markup } from 'telegraf';
-import { BUTTONS } from '../constants/buttons.const';
+import { BUTTONS } from '../constants';
 
 export function actionButtonsStart(language: string = 'ua') {
   return Markup.inlineKeyboard(
@@ -81,7 +81,7 @@ export function backStartButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
 }
 export function backTranButton(language: string = 'ua') {
-  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backT')]);
+  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backT')], { columns: 1 });
 }
 export function actionButtonsTransactionNames(transactionNames: string[], language: string = 'ua') {
   const buttons = [];
