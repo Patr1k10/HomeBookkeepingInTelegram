@@ -1,5 +1,7 @@
 export const BUTTONS = {
   ua: {
+    YEARS: '✅Обрати цей рік:',
+    MONTHS: '✅Обрати цей місяць:',
     BALANCE: 'Баланс 💰',
     TRANSACTIONS: 'Транзакції 💸',
     STATISTICS: 'Статистика 📊',
@@ -41,6 +43,8 @@ export const BUTTONS = {
     SELECT_YEAR: 'Оберіть дату🗓️',
   },
   en: {
+    YEARS: '✅Select this year:',
+    MONTHS: '✅Select this month:',
     BALANCE: 'Balance 💰',
     TRANSACTIONS: 'Transactions 💸',
     STATISTICS: 'Statistics 📊',

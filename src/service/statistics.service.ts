@@ -157,4 +157,62 @@ export class StatisticsService {
       throw error;
     }
   }
+  async getUniqueMonths(selectedYear: number, userId: number): Promise<number[]> {
+    try {
+      const transactions = await this.transactionModel
+        .find({
+          userId: userId,
+          timestamp: { $ne: null, $type: 'date' },
+        })
+        .select('timestamp')
+        .lean();
+
+      const uniqueMonths = new Set<number>();
+
+      transactions.forEach((transaction) => {
+        const timestamp =
+          transaction.timestamp instanceof Date ? transaction.timestamp : new Date(transaction.timestamp);
+        if (!isNaN(timestamp.valueOf())) {
+          const month = timestamp.getMonth() + 1;
+          uniqueMonths.add(month);
+        }
+      });
+
+      return Array.from(uniqueMonths);
+    } catch (error) {
+      console.error('Error in getUniqueMonths:', error);
+      throw error;
+    }
+  }
+  async getUniqueDays(selectedYear: number, selectedMonth: number, userId: number): Promise<number[]> {
+    try {
+      const transactions = await this.transactionModel
+        .find({
+          userId: userId,
+          timestamp: { $ne: null, $type: 'date' },
+        })
+        .select('timestamp')
+        .lean();
+
+      const uniqueDays = new Set<number>();
+
+      transactions.forEach((transaction) => {
+        const timestamp =
+          transaction.timestamp instanceof Date ? transaction.timestamp : new Date(transaction.timestamp);
+        if (
+          !isNaN(timestamp.valueOf()) &&
+          timestamp.getFullYear() === selectedYear &&
+          timestamp.getMonth() + 1 === selectedMonth
+        ) {
+          const day = timestamp.getDate();
+          uniqueDays.add(day);
+        }
+      });
+
+      return Array.from(uniqueDays);
+    } catch (error) {
+      console.error('Error in getUniqueDays:', error);
+      throw error;
+    }
+  }
 }

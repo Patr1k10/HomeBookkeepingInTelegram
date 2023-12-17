@@ -9,13 +9,14 @@ import * as handlers from './handler/index';
 import { Balance, BalanceSchema } from './shemas/balance.shemas';
 import { Transaction, TransactionSchema } from './shemas/transaction.shemas';
 import { createSessionMiddleware } from './middleware/session.middleware';
+import { errorHandlingMiddleware } from './global-error.filter';
 
 dotenv.config();
 
 @Module({
   imports: [
     TelegrafModule.forRoot({
-      middlewares: [createSessionMiddleware()],
+      middlewares: [createSessionMiddleware(), errorHandlingMiddleware()],
       token: process.env.TELEGRAM_TOKEN,
     }),
     MongooseModule.forRootAsync({

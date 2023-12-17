@@ -1,10 +1,11 @@
 import { Action, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
-import { backStartButton } from '../battons/app.buttons';
+import { backStartButton, languageSet } from '../battons/app.buttons';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../interface';
+import { Telegraf } from 'telegraf';
 
 @Update()
 export class BalanceHandler {
@@ -29,6 +30,13 @@ export class BalanceHandler {
       ctx.session.type = 'balance';
       this.logger.log('Баланс command executed');
     } catch (error) {
+      if (error.description === 'Bad Request: message to edit not found') {
+        // Возможно, сообщение было удалено или не существует, отправьте новое сообщение
+        const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
+        ctx.session.lastBotMessage = sentMessage.message_id;
+        return;
+      }
+
       this.logger.error('Error in listCommand:', error);
       await ctx.telegram.editMessageText(
         ctx.from.id,
