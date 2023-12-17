@@ -157,4 +157,99 @@ export class StatisticsService {
       throw error;
     }
   }
+  async getUniqueMonths(selectedYear: number, userId: number): Promise<number[]> {
+    try {
+      const transactions = await this.transactionModel
+        .find({
+          userId: userId,
+          timestamp: { $ne: null, $type: 'date' },
+        })
+        .select('timestamp')
+        .lean();
+
+      const uniqueMonths = new Set<number>();
+
+      transactions.forEach((transaction) => {
+        const timestamp =
+          transaction.timestamp instanceof Date ? transaction.timestamp : new Date(transaction.timestamp);
+        if (!isNaN(timestamp.valueOf())) {
+          const month = timestamp.getMonth() + 1;
+          uniqueMonths.add(month);
+        }
+      });
+
+      return Array.from(uniqueMonths);
+    } catch (error) {
+      console.error('Error in getUniqueMonths:', error);
+      throw error;
+    }
+  }
+  async getUniqueDays(selectedYear: number, selectedMonth: number, userId: number): Promise<number[]> {
+    try {
+      const transactions = await this.transactionModel
+        .find({
+          userId: userId,
+          timestamp: { $ne: null, $type: 'date' },
+        })
+        .select('timestamp')
+        .lean();
+
+      const uniqueDays = new Set<number>();
+
+      transactions.forEach((transaction) => {
+        const timestamp =
+          transaction.timestamp instanceof Date ? transaction.timestamp : new Date(transaction.timestamp);
+        if (
+          !isNaN(timestamp.valueOf()) &&
+          timestamp.getFullYear() === selectedYear &&
+          timestamp.getMonth() + 1 === selectedMonth
+        ) {
+          const day = timestamp.getDate();
+          uniqueDays.add(day);
+        }
+      });
+
+      return Array.from(uniqueDays);
+    } catch (error) {
+      console.error('Error in getUniqueDays:', error);
+      throw error;
+    }
+  }
+  async getDetailedTransactions(ctx: IContext, year: number, month: number, date: number): Promise<void> {
+    const userId = ctx.from.id;
+    const fromDate = new Date(year, month - 1, date, 0, 0, 0, 0);
+    const toDate = new Date(year, month - 1, date, 23, 59, 59, 999);
+
+    try {
+      const transactions = await this.transactionModel
+        .find({
+          userId,
+          timestamp: { $gte: fromDate, $lte: toDate },
+        })
+        .exec();
+
+      if (transactions.length > 0) {
+        const formattedTransactions = await Promise.all(
+          transactions.map(async (transaction) => await this.messageService.formatTransaction(transaction)),
+        );
+        const mark = backStatisticButton(ctx.session.language);
+
+        const detailedStatistics = formattedTransactions.join('\n');
+
+        await ctx.telegram.editMessageText(
+          ctx.from.id,
+          ctx.session.lastBotMessage,
+          null,
+          detailedStatistics,
+
+          { parse_mode: 'HTML', reply_markup: mark.reply_markup },
+        );
+      } else {
+        await ctx.reply('Детальная статистика отсутствует.');
+      }
+    } catch (error) {
+      this.logger.error('Error getting detailed transactions', error);
+      throw error;
+    }
+  }
 }

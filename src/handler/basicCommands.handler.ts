@@ -1,11 +1,18 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { actionButtonsStart, backStartButton, currencySet, languageSet, resetButton } from '../battons/app.buttons';
+import {
+  actionButtonsStart,
+  backHelpButton,
+  backStartButton,
+  currencySet,
+  languageSet,
+  resetButton,
+} from '../battons/app.buttons';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { TransactionService } from '../service';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import * as dotenv from 'dotenv';
-import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE } from '../constants';
+import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
 
 dotenv.config();
@@ -21,6 +28,9 @@ export class BasicCommandsHandler {
   @Start()
   async startCommand(ctx: IContext) {
     try {
+      delete ctx.session.selectedDate;
+      delete ctx.session.selectedMonth;
+      delete ctx.session.selectedYear;
       const userId = ctx.from.id;
       const user = ctx.from;
       const count = await this.balanceService.countAllBalances();
@@ -116,7 +126,7 @@ export class BasicCommandsHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
-    const markup = backStartButton(ctx.session.language);
+    const markup = backHelpButton(ctx.session.language);
     try {
       await ctx.telegram.editMessageText(
         ctx.from.id,
@@ -214,11 +224,29 @@ export class BasicCommandsHandler {
     delete ctx.session.type;
   }
 
+  @Action('project_support')
+  async getProjectSupport(ctx: IContext) {
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      SUPPORT_MESSAGE[ctx.session.language || 'ua'],
+      {
+        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      },
+    );
+  }
+
   @Action('back')
   async back(ctx: IContext) {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    delete ctx.session.selectedDate;
+    delete ctx.session.selectedMonth;
+    delete ctx.session.selectedYear;
     ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(

@@ -207,6 +207,9 @@ export class FamilyHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    delete ctx.session.selectedDate;
+    delete ctx.session.selectedMonth;
+    delete ctx.session.selectedYear;
     ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(

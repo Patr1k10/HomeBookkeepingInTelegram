@@ -1,5 +1,6 @@
 import { Markup } from 'telegraf';
 import { BUTTONS } from '../constants';
+import { IContext } from '../interface';
 
 export function actionButtonsStart(language: string = 'ua') {
   return Markup.inlineKeyboard(
@@ -71,6 +72,21 @@ export function actionButtonsStatistics(language: string = 'ua') {
     { columns: 2 },
   );
 }
+export function backStatisticButtonMessage(language: string = 'ua', ctx: IContext) {
+  const buttons = [Markup.button.callback(BUTTONS[language].BACK, 'backS')];
+
+  if (ctx.session.selectedDate) {
+    buttons.push(
+      Markup.button.callback(
+        BUTTONS[language].DETAILS,
+        `details:${ctx.session.selectedYear}:${ctx.session.selectedMonth}:${ctx.session.selectedDate}`,
+      ),
+    );
+  }
+
+  return Markup.inlineKeyboard(buttons);
+}
+
 export function backStatisticButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backS')]);
 }
@@ -80,6 +96,16 @@ export function backFamilyButton(language: string = 'ua') {
 
 export function backStartButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
+}
+
+export function backHelpButton(language: string = 'ua') {
+  return Markup.inlineKeyboard(
+    [
+      Markup.button.callback(BUTTONS[language].SUPPORT, 'project_support'),
+      Markup.button.callback(BUTTONS[language].BACK, 'back'),
+    ],
+    { columns: 1 },
+  );
 }
 export function backTranButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backT')], { columns: 1 });
@@ -93,25 +119,6 @@ export function actionButtonsTransactionNames(transactionNames: string[], langua
   buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'backS'));
 
   return Markup.inlineKeyboard(buttons, { columns: 2 });
-}
-
-export function actionButtonsMonths(language: string = 'ua', selectedYear: number) {
-  const buttons = [
-    Markup.button.callback(BUTTONS[language].JANUARY, `Month:${selectedYear}:1`),
-    Markup.button.callback(BUTTONS[language].FEBRUARY, `Month:${selectedYear}:2`),
-    Markup.button.callback(BUTTONS[language].MARCH, `Month:${selectedYear}:3`),
-    Markup.button.callback(BUTTONS[language].APRIL, `Month:${selectedYear}:4`),
-    Markup.button.callback(BUTTONS[language].MAY, `Month:${selectedYear}:5`),
-    Markup.button.callback(BUTTONS[language].JUNE, `Month:${selectedYear}:6`),
-    Markup.button.callback(BUTTONS[language].JULY, `Month:${selectedYear}:7`),
-    Markup.button.callback(BUTTONS[language].AUGUST, `Month:${selectedYear}:8`),
-    Markup.button.callback(BUTTONS[language].SEPTEMBER, `Month:${selectedYear}:9`),
-    Markup.button.callback(BUTTONS[language].OCTOBER, `Month:${selectedYear}:10`),
-    Markup.button.callback(BUTTONS[language].NOVEMBER, `Month:${selectedYear}:11`),
-    Markup.button.callback(BUTTONS[language].DECEMBER, `Month:${selectedYear}:12`),
-    Markup.button.callback(BUTTONS[language].BACK, 'backS'),
-  ];
-  return Markup.inlineKeyboard(buttons, { columns: 3 });
 }
 
 export function groupButton(language: string = 'ua') {
@@ -133,5 +140,53 @@ export function actionButtonsYears(years: number[], language: string = 'ua') {
 
   buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'backS'));
 
-  return Markup.inlineKeyboard(buttons, { columns: 3 });
+  return Markup.inlineKeyboard(buttons, { columns: 1 });
+}
+
+export function actionButtonsDays(
+  language: string = 'ua',
+  selectedYear: number,
+  selectedMonth: number,
+  availableDays: number[],
+) {
+  const buttons = availableDays.map((day) =>
+    Markup.button.callback(day.toString(), `Day:${selectedYear}:${selectedMonth}:${day}`),
+  );
+
+  buttons.push(
+    Markup.button.callback(
+      `${BUTTONS[language].MONTHS}${selectedMonth}`,
+      `selectedDate:${selectedYear}:${selectedMonth}`,
+    ),
+    Markup.button.callback(BUTTONS[language].BACK, 'backS'),
+  );
+
+  return Markup.inlineKeyboard(buttons, { columns: 2 });
+}
+export function actionButtonsMonths(language: string = 'ua', selectedYear: number, availableMonths: number[]) {
+  const monthNames = [
+    BUTTONS[language].JANUARY,
+    BUTTONS[language].FEBRUARY,
+    BUTTONS[language].MARCH,
+    BUTTONS[language].APRIL,
+    BUTTONS[language].MAY,
+    BUTTONS[language].JUNE,
+    BUTTONS[language].JULY,
+    BUTTONS[language].AUGUST,
+    BUTTONS[language].SEPTEMBER,
+    BUTTONS[language].OCTOBER,
+    BUTTONS[language].NOVEMBER,
+    BUTTONS[language].DECEMBER,
+  ];
+
+  const buttons = availableMonths.map((month) =>
+    Markup.button.callback(monthNames[month - 1], `Month:${selectedYear}:${month}`),
+  );
+
+  buttons.push(
+    Markup.button.callback(`${BUTTONS[language].YEARS}${selectedYear}`, `selectedDate:${selectedYear}`),
+    Markup.button.callback(BUTTONS[language].BACK, 'backS'),
+  );
+
+  return Markup.inlineKeyboard(buttons, { columns: 2 });
 }

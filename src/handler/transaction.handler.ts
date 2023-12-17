@@ -51,7 +51,7 @@ export class TransactionHandler {
       ctx.session.lastBotMessage,
       null,
       ENTER_INCOME_MESSAGE[ctx.session.language || 'ua'],
-      backTranButton(ctx.session.language || 'ua'),
+      { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
     );
 
     this.logger.log('Приход command executed');
@@ -68,7 +68,7 @@ export class TransactionHandler {
       ctx.session.lastBotMessage,
       null,
       ENTER_EXPENSE_MESSAGE[ctx.session.language || 'ua'],
-      backTranButton(ctx.session.language || 'ua'),
+      { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
     );
 
     this.logger.log('Расход command executed');
@@ -203,6 +203,9 @@ export class TransactionHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    delete ctx.session.selectedDate;
+    delete ctx.session.selectedMonth;
+    delete ctx.session.selectedYear;
     ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(

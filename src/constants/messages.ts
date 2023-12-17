@@ -14,13 +14,13 @@ export const SELECT_TRANSACTION_MESSAGE = {
 };
 
 export const ENTER_INCOME_MESSAGE = {
-  en: 'Enter the income name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nExample: "Salary 100000, Bonus 5000"',
-  ua: 'Введіть найменування приходу та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПриклад: "Зарплата 100000, Бонус 5000"',
+  en: 'Enter the income name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nNote: Use up to <b>two words for each transaction name.</b>\n<u>Example: "<b>Salary 100000</b>, <b>Bonus 5000"</b></u>',
+  ua: 'Введіть найменування приходу та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПримітка: Використовуйте до <b>двох слів для назви кожної транзакції.</b>\n<u>Приклад: "<b>Зарплата 100000</b>, <b>Віддали борг 5000"</b></u>',
 };
 
 export const ENTER_EXPENSE_MESSAGE = {
-  en: 'Enter the expense name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nExample: "Rent 2000, Groceries 500"',
-  ua: 'Введіть найменування витрати та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПриклад: "Аренда 2000, Продукти 500"',
+  en: 'Enter the expense name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nNote: Use up to <b>two words for each transaction name.</b>\n<u>Example: "<b>Rent 2000</b>, <b>Groceries 500"</b></u>',
+  ua: 'Введіть найменування витрати та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПримітка: Використовуйте до <b>двох слів для назви кожної транзакції.</b>\n<u>Приклад: "<b>Оренда 2000</b>, <b>Продукти АТБ 500"</b></u>',
 };
 
 export const TRANSACTION_DELETED_MESSAGE = {
@@ -51,6 +51,11 @@ export const INVALID_TRANSACTION_NAME_MESSAGE = {
 export const SELECT_MONTH_MESSAGE = {
   en: 'Select the month:',
   ua: 'Оберіть місяць:',
+};
+
+export const SELECT_DAY_MESSAGE = {
+  en: 'Select the day:',
+  ua: 'Оберіть день:',
 };
 
 export const BALANCE_MESSAGE = {

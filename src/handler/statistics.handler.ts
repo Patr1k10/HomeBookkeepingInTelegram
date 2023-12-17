@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Action, Update } from 'nestjs-telegraf';
 import {
+  actionButtonsDays,
   actionButtonsMonths,
   actionButtonsStatistics,
   actionButtonsTransactionNames,
@@ -14,6 +15,7 @@ import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import {
   PERIOD_NULL,
   SELECT_CATEGORY_MESSAGE,
+  SELECT_DAY_MESSAGE,
   SELECT_MONTH_MESSAGE,
   SELECT_YEAR_MESSAGE,
   WANT_STATISTICS_MESSAGE,
@@ -170,13 +172,76 @@ export class StatisticsHandler {
       return;
     }
     this.logger.log('month menu command executed');
+    const availableMonths = await this.statisticsService.getUniqueMonths(ctx.session.selectedYear, ctx.from.id);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
       null,
       SELECT_MONTH_MESSAGE[ctx.session.language || 'ua'],
-      actionButtonsMonths(ctx.session.language, ctx.session.selectedYear),
+      actionButtonsMonths(ctx.session.language, ctx.session.selectedYear, availableMonths),
     );
+  }
+
+  @Action(/selectedDate:(\d+)(?::(\d+))?/)
+  async handleSelectedDate(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
+
+    this.logger.log('selectedDate command executed');
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.match(/selectedDate:(\d+)(?::(\d+))?/);
+
+      if (parts) {
+        const selectedYear = Number(parts[1]);
+        const selectedMonth = parts[2] ? Number(parts[2]) : null;
+
+        if (selectedMonth === null) {
+          const fromDate = new Date(selectedYear, 0, 1, 0, 0, 0, 0);
+          const toDate = new Date(selectedYear + 1, 0, 1, 0, 0, 0, 0);
+
+          await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+        } else {
+          const fromDate = new Date(selectedYear, selectedMonth - 1, 1, 0, 0, 0, 0);
+          const toDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59, 999);
+
+          await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+        }
+      } else {
+        this.logger.log('Failed to parse callbackData');
+      }
+    } else {
+      this.logger.log('callbackQuery is undefined');
+    }
+  }
+
+  @Action(/Day:(\d+):(\d+):(\d+)/)
+  async specificDayListCommand(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
+    this.logger.log('specific Day command executed');
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+      const selectedYear = Number(parts[1]);
+      const selectedMonth = Number(parts[2]);
+      const selectedDay = Number(parts[3]);
+      ctx.session.selectedYear = selectedYear;
+      ctx.session.selectedMonth = selectedMonth;
+      ctx.session.selectedDate = selectedDay;
+
+      const fromDate = new Date(selectedYear, selectedMonth - 1, selectedDay, 0, 0, 0, 0);
+      const toDate = new Date(selectedYear, selectedMonth - 1, selectedDay, 23, 59, 59, 999);
+
+      await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+    } else {
+      this.logger.log('callbackQuery is undefined');
+    }
   }
   @Action(/Month:(\d+):(\d+)/)
   async specificMonthListCommand(ctx: IContext) {
@@ -190,20 +255,46 @@ export class StatisticsHandler {
       const parts = callbackData.split(':');
       const selectedYear = Number(parts[1]);
       const selectedMonth = Number(parts[2]);
+      const availableDays = await this.statisticsService.getUniqueDays(selectedYear, selectedMonth, ctx.from.id);
+      ctx.session.selectedYear = selectedYear;
+      ctx.session.selectedMonth = selectedMonth;
 
-      const fromDate = new Date(selectedYear, selectedMonth - 1, 1, 0, 0, 0, 0);
-      const toDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59, 999);
-
-      await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+      await ctx.telegram.editMessageText(
+        ctx.from.id,
+        ctx.session.lastBotMessage,
+        null,
+        SELECT_DAY_MESSAGE[ctx.session.language || 'ua'],
+        actionButtonsDays(ctx.session.language, selectedYear, selectedMonth, availableDays),
+      );
     } else {
       this.logger.log('callbackQuery is undefined');
     }
   }
+
+  @Action(/details:(\d+):(\d+):(\d+)/)
+  async detailsCommand(ctx: IContext) {
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+      const year = Number(parts[1]);
+      const month = Number(parts[2]);
+      const date = Number(parts[3]);
+
+      await this.statisticsService.getDetailedTransactions(ctx, year, month, date);
+    } else {
+      this.logger.log('callbackQuery is undefined');
+    }
+  }
+
   @Action('backS')
   async backS(ctx: IContext) {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    delete ctx.session.selectedDate;
+    delete ctx.session.selectedMonth;
+    delete ctx.session.selectedYear;
     ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(

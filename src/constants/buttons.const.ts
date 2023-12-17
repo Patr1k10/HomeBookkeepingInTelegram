@@ -1,5 +1,9 @@
 export const BUTTONS = {
   ua: {
+    SUPPORT: '💸Допомога проєкту💸',
+    YEARS: '✅Обрати цей рік:',
+    MONTHS: '✅Обрати цей місяць:',
+    DETAILS: '📝Детальніше',
     BALANCE: 'Баланс 💰',
     TRANSACTIONS: 'Транзакції 💸',
     STATISTICS: 'Статистика 📊',
@@ -41,6 +45,10 @@ export const BUTTONS = {
     SELECT_YEAR: 'Оберіть дату🗓️',
   },
   en: {
+    SUPPORT: '💸Project support💸',
+    YEARS: '✅Select this year:',
+    MONTHS: '✅Select this month:',
+    DETAILS: '📝More details',
     BALANCE: 'Balance 💰',
     TRANSACTIONS: 'Transactions 💸',
     STATISTICS: 'Statistics 📊',

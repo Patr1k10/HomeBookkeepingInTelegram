@@ -1,6 +1,6 @@
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
-import { backStatisticButton } from '../battons/app.buttons';
+import { backStatisticButtonMessage } from '../battons/app.buttons';
 import { CURRNCY, TOTAL_MESSAGES } from '../constants';
 import { IContext, Transaction } from '../interface';
 
@@ -9,7 +9,7 @@ export class MessageService {
     @InjectBot()
     private readonly bot: Telegraf<IContext>,
   ) {}
-  formatTransaction(transaction: Transaction): string {
+  async formatTransaction(transaction: Transaction) {
     const transactionName = transaction.transactionName;
 
     const amount = transaction.amount;
@@ -25,7 +25,7 @@ export class MessageService {
 📝 <b>${transactionName}</b>: ${amount}
 `;
   }
-  splitArray(array: any[], chunkSize: number): any[][] {
+  async splitArray(array: any[], chunkSize: number) {
     const result = [];
     for (let i = 0; i < array.length; i += chunkSize) {
       result.push(array.slice(i, i + chunkSize));
@@ -84,7 +84,7 @@ export class MessageService {
       for (const { name, sum, percentage } of sortedPositive) {
         message += this.formatMessage(name, percentage, sum, currency);
       }
-      message += `${totalPositiveAmount}${setCurrency}\n\n`; // Общая сумма додатних транзакций
+      message += `<b>${totalPositiveAmount}${setCurrency}</b>\n\n`; // Общая сумма додатних транзакций
     }
 
     if (sortedNegative.length > 0) {
@@ -93,25 +93,25 @@ export class MessageService {
       for (const { name, sum, percentage } of sortedNegative) {
         message += this.formatMessage(name, percentage, sum, currency);
       }
-      message += `${totalNegativeAmount}${setCurrency}`; // Общая сумма від'ємних транзакцій
+      message += `<b>${totalNegativeAmount}${setCurrency}</b>`; // Общая сумма від'ємних транзакцій
     }
 
     const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
     // General summary
-    message += `${localizedMessage}${totalPositiveAmount - totalNegativeAmount}${setCurrency}\n`;
+    message += `${localizedMessage}<b>${totalPositiveAmount - totalNegativeAmount}${setCurrency}</b>\n`;
 
     await this.bot.telegram.editMessageText(userId, ctx.session.lastBotMessage, null, message, {
       parse_mode: 'HTML',
-      reply_markup: backStatisticButton(ctx.session.language).reply_markup,
+      reply_markup: backStatisticButtonMessage(ctx.session.language, ctx).reply_markup,
     });
   }
 
-  formatMessage(name: string, percentage: string, sum: number, currency: string) {
+  private formatMessage(name: string, percentage: string, sum: number, currency: string) {
     const paddedName = name.padEnd(12, ' ');
     const setCurrency = CURRNCY[currency];
     return `<code>${paddedName}: ${percentage}% (${sum}${setCurrency})</code>\n`;
   }
-  getLocalizedMessage(key: string, language: string) {
+  private getLocalizedMessage(key: string, language: string) {
     return TOTAL_MESSAGES[key][language] || TOTAL_MESSAGES[key]['ua'];
   }
 }

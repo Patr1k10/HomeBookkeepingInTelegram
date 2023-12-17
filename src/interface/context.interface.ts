@@ -11,7 +11,7 @@ export interface IContext extends ContextTelegraf {
     lastBotMessage?: number;
     lastActivity?: number;
     selectedYear?: number;
+    selectedMonth?: number;
+    selectedDate?: number;
   };
 }
-
-
