@@ -9,7 +9,7 @@ import * as handlers from './handler/index';
 import { Balance, BalanceSchema } from './shemas/balance.shemas';
 import { Transaction, TransactionSchema } from './shemas/transaction.shemas';
 import { createSessionMiddleware } from './middleware/session.middleware';
-import { errorHandlingMiddleware } from './global-error.filter';
+import { errorHandlingMiddleware } from './middleware/global-error.filter';
 
 dotenv.config();
 

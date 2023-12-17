@@ -51,7 +51,7 @@ export class TransactionHandler {
       ctx.session.lastBotMessage,
       null,
       ENTER_INCOME_MESSAGE[ctx.session.language || 'ua'],
-      backTranButton(ctx.session.language || 'ua'),
+      { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
     );
 
     this.logger.log('Приход command executed');
@@ -68,7 +68,7 @@ export class TransactionHandler {
       ctx.session.lastBotMessage,
       null,
       ENTER_EXPENSE_MESSAGE[ctx.session.language || 'ua'],
-      backTranButton(ctx.session.language || 'ua'),
+      { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
     );
 
     this.logger.log('Расход command executed');

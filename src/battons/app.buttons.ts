@@ -97,6 +97,16 @@ export function backFamilyButton(language: string = 'ua') {
 export function backStartButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
 }
+
+export function backHelpButton(language: string = 'ua') {
+  return Markup.inlineKeyboard(
+    [
+      Markup.button.callback(BUTTONS[language].SUPPORT, 'project_support'),
+      Markup.button.callback(BUTTONS[language].BACK, 'back'),
+    ],
+    { columns: 1 },
+  );
+}
 export function backTranButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backT')], { columns: 1 });
 }

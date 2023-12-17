@@ -1,11 +1,18 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { actionButtonsStart, backStartButton, currencySet, languageSet, resetButton } from '../battons/app.buttons';
+import {
+  actionButtonsStart,
+  backHelpButton,
+  backStartButton,
+  currencySet,
+  languageSet,
+  resetButton,
+} from '../battons/app.buttons';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { TransactionService } from '../service';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import * as dotenv from 'dotenv';
-import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE } from '../constants';
+import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
 
 dotenv.config();
@@ -119,7 +126,7 @@ export class BasicCommandsHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
-    const markup = backStartButton(ctx.session.language);
+    const markup = backHelpButton(ctx.session.language);
     try {
       await ctx.telegram.editMessageText(
         ctx.from.id,
@@ -215,6 +222,21 @@ export class BasicCommandsHandler {
     ctx.session.lastBotMessage = sendMessage.message_id;
 
     delete ctx.session.type;
+  }
+
+  @Action('project_support')
+  async getProjectSupport(ctx: IContext) {
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      SUPPORT_MESSAGE[ctx.session.language || 'ua'],
+      {
+        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      },
+    );
   }
 
   @Action('back')

@@ -26,7 +26,8 @@ export const HELP_MESSAGE = {
 
 🔧 <i>If you have any questions or suggestions, feel free to contact us.</i>
 
-📩 <b>For additional help or questions, please email us at: help.tgbot@icloud.com</b> 📩`,
+📩 <b>For additional help or questions, please email us at: help.tgbot@icloud.com</b> 📩
+   <b>If you want to help the project financially, click on the button below 🔽🔽🔽🔽🔽</b>`,
 
   ua: `<b>📘 Інструкція з використання вашого фінансового бота. 📘</b>
 
@@ -56,5 +57,21 @@ export const HELP_MESSAGE = {
 
 🔧 <i>Якщо у вас є питання або пропозиції, не соромтесь звертатися.</i>
 
-📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: help.tgbot@icloud.com</b> 📩`,
+📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: help.tgbot@icloud.com</b> 📩
+   <b>Якщо ви хочете допомогти проєкт фінансово тисніть на кнопку нижче 🔽🔽🔽🔽🔽</b>`,
+};
+
+export const SUPPORT_MESSAGE = {
+  en: `<u>Choose a convenient way to help the project:</u>
+<b>USDT Address (TRC20):</b> ${process.env.USDT}
+<b>BTC Address (SegWit new):</b> ${process.env.BTC}
+<b>ETH Address (ERC20):</b> ${process.env.ETH}
+<b>LTC Address:</b> ${process.env.LTC}
+<b>MonoBank card:</b> ${process.env.MONO}`,
+  ua: `<u>Оберіть зручний спосіб допомоги проєкту:</u>
+<b>USDT Адреса (TRC20):</b> ${process.env.USDT}
+<b>BTC Адреса (SegWit new):</b> ${process.env.BTC}
+<b>ETH Адреса (ERC20):</b> ${process.env.ETH}
+<b>LTC Адреса:</b> ${process.env.LTC}
+<b>Карта MonoBank:</b> ${process.env.MONO}`,
 };
