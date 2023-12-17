@@ -21,6 +21,9 @@ export class BasicCommandsHandler {
   @Start()
   async startCommand(ctx: IContext) {
     try {
+      delete ctx.session.selectedDate;
+      delete ctx.session.selectedMonth;
+      delete ctx.session.selectedYear;
       const userId = ctx.from.id;
       const user = ctx.from;
       const count = await this.balanceService.countAllBalances();
@@ -219,6 +222,9 @@ export class BasicCommandsHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
+    delete ctx.session.selectedDate;
+    delete ctx.session.selectedMonth;
+    delete ctx.session.selectedYear;
     ctx.session.awaitingUserIdInput = false;
     delete ctx.session.type;
     await ctx.telegram.editMessageText(

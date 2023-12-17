@@ -5,7 +5,6 @@ import { backStartButton, languageSet } from '../battons/app.buttons';
 import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../interface';
-import { Telegraf } from 'telegraf';
 
 @Update()
 export class BalanceHandler {
@@ -18,6 +17,9 @@ export class BalanceHandler {
       if (await checkAndUpdateLastBotMessage(ctx)) {
         return;
       }
+      delete ctx.session.selectedDate;
+      delete ctx.session.selectedMonth;
+      delete ctx.session.selectedYear;
       const userId = ctx.from.id;
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
       const markup = backStartButton(ctx.session.language);

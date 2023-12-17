@@ -53,6 +53,12 @@ export const SELECT_MONTH_MESSAGE = {
   ua: 'Оберіть місяць:',
 };
 
+export const SELECT_DAY_MESSAGE = {
+  en: 'Select the day:',
+  ua: 'Оберіть день:',
+};
+
+
 export const BALANCE_MESSAGE = {
   en: 'Balance has been updated✅',
   ua: 'Баланс оновлено✅',

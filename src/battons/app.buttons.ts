@@ -1,5 +1,6 @@
 import { Markup } from 'telegraf';
 import { BUTTONS } from '../constants';
+import { IContext } from '../interface';
 
 export function actionButtonsStart(language: string = 'ua') {
   return Markup.inlineKeyboard(
@@ -71,6 +72,21 @@ export function actionButtonsStatistics(language: string = 'ua') {
     { columns: 2 },
   );
 }
+export function backStatisticButtonMessage(language: string = 'ua', ctx: IContext) {
+  const buttons = [Markup.button.callback(BUTTONS[language].BACK, 'backS')];
+
+  if (ctx.session.selectedDate) {
+    buttons.push(
+      Markup.button.callback(
+        BUTTONS[language].DETAILS,
+        `details:${ctx.session.selectedYear}:${ctx.session.selectedMonth}:${ctx.session.selectedDate}`,
+      ),
+    );
+  }
+
+  return Markup.inlineKeyboard(buttons);
+}
+
 export function backStatisticButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backS')]);
 }
@@ -114,7 +130,7 @@ export function actionButtonsYears(years: number[], language: string = 'ua') {
 
   buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'backS'));
 
-  return Markup.inlineKeyboard(buttons, { columns: 3 });
+  return Markup.inlineKeyboard(buttons, { columns: 1 });
 }
 
 export function actionButtonsDays(

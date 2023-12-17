@@ -2,6 +2,7 @@ export const BUTTONS = {
   ua: {
     YEARS: '✅Обрати цей рік:',
     MONTHS: '✅Обрати цей місяць:',
+    DETAILS: '📝Детальніше',
     BALANCE: 'Баланс 💰',
     TRANSACTIONS: 'Транзакції 💸',
     STATISTICS: 'Статистика 📊',
@@ -45,6 +46,7 @@ export const BUTTONS = {
   en: {
     YEARS: '✅Select this year:',
     MONTHS: '✅Select this month:',
+    DETAILS: '📝More details',
     BALANCE: 'Balance 💰',
     TRANSACTIONS: 'Transactions 💸',
     STATISTICS: 'Statistics 📊',
