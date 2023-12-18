@@ -95,6 +95,22 @@ export class BalanceService {
     }
   }
 
+  async countBannedUsers(): Promise<number> {
+    try {
+      const bannedUsersCount = await this.balanceModel
+        .countDocuments({
+          isBaned: true,
+        })
+        .exec();
+
+      this.logger.log(`Number of banned users: ${bannedUsersCount}`);
+      return bannedUsersCount;
+    } catch (error) {
+      this.logger.error('Error counting banned users', error);
+      throw error;
+    }
+  }
+
   async countActiveUsersLast3Days(): Promise<number> {
     try {
       const threeDaysAgo = new Date();

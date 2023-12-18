@@ -9,7 +9,7 @@ export class Balance extends Document {
   @Prop({ required: true })
   balance: number;
 
-  @Prop({ required: true , default: false})
+  @Prop({ required: true, default: false })
   isBaned: boolean;
 
   @Prop({ default: Date.now })

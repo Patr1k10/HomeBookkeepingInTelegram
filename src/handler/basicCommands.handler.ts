@@ -35,6 +35,7 @@ export class BasicCommandsHandler {
       const user = ctx.from;
       const count = await this.balanceService.countAllBalances();
       const activeUsers = await this.balanceService.countActiveUsersLast3Days();
+      const bannedUsers = await this.balanceService.countBannedUsers();
       const bosId = process.env.BOSID;
       this.logger.log(`
       User ID: ${user.id}
@@ -42,7 +43,8 @@ export class BasicCommandsHandler {
       Last Name: ${user.last_name}
       Username: ${user.username}
       ActiveUsers: ${activeUsers}
-      Count Users: ${count}`);
+      Count Users: ${count}
+      BannedUsers: ${bannedUsers}`);
       await this.balanceService.createBalance({ userId });
       await ctx.telegram.sendMessage(
         bosId,
@@ -52,7 +54,8 @@ export class BasicCommandsHandler {
       Last Name: ${user.last_name}
       Username: ${user.username}
       ActiveUsers: ${activeUsers}
-      Count Users: ${count}`,
+      Count Users: ${count}
+      BannedUsers: ${bannedUsers}`,
       );
       const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
       ctx.session.lastBotMessage = sentMessage.message_id;
@@ -244,7 +247,7 @@ export class BasicCommandsHandler {
     if (await checkAndUpdateLastBotMessage(ctx)) {
       return;
     }
-    await ctx.deleteMessage()
+    await ctx.deleteMessage();
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;
