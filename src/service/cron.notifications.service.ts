@@ -3,7 +3,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { IContext } from '../interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Transaction } from '../shemas/transaction.shemas';
 import { Cron } from '@nestjs/schedule';
 import { CRON_NOTIFICATION } from '../constants';
 import { backToStartButton } from '../battons/app.buttons';
