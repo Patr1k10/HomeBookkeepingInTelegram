@@ -19,7 +19,7 @@ export class CronNotificationsService {
     @InjectModel('Transaction') private readonly transactionModel: Model<Transaction>,
   ) {}
 
-  @Cron('0 12 * * *', { timeZone: 'Europe/Kiev' })
+  @Cron('0 13 * * *', { timeZone: 'Europe/Kiev' })
   async notificationsAll() {
     const startTime = new Date();
     this.logger.log(`Cron task started at: ${startTime}`);
@@ -51,14 +51,22 @@ export class CronNotificationsService {
   }
 
   private async sendNotification(user: Balance) {
-    const userId = user.userId;
-    await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION, { parse_mode: 'HTML' });
-    this.logger.log(`Sent notification to user ${userId}`);
+    try {
+      const userId = user.userId;
+      await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION, { parse_mode: 'HTML' });
+      this.logger.log(`Sent notification to user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error sending notification to user ${user.userId}`, error);
+    }
   }
 
   private async updateLastActivity(user: Balance) {
-    user.lastActivity = new Date();
-    await user.save();
-    this.logger.log(`Updated lastActivity for user ${user.userId}`);
+    try {
+      user.lastActivity = new Date();
+      await user.save();
+      this.logger.log(`Updated lastActivity for user ${user.userId}`);
+    } catch (error) {
+      this.logger.error(`Error updating lastActivity for user ${user.userId}`, error);
+    }
   }
 }
