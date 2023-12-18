@@ -98,6 +98,10 @@ export function backStartButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
 }
 
+export function backToStartButton(language: string = 'ua') {
+  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'backToStart')]);
+}
+
 export function backHelpButton(language: string = 'ua') {
   return Markup.inlineKeyboard(
     [
