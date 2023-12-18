@@ -17,8 +17,8 @@ export function errorHandlingMiddleware(): Middleware<IContext> {
         console.log('errorHandlingMiddleware ');
         return;
       }
-      // await ctx.reply(`Произошла ошибка: ${error.message}`);
-      console.error('Error in middleware:', error);
+      const bosId = process.env.BOSID;
+      await ctx.telegram.sendMessage(bosId, `Произошла ошибка: ${error.message}`);
     }
   };
 }
