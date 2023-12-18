@@ -239,6 +239,20 @@ export class BasicCommandsHandler {
     );
   }
 
+  @Action('backToStart')
+  async backToStart(ctx: IContext) {
+    if (await checkAndUpdateLastBotMessage(ctx)) {
+      return;
+    }
+    await ctx.deleteMessage()
+    delete ctx.session.selectedDate;
+    delete ctx.session.selectedMonth;
+    delete ctx.session.selectedYear;
+    ctx.session.awaitingUserIdInput = false;
+    const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
+    ctx.session.lastBotMessage = sentMessage.message_id;
+  }
+
   @Action('back')
   async back(ctx: IContext) {
     if (await checkAndUpdateLastBotMessage(ctx)) {

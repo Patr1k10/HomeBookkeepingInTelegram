@@ -10,14 +10,13 @@ import { Balance, BalanceSchema } from './shemas/balance.shemas';
 import { Transaction, TransactionSchema } from './shemas/transaction.shemas';
 import { createSessionMiddleware } from './middleware/session.middleware';
 import { errorHandlingMiddleware } from './middleware/global-error.filter';
-import { CronModule } from './cron/cron.module';
-
+import { ScheduleModule } from '@nestjs/schedule';
 
 dotenv.config();
 
 @Module({
   imports: [
-    CronModule,
+    ScheduleModule.forRoot(),
     TelegrafModule.forRoot({
       middlewares: [createSessionMiddleware(), errorHandlingMiddleware()],
       token: process.env.TELEGRAM_TOKEN,

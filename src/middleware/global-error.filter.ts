@@ -7,18 +7,14 @@ export function errorHandlingMiddleware(): Middleware<IContext> {
     try {
       await next();
     } catch (error) {
-      if (
-        error.description === 'Bad Request: message to edit not found' ||
-        error.description ===
-          'Bad Request: message is not modified: specified new message content and reply markup are exactly the same as the current content and reply markup of the message'
-      ) {
-        const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
-        ctx.session.lastBotMessage = sentMessage.message_id;
-        console.log('errorHandlingMiddleware ');
+      if (error.response && error.response.status === 400) {
+        const bosId = process.env.BOSID;
+        await ctx.telegram.sendMessage(bosId, `Произошла ошибка: ${error.message}`);
         return;
       }
-      const bosId = process.env.BOSID;
-      await ctx.telegram.sendMessage(bosId, `Произошла ошибка: ${error.message}`);
+      const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
+      ctx.session.lastBotMessage = sentMessage.message_id;
+      console.log('errorHandlingMiddleware');
     }
   };
 }
