@@ -16,7 +16,7 @@ export class FamilyHandler {
 
   @Action('family')
   async groupCommand(ctx: IContext) {
-    this.logger.log('Executing groupCommand');
+    this.logger.log(`user:${ctx.from.id} Executing groupCommand`);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -28,7 +28,7 @@ export class FamilyHandler {
 
   @Action('get_id')
   async getId(ctx: IContext) {
-    this.logger.log('Executing getId');
+    this.logger.log(`user:${ctx.from.id} Executing getId`);
     const message = FAMILY_TEXT[ctx.session.language || 'ua'].YOUR_ID;
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -41,7 +41,7 @@ export class FamilyHandler {
 
   @Action('add_to_group')
   async addToGroup(ctx: IContext) {
-    this.logger.log('Executing addToGroup');
+    this.logger.log(`user:${ctx.from.id} Executing addToGroup`);
     if (!ctx.session.group) {
       ctx.session.group = [];
     }
@@ -65,7 +65,7 @@ export class FamilyHandler {
       return;
     }
     const initiatorId = ctx.from.id;
-    this.logger.log('Executing addUserId');
+    this.logger.log(`user:${ctx.from.id} Executing addUserId`);
     const message = ctx.message as MyMessage;
     const recipientId = parseInt(message.text, 10);
     if (isNaN(recipientId)) {
@@ -108,6 +108,7 @@ export class FamilyHandler {
   }
 
   private async sendInvite(ctx: IContext, recipientId: number, initiatorId: number) {
+    this.logger.log(`user:${ctx.from.id} sendInvite to ${initiatorId} `)
     const message = GROUP_INVITATION_MESSAGE(initiatorId, ctx.session.language);
     const keyboard = {
       reply_markup: {
@@ -121,12 +122,13 @@ export class FamilyHandler {
     try {
       await this.bot.telegram.sendMessage(recipientId, message, keyboard);
     } catch (error) {
-      this.logger.error(`sendInvite failed: ${error}`)
+      this.logger.error(`sendInvite failed: ${error}`);
     }
   }
 
   @Action(/^accept_invite:\d+$/)
   async acceptInvite(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} acceptInvite`)
     const recipientId = ctx.from.id;
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     const initiatorId = parseInt(callbackQuery.message.text.split(':')[1], 10);
@@ -151,6 +153,7 @@ export class FamilyHandler {
   }
   @Action(/^accept_user:\d+$/)
   async acceptUser(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} acceptUser`)
     const initiatorId = ctx.from.id;
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     const recipientId = parseInt(callbackQuery.data.split(':')[1], 10);
@@ -170,7 +173,7 @@ export class FamilyHandler {
 
   @Action(/^decline_invite:\d+$/)
   async declineInvite(ctx: IContext) {
-    this.logger.log('Executing declineInvite');
+    this.logger.log(`user:${ctx.from.id} Executing declineInvite`);
     const recipientId = ctx.from.id;
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     const initiatorId = parseInt(callbackQuery.message.text.split(':')[1], 10);
@@ -190,7 +193,7 @@ export class FamilyHandler {
   @Action('remove_group')
   async deleteGroup(ctx: IContext) {
     delete ctx.session.type;
-    this.logger.log('Executing deleteGroup');
+    this.logger.log(`user:${ctx.from.id} Executing deleteGroup`);
     if (ctx.session.group && ctx.session.group.length > 0) {
       ctx.session.group = [];
       await ctx.telegram.editMessageText(
@@ -211,7 +214,8 @@ export class FamilyHandler {
     }
   }
   @Action('backF')
-  async backT(ctx: IContext) {
+  async backF(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} backF`)
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;

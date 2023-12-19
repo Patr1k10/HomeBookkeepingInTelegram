@@ -114,7 +114,7 @@ export class BalanceService {
   async countActiveUsersLast3Days(): Promise<number> {
     try {
       const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Дата 3 дня назад
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3); // Date 3 days ago
 
       const activeUsersCount = await this.balanceModel
         .countDocuments({
