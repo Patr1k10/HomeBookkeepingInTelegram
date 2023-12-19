@@ -13,7 +13,6 @@ import { TransactionService } from '../service';
 import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
 
-
 @Update()
 export class BasicCommandsHandler {
   private readonly logger: Logger = new Logger(BasicCommandsHandler.name);
@@ -59,7 +58,7 @@ export class BasicCommandsHandler {
 
       await ctx.deleteMessage();
       delete ctx.session.type;
-      this.logger.log('startCommand executed successfully');
+      this.logger.log(`user:${ctx.from.id} startCommand executed successfully`);
     } catch (error) {
       this.logger.error('Error in startCommand:', error);
       await ctx.reply(ERROR_MESSAGE[ctx.session.language || 'ua']);
@@ -76,10 +75,12 @@ export class BasicCommandsHandler {
       START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
       { reply_markup: markup.reply_markup, disable_web_page_preview: true, parse_mode: 'HTML' },
     );
+    this.logger.log(`user:${ctx.from.id} usdCommand `);
   }
 
   @Action('UAH')
   async uahCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} uahCommand `);
     ctx.session.currency = 'UAH';
     const markup = actionButtonsStart(ctx.session.language);
     await ctx.telegram.editMessageText(
@@ -106,9 +107,9 @@ export class BasicCommandsHandler {
         'Оберіть валюту / Choose currency',
         { reply_markup: markup.reply_markup, disable_web_page_preview: true, parse_mode: 'HTML' },
       );
-      this.logger.log('setLanguage command executed');
+      this.logger.log(`user:${ctx.from.id} setLanguage command executed`);
     } else {
-      this.logger.log('callbackQuery is undefined');
+      this.logger.log(`user:${ctx.from.id} callbackQuery is undefined`);
     }
   }
 
@@ -123,9 +124,9 @@ export class BasicCommandsHandler {
         HELP_MESSAGE[ctx.session.language || 'ua'],
         { reply_markup: markup.reply_markup, disable_web_page_preview: true, parse_mode: 'HTML' },
       );
-      this.logger.log('helpCommand executed');
+      this.logger.log(`user:${ctx.from.id} helpCommand executed`);
     } catch (error) {
-      this.logger.error('Error in helpCommand:', error);
+      this.logger.error(`user:${ctx.from.id} Error in helpCommand:`, error);
       await ctx.reply(ERROR_MESSAGE[ctx.session.language || 'ua']);
       ctx.editedMessage;
     }
@@ -140,14 +141,15 @@ export class BasicCommandsHandler {
         'Оберіть мову / Choose language',
         languageSet(),
       );
-      this.logger.log('languageCommand executed');
+      this.logger.log(`user:${ctx.from.id} languageCommand executed`);
     } catch (error) {
-      this.logger.error('Error in languageCommand:', error);
+      this.logger.error(`user:${ctx.from.id} Error in languageCommand:`, error);
       await ctx.reply(ERROR_MESSAGE[ctx.session.language || 'ua']);
     }
   }
   @Action('reset')
   async resetCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} resetCommand executed`);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -158,6 +160,7 @@ export class BasicCommandsHandler {
   }
   @Action('yes')
   async yesCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} yesCommand`);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -168,6 +171,7 @@ export class BasicCommandsHandler {
   }
   @Action('no')
   async noCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} noCommand`);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -182,6 +186,7 @@ export class BasicCommandsHandler {
     if (ctx.session.type !== 'delete') {
       return;
     }
+    this.logger.log(`user:${ctx.from.id} resetAllCommand`);
     await ctx.deleteMessage();
     const userId = ctx.from.id;
     await this.balanceService.deleteAllBalancesOfUser(userId);
@@ -199,6 +204,8 @@ export class BasicCommandsHandler {
 
   @Action('project_support')
   async getProjectSupport(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} getProjectSupport `);
+    await ctx.telegram.sendMessage(process.env.BOSID, `user:${ctx.from.id} getProjectSupport`);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -214,6 +221,7 @@ export class BasicCommandsHandler {
 
   @Action('backToStart')
   async backToStart(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} backToStart`);
     await ctx.deleteMessage();
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
@@ -225,6 +233,7 @@ export class BasicCommandsHandler {
 
   @Action('back')
   async back(ctx: IContext) {
+    this.logger.log(`${ctx.from.id} back`);
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;

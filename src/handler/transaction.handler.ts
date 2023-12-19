@@ -27,7 +27,7 @@ export class TransactionHandler {
   @Action('transactions')
   async aboutCommand(ctx: IContext) {
     delete ctx.session.type;
-    this.logger.log('transactions command executed');
+    this.logger.log(`user:${ctx.from.id} transactions command executed`);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -38,6 +38,7 @@ export class TransactionHandler {
   }
   @Action('income')
   async incomeCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} incomeCommand executed`);
     ctx.session.type = 'income';
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -46,12 +47,11 @@ export class TransactionHandler {
       ENTER_INCOME_MESSAGE[ctx.session.language || 'ua'],
       { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
     );
-
-    this.logger.log('Приход command executed');
   }
 
   @Action('expense')
   async expenseCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} command executed`);
     ctx.session.type = 'expense';
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -60,17 +60,17 @@ export class TransactionHandler {
       ENTER_EXPENSE_MESSAGE[ctx.session.language || 'ua'],
       { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
     );
-
-    this.logger.log('Расход command executed');
   }
   @Action('delete_last')
   async deleteLastCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} deleteLastCommand `)
     ctx.session.type = 'delete';
     const count = 20;
     await this.transactionService.showLastNTransactionsWithDeleteOption(ctx, count);
   }
   @Action(/delete_(.+)/)
   async handleCallbackQuery(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} handleCallbackQuery`)
     try {
       if (ctx.session.type !== 'delete') {
         return;
@@ -91,11 +91,10 @@ export class TransactionHandler {
           delete ctx.session.type;
         }
       } else {
-        this.logger.error('customCallbackQuery is undefined or does not contain data');
+        this.logger.error(`user:${ctx.from.id} customCallbackQuery is undefined or does not contain data`);
       }
     } catch (error) {
-      this.logger.error('Error in handleCallbackQuery:', error);
-      await ctx.answerCbQuery('Произошла ошибка');
+      this.logger.error(`user:${ctx.from.id} Error in handleCallbackQuery:`, error);
     }
   }
 
@@ -108,34 +107,25 @@ export class TransactionHandler {
     const userId = ctx.from.id;
     const text = message.text;
     const transactions = text.split(',').map((t) => t.trim());
-
     let errorMessageSent = false;
-
     for (const transaction of transactions) {
       const matches = transaction.match(regex);
-
       if (!matches) {
         errorMessageSent = true;
         continue;
       }
-
       const transactionName = matches[1].trim().toLowerCase();
       const amount = Number(matches[2]);
-
       if (!transactionName || isNaN(amount) || amount <= 0) {
         errorMessageSent = true;
         continue;
       }
-
       const words = transactionName.split(' ');
-
       if (words.length > 2) {
         errorMessageSent = true;
         continue;
       }
-
       const transactionType = ctx.session.type === 'income' ? TransactionType.INCOME : TransactionType.EXPENSE;
-
       try {
         await this.transactionService.createTransaction({
           userId,
@@ -172,7 +162,7 @@ export class TransactionHandler {
           reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
         },
       );
-      this.logger.log('textCommand executed');
+      this.logger.log(`user:${ctx.from.id} textCommand executed`);
     }
 
     delete ctx.session.type;
@@ -180,6 +170,7 @@ export class TransactionHandler {
 
   @Action('backT')
   async backT(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} backT executed`);
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;

@@ -28,16 +28,15 @@ export class BalanceHandler {
       });
 
       ctx.session.type = 'balance';
-      this.logger.log('Баланс command executed');
+      this.logger.log(`user:${ctx.from.id} balance command executed`);
     } catch (error) {
       if (error.description === 'Bad Request: message to edit not found') {
-        // Возможно, сообщение было удалено или не существует, отправьте новое сообщение
         const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
         ctx.session.lastBotMessage = sentMessage.message_id;
         return;
       }
 
-      this.logger.error('Error in listCommand:', error);
+      this.logger.error(`user:${ctx.from.id}Error in listCommand:`, error);
       await ctx.telegram.editMessageText(
         ctx.from.id,
         ctx.session.lastBotMessage,
