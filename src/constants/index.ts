@@ -1,5 +1,5 @@
 export * from './buttons.const';
-export * from './familyText.constants';
+export * from './family.messages';
 export * from './help.massages';
 export * from './messages';
 export * from './start.messages';

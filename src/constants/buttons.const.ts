@@ -1,5 +1,6 @@
 export const BUTTONS = {
   ua: {
+    ACCEPT: 'OK',
     SUPPORT: '💸Підтримка проєкту💸',
     YEARS: '✅Обрати цей рік:',
     MONTHS: '✅Обрати цей місяць:',
@@ -45,6 +46,7 @@ export const BUTTONS = {
     SELECT_YEAR: 'Оберіть дату🗓️',
   },
   en: {
+    ACCEPT: 'OK',
     SUPPORT: '💸Project support💸',
     YEARS: '✅Select this year:',
     MONTHS: '✅Select this month:',

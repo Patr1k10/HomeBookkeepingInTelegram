@@ -194,3 +194,7 @@ export function actionButtonsMonths(language: string = 'ua', selectedYear: numbe
 
   return Markup.inlineKeyboard(buttons, { columns: 2 });
 }
+
+export function acceptButton(language: string = 'ua', recipientId: number) {
+  return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].ACCEPT, `accept_user:${recipientId}`)]);
+}

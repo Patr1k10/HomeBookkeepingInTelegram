@@ -12,6 +12,7 @@ import { InjectBot } from 'nestjs-telegraf';
 @Injectable()
 export class CronNotificationsService {
   private readonly logger: Logger = new Logger(CronNotificationsService.name);
+  private notificationCount: number = 0;
   constructor(
     @InjectBot()
     private readonly bot: Telegraf<IContext>,
@@ -35,7 +36,7 @@ export class CronNotificationsService {
     } finally {
       const endTime = new Date();
       const elapsedTime = endTime.getTime() - startTime.getTime();
-      this.logger.log(`Cron task finished at: ${endTime}, elapsed time: ${elapsedTime} ms`);
+      this.logger.log(`Cron task finished at: ${endTime}, elapsed time: ${elapsedTime} ms, sent ${this.notificationCount} notifications`);
     }
   }
 
@@ -61,6 +62,7 @@ export class CronNotificationsService {
       });
 
       this.logger.log(`Sent notification to user ${userId}`);
+      this.notificationCount++
     } catch (error) {
       if (error.code === 403) {
         await this.markUserAsBanned(user);
