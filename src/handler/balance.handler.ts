@@ -2,7 +2,7 @@ import { Action, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { backStartButton, languageSet } from '../battons/app.buttons';
-import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
+
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../interface';
 
@@ -14,9 +14,7 @@ export class BalanceHandler {
   @Action('balance')
   async listCommand(ctx: IContext) {
     try {
-      if (await checkAndUpdateLastBotMessage(ctx)) {
-        return;
-      }
+
       delete ctx.session.selectedDate;
       delete ctx.session.selectedMonth;
       delete ctx.session.selectedYear;

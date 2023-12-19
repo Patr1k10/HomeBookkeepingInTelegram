@@ -12,6 +12,8 @@ export function errorHandlingMiddleware(): Middleware<IContext> {
         await ctx.telegram.sendMessage(bosId, `Произошла ошибка: ${error.message}`);
         return;
       }
+      const bosId = process.env.BOSID;
+      await ctx.telegram.sendMessage(bosId, `Произошла ошибка: ${error.message}`);
       const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
       ctx.session.lastBotMessage = sentMessage.message_id;
       console.log('errorHandlingMiddleware');

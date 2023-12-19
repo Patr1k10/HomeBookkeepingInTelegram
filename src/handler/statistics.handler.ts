@@ -11,7 +11,6 @@ import {
 
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { StatisticsService } from '../service';
-import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import {
   PERIOD_NULL,
   SELECT_CATEGORY_MESSAGE,
@@ -29,9 +28,6 @@ export class StatisticsHandler {
 
   @Action('statistics')
   async statisticsCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -44,26 +40,17 @@ export class StatisticsHandler {
 
   @Action('my_income')
   async incomeListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('my_income command executed');
     await this.statisticsService.getTransactionsByType(ctx, TransactionType.INCOME);
   }
 
   @Action('my_expense')
   async expenseListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('расходы command executed');
     await this.statisticsService.getTransactionsByType(ctx, TransactionType.EXPENSE);
   }
   @Action('by_category')
   async categoryListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(ctx);
     if (uniqueTransactionNames === null) {
       await ctx.telegram.editMessageText(
@@ -87,9 +74,6 @@ export class StatisticsHandler {
 
   @Action(/TransactionName:(.+)/)
   async transactionNameCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('transactionName command executed');
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
@@ -103,27 +87,18 @@ export class StatisticsHandler {
   }
   @Action('today')
   async todayListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('today command executed');
     await this.statisticsService.getFormattedTransactionsForToday(ctx);
     this.logger.log('today command executed');
   }
   @Action('on_week')
   async weekListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('week command executed');
     await this.statisticsService.getFormattedTransactionsForWeek(ctx);
     this.logger.log('week command executed');
   }
   @Action('on_month')
   async monthListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('month command executed');
     await this.statisticsService.getFormattedTransactionsForMonth(ctx);
     this.logger.log('month command executed');
@@ -131,9 +106,6 @@ export class StatisticsHandler {
 
   @Action('select_year')
   async yearListMenuCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('year menu command executed');
 
     const uniqueYears = await this.statisticsService.getUniqueYears(ctx.from.id);
@@ -150,9 +122,6 @@ export class StatisticsHandler {
 
   @Action(/Year:(.+)/)
   async specificYearListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('specific year command executed');
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
@@ -168,9 +137,6 @@ export class StatisticsHandler {
   }
   @Action('select_month')
   async monthListMenuCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('month menu command executed');
     const availableMonths = await this.statisticsService.getUniqueMonths(ctx.session.selectedYear, ctx.from.id);
     await ctx.telegram.editMessageText(
@@ -184,9 +150,6 @@ export class StatisticsHandler {
 
   @Action(/selectedDate:(\d+)(?::(\d+))?/)
   async handleSelectedDate(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
 
     this.logger.log('selectedDate command executed');
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
@@ -220,9 +183,6 @@ export class StatisticsHandler {
 
   @Action(/Day:(\d+):(\d+):(\d+)/)
   async specificDayListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('specific Day command executed');
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
@@ -245,9 +205,6 @@ export class StatisticsHandler {
   }
   @Action(/Month:(\d+):(\d+)/)
   async specificMonthListCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('specific month command executed');
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
@@ -289,9 +246,6 @@ export class StatisticsHandler {
 
   @Action('backS')
   async backS(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;

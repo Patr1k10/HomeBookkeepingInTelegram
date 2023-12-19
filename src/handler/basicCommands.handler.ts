@@ -10,12 +10,9 @@ import {
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { TransactionService } from '../service';
-import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
-import * as dotenv from 'dotenv';
 import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
 
-dotenv.config();
 
 @Update()
 export class BasicCommandsHandler {
@@ -70,9 +67,6 @@ export class BasicCommandsHandler {
   }
   @Action('USD')
   async usdCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     ctx.session.currency = 'USD';
     const markup = actionButtonsStart(ctx.session.language);
     await ctx.telegram.editMessageText(
@@ -86,9 +80,6 @@ export class BasicCommandsHandler {
 
   @Action('UAH')
   async uahCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     ctx.session.currency = 'UAH';
     const markup = actionButtonsStart(ctx.session.language);
     await ctx.telegram.editMessageText(
@@ -102,9 +93,6 @@ export class BasicCommandsHandler {
 
   @Action(/setLanguage:(.+)/)
   async setLanguage(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
       const callbackData = callbackQuery.data;
@@ -126,9 +114,6 @@ export class BasicCommandsHandler {
 
   @Action('help')
   async helpCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     const markup = backHelpButton(ctx.session.language);
     try {
       await ctx.telegram.editMessageText(
@@ -147,9 +132,6 @@ export class BasicCommandsHandler {
   }
   @Action('language')
   async languageCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     try {
       await ctx.telegram.editMessageText(
         ctx.from.id,
@@ -166,9 +148,6 @@ export class BasicCommandsHandler {
   }
   @Action('reset')
   async resetCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -179,9 +158,6 @@ export class BasicCommandsHandler {
   }
   @Action('yes')
   async yesCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -192,9 +168,6 @@ export class BasicCommandsHandler {
   }
   @Action('no')
   async noCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -206,9 +179,6 @@ export class BasicCommandsHandler {
   }
   @Hears('RESET')
   async resetAll(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     if (ctx.session.type !== 'delete') {
       return;
     }
@@ -244,9 +214,6 @@ export class BasicCommandsHandler {
 
   @Action('backToStart')
   async backToStart(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     await ctx.deleteMessage();
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
@@ -258,9 +225,6 @@ export class BasicCommandsHandler {
 
   @Action('back')
   async back(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;
