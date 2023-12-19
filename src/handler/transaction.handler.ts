@@ -4,7 +4,6 @@ import { Logger } from '@nestjs/common';
 import { actionButtonsTransaction, backTranButton } from '../battons/app.buttons';
 import { BalanceService } from '../service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import {
   BALANCE_MESSAGE,
   ENTER_EXPENSE_MESSAGE,
@@ -27,9 +26,6 @@ export class TransactionHandler {
 
   @Action('transactions')
   async aboutCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     delete ctx.session.type;
     this.logger.log('transactions command executed');
     await ctx.telegram.editMessageText(
@@ -42,9 +38,6 @@ export class TransactionHandler {
   }
   @Action('income')
   async incomeCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     ctx.session.type = 'income';
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -59,9 +52,6 @@ export class TransactionHandler {
 
   @Action('expense')
   async expenseCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     ctx.session.type = 'expense';
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -75,18 +65,12 @@ export class TransactionHandler {
   }
   @Action('delete_last')
   async deleteLastCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     ctx.session.type = 'delete';
     const count = 20;
     await this.transactionService.showLastNTransactionsWithDeleteOption(ctx, count);
   }
   @Action(/delete_(.+)/)
   async handleCallbackQuery(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     try {
       if (ctx.session.type !== 'delete') {
         return;
@@ -120,10 +104,6 @@ export class TransactionHandler {
     if (ctx.session.type !== 'income' && ctx.session.type !== 'expense') {
       return;
     }
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
-
     const message = ctx.message as MyMessage;
     const userId = ctx.from.id;
     const text = message.text;
@@ -200,9 +180,6 @@ export class TransactionHandler {
 
   @Action('backT')
   async backT(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;

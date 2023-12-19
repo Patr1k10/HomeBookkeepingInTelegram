@@ -2,7 +2,6 @@ import { Action, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { backFamilyButton, groupButton } from '../battons/app.buttons';
 import { Telegraf } from 'telegraf';
-import { checkAndUpdateLastBotMessage } from '../utils/botUtils';
 import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 
@@ -17,9 +16,6 @@ export class FamilyHandler {
 
   @Action('family')
   async groupCommand(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('Executing groupCommand');
     await ctx.telegram.editMessageText(
       ctx.from.id,
@@ -32,9 +28,6 @@ export class FamilyHandler {
 
   @Action('get_id')
   async getId(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('Executing getId');
     const message = FAMILY_TEXT[ctx.session.language || 'ua'].YOUR_ID;
     await ctx.telegram.editMessageText(
@@ -48,9 +41,6 @@ export class FamilyHandler {
 
   @Action('add_to_group')
   async addToGroup(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     this.logger.log('Executing addToGroup');
     if (!ctx.session.group) {
       ctx.session.group = [];
@@ -72,9 +62,6 @@ export class FamilyHandler {
   @Hears(/^\d+$/)
   async addUserId(ctx: IContext) {
     if (ctx.session.awaitingUserIdInput) {
-      if (await checkAndUpdateLastBotMessage(ctx)) {
-        return;
-      }
       const userId = ctx.from.id;
       this.logger.log('Executing addUserId');
       const message = ctx.message as MyMessage;
@@ -178,9 +165,6 @@ export class FamilyHandler {
 
   @Action('remove_group')
   async deleteGroup(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     delete ctx.session.type;
     this.logger.log('Executing deleteGroup');
     if (ctx.session.group && ctx.session.group.length > 0) {
@@ -204,9 +188,6 @@ export class FamilyHandler {
   }
   @Action('backF')
   async backT(ctx: IContext) {
-    if (await checkAndUpdateLastBotMessage(ctx)) {
-      return;
-    }
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;
