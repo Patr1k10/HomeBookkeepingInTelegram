@@ -1,11 +1,10 @@
 import { Middleware } from 'telegraf';
 import { Mongo } from '@telegraf/session/mongodb';
 import { Redis } from '@telegraf/session/redis';
-import * as dotenv from 'dotenv';
 import { createClient } from 'redis';
 import { IContext } from '../interface';
 
-dotenv.config();
+
 
 const redisClient = createClient({
   username: process.env.REDIS_USERNAME,

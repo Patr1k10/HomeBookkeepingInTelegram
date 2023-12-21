@@ -14,7 +14,6 @@ export class BalanceHandler {
   @Action('balance')
   async listCommand(ctx: IContext) {
     try {
-
       delete ctx.session.selectedDate;
       delete ctx.session.selectedMonth;
       delete ctx.session.selectedYear;
@@ -26,7 +25,6 @@ export class BalanceHandler {
         parse_mode: 'HTML',
         reply_markup: markup.reply_markup,
       });
-
       ctx.session.type = 'balance';
       this.logger.log(`user:${ctx.from.id} balance command executed`);
     } catch (error) {
@@ -35,7 +33,6 @@ export class BalanceHandler {
         ctx.session.lastBotMessage = sentMessage.message_id;
         return;
       }
-
       this.logger.error(`user:${ctx.from.id}Error in listCommand:`, error);
       await ctx.telegram.editMessageText(
         ctx.from.id,

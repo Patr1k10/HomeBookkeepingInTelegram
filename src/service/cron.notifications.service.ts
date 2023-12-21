@@ -19,7 +19,7 @@ export class CronNotificationsService {
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
   ) {}
 
-  @Cron('15 10 * * *', { timeZone: 'Europe/Kiev' })
+  @Cron('46 10 * * *', { timeZone: 'Europe/Kiev' })
   async notificationsAll() {
     const startTime = new Date();
     this.logger.log(`Cron task started at: ${startTime}`);
@@ -74,7 +74,8 @@ export class CronNotificationsService {
 
   private async markUserAsBanned(user: Balance) {
     try {
-      await this.balanceModel.updateOne({ userId: user.userId }, { $set: { isBaned: true } }, { upsert: true });
+      user.isBaned = true;
+      await user.save();
       this.logger.log(`Marked user ${user.userId} as banned`);
     } catch (error) {
       this.logger.error(`Error marking user ${user.userId} as banned`, error);
@@ -83,6 +84,10 @@ export class CronNotificationsService {
 
   private async updateLastActivity(user: Balance) {
     try {
+      if (user.isBaned) {
+        this.logger.log(`User ${user.userId} is banned. Skipping lastActivity update.`);
+        return;
+      }
       user.lastActivity = new Date();
       await user.save();
       this.logger.log(`Updated lastActivity for user ${user.userId}`);
