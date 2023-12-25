@@ -66,7 +66,11 @@ export class BasicCommandsHandler {
       ctx.session.lastBotMessage,
       null,
       START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
-      { reply_markup: markup.reply_markup, disable_web_page_preview: true, parse_mode: 'HTML' },
+      {
+        reply_markup: markup.reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      },
     );
     this.logger.log(`user:${ctx.from.id} usdCommand `);
   }

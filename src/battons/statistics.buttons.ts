@@ -40,15 +40,18 @@ export function actionButtonsDays(
     Markup.button.callback(day.toString(), `Day:${selectedYear}:${selectedMonth}:${day}`),
   );
 
-  buttons.push(
-    Markup.button.callback(
-      `${BUTTONS[language].MONTHS}${selectedMonth}`,
-      `selectedDate:${selectedYear}:${selectedMonth}`,
-    ),
-    Markup.button.callback(BUTTONS[language].BACK, 'backS'),
+  const monthButton = Markup.button.callback(
+    `${BUTTONS[language].MONTHS}${selectedMonth}`,
+    `selectedDate:${selectedYear}:${selectedMonth}`,
   );
+  const backButton = Markup.button.callback(BUTTONS[language].BACK, 'backS');
+  const buttonsInColumns: ReturnType<typeof Markup.button.callback>[][] = [];
+  for (let i = 0; i < buttons.length; i += 4) {
+    buttonsInColumns.push(buttons.slice(i, i + 4));
+  }
+  buttonsInColumns.push([monthButton, backButton]);
 
-  return Markup.inlineKeyboard(buttons, { columns: 4 });
+  return Markup.inlineKeyboard(buttonsInColumns);
 }
 
 export function backStatisticButton(language: string = 'ua') {
