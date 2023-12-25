@@ -1,17 +1,10 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import {
-  actionButtonsStart,
-  backHelpButton,
-  backStartButton,
-  currencySet,
-  languageSet,
-  resetButton,
-} from '../battons/app.buttons';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { TransactionService } from '../service';
 import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
+import { actionButtonsStart, backHelpButton, backStartButton, currencySet, languageSet, resetButton } from '../battons';
 
 @Update()
 export class BasicCommandsHandler {

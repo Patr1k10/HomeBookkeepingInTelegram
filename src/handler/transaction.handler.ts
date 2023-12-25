@@ -1,7 +1,6 @@
 import { Action, On, Update } from 'nestjs-telegraf';
 import { TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
-import { actionButtonsTransaction, backTranButton } from '../battons/app.buttons';
 import { BalanceService } from '../service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import {
@@ -15,6 +14,7 @@ import {
   TRANSACTION_DELETED_MESSAGE,
 } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
+import { actionButtonsTransaction, backTranButton } from '../battons';
 
 @Update()
 export class TransactionHandler {
@@ -63,14 +63,14 @@ export class TransactionHandler {
   }
   @Action('delete_last')
   async deleteLastCommand(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} deleteLastCommand `)
+    this.logger.log(`user:${ctx.from.id} deleteLastCommand `);
     ctx.session.type = 'delete';
     const count = 20;
     await this.transactionService.showLastNTransactionsWithDeleteOption(ctx, count);
   }
   @Action(/delete_(.+)/)
   async handleCallbackQuery(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} handleCallbackQuery`)
+    this.logger.log(`user:${ctx.from.id} handleCallbackQuery`);
     try {
       if (ctx.session.type !== 'delete') {
         return;

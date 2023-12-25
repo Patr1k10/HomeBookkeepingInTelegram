@@ -1,14 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { Action, Update } from 'nestjs-telegraf';
-import {
-  actionButtonsDays,
-  actionButtonsMonths,
-  actionButtonsStatistics,
-  actionButtonsTransactionNames,
-  actionButtonsYears,
-  backStatisticButton,
-} from '../battons/app.buttons';
-
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { StatisticsService } from '../service';
 import {
@@ -20,6 +11,14 @@ import {
   WANT_STATISTICS_MESSAGE,
 } from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
+import {
+  actionButtonsDays,
+  actionButtonsMonths,
+  actionButtonsStatistics,
+  actionButtonsTransactionNames,
+  actionButtonsYears,
+  backStatisticButton,
+} from '../battons';
 
 @Update()
 export class StatisticsHandler {
@@ -51,7 +50,7 @@ export class StatisticsHandler {
   }
   @Action('by_category')
   async categoryListCommand(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} by_category`)
+    this.logger.log(`user:${ctx.from.id} by_category`);
     const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(ctx);
     if (uniqueTransactionNames === null) {
       await ctx.telegram.editMessageText(
@@ -95,13 +94,11 @@ export class StatisticsHandler {
   async weekListCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} week command executed`);
     await this.statisticsService.getFormattedTransactionsForWeek(ctx);
-
   }
   @Action('on_month')
   async monthListCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} month command executed`);
     await this.statisticsService.getFormattedTransactionsForMonth(ctx);
-
   }
 
   @Action('select_year')
@@ -217,7 +214,7 @@ export class StatisticsHandler {
 
   @Action(/details:(\d+):(\d+):(\d+)/)
   async detailsCommand(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} detailsCommand `)
+    this.logger.log(`user:${ctx.from.id} detailsCommand `);
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
       const callbackData = callbackQuery.data;
@@ -233,7 +230,7 @@ export class StatisticsHandler {
 
   @Action('backS')
   async backS(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} backS `)
+    this.logger.log(`user:${ctx.from.id} backS `);
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;

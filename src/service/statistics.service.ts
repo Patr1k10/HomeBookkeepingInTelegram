@@ -5,10 +5,10 @@ import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
-import { backStatisticButton } from '../battons/app.buttons';
 import { PERIOD_E, PERIOD_NULL } from '../constants';
 
 import { IContext, Transaction } from '../interface';
+import { backStatisticButton } from '../battons';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);

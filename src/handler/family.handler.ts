@@ -1,9 +1,9 @@
 import { Action, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { acceptButton, backFamilyButton, backStartButton, groupButton } from '../battons/app.buttons';
 import { Telegraf } from 'telegraf';
 import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
+import { acceptButton, backFamilyButton, backStartButton, groupButton } from '../battons';
 
 @Update()
 export class FamilyHandler {
@@ -108,7 +108,7 @@ export class FamilyHandler {
   }
 
   private async sendInvite(ctx: IContext, recipientId: number, initiatorId: number) {
-    this.logger.log(`user:${ctx.from.id} sendInvite to ${initiatorId} `)
+    this.logger.log(`user:${ctx.from.id} sendInvite to ${initiatorId} `);
     const message = GROUP_INVITATION_MESSAGE(initiatorId, ctx.session.language);
     const keyboard = {
       reply_markup: {
@@ -128,7 +128,7 @@ export class FamilyHandler {
 
   @Action(/^accept_invite:\d+$/)
   async acceptInvite(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} acceptInvite`)
+    this.logger.log(`user:${ctx.from.id} acceptInvite`);
     const recipientId = ctx.from.id;
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     const initiatorId = parseInt(callbackQuery.message.text.split(':')[1], 10);
@@ -153,7 +153,7 @@ export class FamilyHandler {
   }
   @Action(/^accept_user:\d+$/)
   async acceptUser(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} acceptUser`)
+    this.logger.log(`user:${ctx.from.id} acceptUser`);
     const initiatorId = ctx.from.id;
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     const recipientId = parseInt(callbackQuery.data.split(':')[1], 10);
@@ -215,7 +215,7 @@ export class FamilyHandler {
   }
   @Action('backF')
   async backF(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} backF`)
+    this.logger.log(`user:${ctx.from.id} backF`);
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;

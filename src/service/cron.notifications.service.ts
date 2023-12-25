@@ -36,13 +36,15 @@ export class CronNotificationsService {
     } finally {
       const endTime = new Date();
       const elapsedTime = endTime.getTime() - startTime.getTime();
-      this.logger.log(`Cron task finished at: ${endTime}, elapsed time: ${elapsedTime} ms, sent ${this.notificationCount} notifications`);
+      this.logger.log(
+        `Cron task finished at: ${endTime}, elapsed time: ${elapsedTime} ms, sent ${this.notificationCount} notifications`,
+      );
     }
   }
 
   private async getInactiveUsers(): Promise<Balance[]> {
     const cutoffDate = new Date();
-    cutoffDate.setHours(cutoffDate.getHours() - 48);// to everyone who is not active
+    cutoffDate.setHours(cutoffDate.getHours() - 48); // to everyone who is not active
     return await this.balanceModel
       .find({
         $or: [
@@ -62,7 +64,7 @@ export class CronNotificationsService {
       });
 
       this.logger.log(`Sent notification to user ${userId}`);
-      this.notificationCount++
+      this.notificationCount++;
     } catch (error) {
       if (error.code === 403) {
         await this.markUserAsBanned(user);

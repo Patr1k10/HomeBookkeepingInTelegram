@@ -1,10 +1,9 @@
 import { Action, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
-import { backStartButton, languageSet } from '../battons/app.buttons';
-
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../interface';
+import { backStartButton, languageSet } from '../battons';
 
 @Update()
 export class BalanceHandler {
