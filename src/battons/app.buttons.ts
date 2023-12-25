@@ -4,19 +4,26 @@ import { BUTTONS } from '../constants';
 export function actionButtonsStart(language: string = 'ua') {
   return Markup.inlineKeyboard([
     [
-      Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
       Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'transactions'),
-    ],
-    [
-      Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
       Markup.button.callback(BUTTONS[language].STATISTICS, 'statistics'),
     ],
-    [Markup.button.callback(BUTTONS[language].HELP, 'help')],
     [
-      Markup.button.callback(BUTTONS[language].LANGUAGE, 'language'),
-      Markup.button.callback(BUTTONS[language].RESET, 'reset'),
+      Markup.button.callback(BUTTONS[language].SETTING, 'settings'),
+      Markup.button.callback(BUTTONS[language].HELP, 'help'),
     ],
   ]);
+}
+
+export function actionButtonsSettings(language: string = 'ua') {
+  return Markup.inlineKeyboard(
+    [
+      Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
+      Markup.button.callback(BUTTONS[language].LANGUAGE, 'language'),
+      Markup.button.callback(BUTTONS[language].RESET, 'reset'),
+      Markup.button.callback(BUTTONS[language].BACK, 'back'),
+    ],
+    { columns: 2 },
+  );
 }
 
 export function languageSet() {

@@ -74,20 +74,23 @@ export function backStatisticButtonMessage(language: string = 'ua', ctx: IContex
 }
 
 export function actionButtonsStatistics(language: string = 'ua') {
-  return Markup.inlineKeyboard(
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
+      Markup.button.callback(BUTTONS[language].SELECT_YEAR, 'select_year'),
+    ],
     [
       Markup.button.callback(BUTTONS[language].TODAY, 'today'),
       Markup.button.callback(BUTTONS[language].WEEK, 'on_week'),
       Markup.button.callback(BUTTONS[language].MONTH, 'on_month'),
-      Markup.button.callback(BUTTONS[language].SELECT_YEAR, 'select_year'),
-      // Markup.button.callback(BUTTONS[language].SELECT_MONTH, 'select_month'),
+    ],
+    [
       Markup.button.callback(BUTTONS[language].MY_INCOME, 'my_income'),
       Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'my_expense'),
       Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'by_category'),
-      Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
-    { columns: 2 },
-  );
+    [Markup.button.callback(BUTTONS[language].BACK, 'back')],
+  ]);
 }
 export function actionButtonsYears(years: number[], language: string = 'ua') {
   const buttons = years.map((year) => Markup.button.callback(year.toString(), `Year:${year}`));

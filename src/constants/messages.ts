@@ -149,3 +149,8 @@ export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
 
   return messages[language];
 };
+
+export const SELECT_SETTING_MESSAGE = {
+  en: 'Select the Settings:🔽',
+  ua: 'Оберіть налаштування:🔽',
+};
