@@ -8,8 +8,8 @@ export function actionButtonsStart(language: string = 'ua') {
       Markup.button.callback(BUTTONS[language].TRANSACTIONS, 'transactions'),
     ],
     [
-      Markup.button.callback(BUTTONS[language].STATISTICS, 'statistics'),
       Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
+      Markup.button.callback(BUTTONS[language].STATISTICS, 'statistics'),
     ],
     [Markup.button.callback(BUTTONS[language].HELP, 'help')],
     [
