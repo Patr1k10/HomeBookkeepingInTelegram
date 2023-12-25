@@ -1,5 +1,6 @@
 export const BUTTONS = {
   ua: {
+    SETTING: 'Налаштування⚙️',
     ACCEPT: 'OK',
     SUPPORT: '💸Підтримка проєкту💸',
     YEARS: '✅Обрати цей рік:',
@@ -18,8 +19,8 @@ export const BUTTONS = {
     WEEK: 'За тиждень🗓️',
     MONTH: 'За місяць🗓️',
     SELECT_MONTH: 'Оберіть місяць📤️',
-    MY_INCOME: 'Мої надходження💵',
-    MY_EXPENSE: 'Мої витрати🧾',
+    MY_INCOME: 'Надходження💵',
+    MY_EXPENSE: 'Витрати🧾',
     BY_CATEGORY: 'За категорією🗃️',
     JANUARY: 'Січень ❄️',
     FEBRUARY: 'Лютий ☃️',
@@ -46,6 +47,7 @@ export const BUTTONS = {
     SELECT_YEAR: 'Оберіть дату🗓️',
   },
   en: {
+    SETTING: 'Settings⚙️',
     ACCEPT: 'OK',
     SUPPORT: '💸Project support💸',
     YEARS: '✅Select this year:',

@@ -2,9 +2,25 @@ import { Action, Hears, Start, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { TransactionService } from '../service';
-import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
+import {
+  ERROR_MESSAGE,
+  HELP_MESSAGE,
+  MAIN_MENU,
+  RESETS_ALL,
+  SELECT_SETTING_MESSAGE,
+  START_MESSAGE,
+  SUPPORT_MESSAGE,
+} from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
-import { actionButtonsStart, backHelpButton, backStartButton, currencySet, languageSet, resetButton } from '../battons';
+import {
+  actionButtonsSettings,
+  actionButtonsStart,
+  backHelpButton,
+  backStartButton,
+  currencySet,
+  languageSet,
+  resetButton,
+} from '../battons';
 
 @Update()
 export class BasicCommandsHandler {
@@ -215,6 +231,21 @@ export class BasicCommandsHandler {
       },
     );
   }
+  @Action('settings')
+  async getSettings(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} getSettings`);
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      SELECT_SETTING_MESSAGE[ctx.session.language || 'ua'],
+      {
+        reply_markup: actionButtonsSettings(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      },
+    );
+  }
 
   @Action('backToStart')
   async backToStart(ctx: IContext) {
@@ -230,7 +261,7 @@ export class BasicCommandsHandler {
 
   @Action('back')
   async back(ctx: IContext) {
-    this.logger.log(`${ctx.from.id} back`);
+    this.logger.log(`user:${ctx.from.id} back`);
     delete ctx.session.selectedDate;
     delete ctx.session.selectedMonth;
     delete ctx.session.selectedYear;
