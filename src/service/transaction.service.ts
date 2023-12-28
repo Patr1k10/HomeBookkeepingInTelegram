@@ -6,9 +6,9 @@ import { BalanceService } from './balance.service';
 import { Telegraf } from 'telegraf';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { CreateTransactionDto } from '../dto/transaction.dto';
-import { backTranButton } from '../battons/app.buttons';
 import { IContext, Transaction } from '../interface';
 import { BUTTONS, DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_NULL } from '../constants';
+import { backTranButton } from '../battons';
 
 @Injectable()
 export class TransactionService {

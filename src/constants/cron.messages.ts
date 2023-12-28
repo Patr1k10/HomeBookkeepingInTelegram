@@ -5,3 +5,15 @@ export const CRON_NOTIFICATION = `<b>Нагадування:</b>
 You haven't entered data into the bot for over <b>48 hours</b>. 
 It's crucial for <b>forming a habit</b>. You'll be surprised how your attitude towards the budget will change when you <u>regularly input data.</u>😊 \n
 `;
+
+export const CRON_NOTIFICATION_NEW_YEAR = `<b>🎄Новорічне Нагадування:</b>
+Вже пройшло більше <b>48 годин</b>, відколи ви останній раз вносили дані в бот. 
+Це особливо <b>важливо під час новорічних🎄 свят,</b> коли витрати можуть зростати.
+Нехай ваш бюджет буде на контролі, щоб уникнути неочікуваних витрат. 
+Спробуйте вносити дані <u>регулярно</u> і насолоджуйтеся святами з усмішкою. 🎉😊\n
+<b>🎄New Year Reminder:</b>
+It's been over <b>48 hours</b> since you last entered data into the bot.
+Especially during the holiday season, it's <b>crucial to stay on top of your budget,</b> as expenses tend to increase.
+Keep your budget in check to avoid unexpected spending. 
+Try to input data <u>regularly</u> and enjoy the holidays with a smile. 🎉😊 \n
+`;

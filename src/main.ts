@@ -10,5 +10,3 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3003);
 }
 bootstrap();
-
-// TODO: подключить гпт чат для советов по финансам
