@@ -1,6 +1,6 @@
 export const MAIN_MENU = {
-  en: 'Main menu⤵️',
-  ua: 'Головне меню⤵️',
+  en: '👋Welcome to the main menu⤵️',
+  ua: '👋Вітаю вас у головному меню⤵️',
 };
 
 export const ERROR_MESSAGE = {
@@ -9,8 +9,8 @@ export const ERROR_MESSAGE = {
 };
 
 export const SELECT_TRANSACTION_MESSAGE = {
-  en: 'Select the transaction:🔽',
-  ua: 'Оберіть транзакцію:🔽',
+  en: 'Please select the transaction you need:🔽',
+  ua: 'Оберіть, будь ласка, транзакцію яка вам потрібна:🔽',
 };
 
 export const ENTER_INCOME_MESSAGE = {

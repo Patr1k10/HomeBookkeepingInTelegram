@@ -4,10 +4,10 @@ import { IContext } from '../interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
-import { CRON_NOTIFICATION } from '../constants';
-import { backToStartButton } from '../battons/app.buttons';
+import { CRON_NOTIFICATION_NEW_YEAR } from '../constants';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
+import { backToStartButton } from '../battons';
 
 @Injectable()
 export class CronNotificationsService {
@@ -58,7 +58,7 @@ export class CronNotificationsService {
   private async sendNotification(user: Balance) {
     try {
       const userId = user.userId;
-      await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION, {
+      await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION_NEW_YEAR, {
         parse_mode: 'HTML',
         reply_markup: backToStartButton().reply_markup,
       });
