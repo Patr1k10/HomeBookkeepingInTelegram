@@ -12,6 +12,12 @@ export class Balance extends Document {
   @Prop({ required: true, default: false })
   isBaned: boolean;
 
+  @Prop({ required: true, default: false })
+  isPremium: boolean;
+
+  @Prop({ required: true, default: 0 })
+  dayOfPremium: Date;
+
   @Prop({ default: Date.now })
   lastActivity: Date;
 }

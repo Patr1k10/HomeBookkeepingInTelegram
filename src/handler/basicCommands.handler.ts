@@ -21,6 +21,7 @@ import {
   languageSet,
   resetButton,
 } from '../battons';
+import { resetSession } from '../common/reset.session';
 
 @Update()
 export class BasicCommandsHandler {
@@ -33,9 +34,7 @@ export class BasicCommandsHandler {
   @Start()
   async startCommand(ctx: IContext) {
     try {
-      delete ctx.session.selectedDate;
-      delete ctx.session.selectedMonth;
-      delete ctx.session.selectedYear;
+      resetSession(ctx);
       const userId = ctx.from.id;
       const user = ctx.from;
       const count = await this.balanceService.countAllBalances();
@@ -251,10 +250,7 @@ export class BasicCommandsHandler {
   async backToStart(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backToStart`);
     await ctx.deleteMessage();
-    delete ctx.session.selectedDate;
-    delete ctx.session.selectedMonth;
-    delete ctx.session.selectedYear;
-    ctx.session.awaitingUserIdInput = false;
+    resetSession(ctx);
     const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
     ctx.session.lastBotMessage = sentMessage.message_id;
   }
@@ -262,11 +258,7 @@ export class BasicCommandsHandler {
   @Action('back')
   async back(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} back`);
-    delete ctx.session.selectedDate;
-    delete ctx.session.selectedMonth;
-    delete ctx.session.selectedYear;
-    ctx.session.awaitingUserIdInput = false;
-    delete ctx.session.type;
+    resetSession(ctx);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,

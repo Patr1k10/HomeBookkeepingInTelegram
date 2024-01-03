@@ -19,6 +19,7 @@ import {
   actionButtonsYears,
   backStatisticButton,
 } from '../battons';
+import { resetSession } from '../common/reset.session';
 
 @Update()
 export class StatisticsHandler {
@@ -231,11 +232,7 @@ export class StatisticsHandler {
   @Action('backS')
   async backS(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backS `);
-    delete ctx.session.selectedDate;
-    delete ctx.session.selectedMonth;
-    delete ctx.session.selectedYear;
-    ctx.session.awaitingUserIdInput = false;
-    delete ctx.session.type;
+    resetSession(ctx);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,

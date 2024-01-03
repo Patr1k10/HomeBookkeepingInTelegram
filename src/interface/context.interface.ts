@@ -13,5 +13,6 @@ export interface IContext extends ContextTelegraf {
     selectedYear?: number;
     selectedMonth?: number;
     selectedDate?: number;
+    isPremium?: boolean;
   };
 }

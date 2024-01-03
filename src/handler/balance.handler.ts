@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../interface';
 import { backStartButton, languageSet } from '../battons';
+import { resetSession } from '../common/reset.session';
 
 @Update()
 export class BalanceHandler {
@@ -13,9 +14,7 @@ export class BalanceHandler {
   @Action('balance')
   async listCommand(ctx: IContext) {
     try {
-      delete ctx.session.selectedDate;
-      delete ctx.session.selectedMonth;
-      delete ctx.session.selectedYear;
+      resetSession(ctx);
       const userId = ctx.from.id;
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
       const markup = backStartButton(ctx.session.language);

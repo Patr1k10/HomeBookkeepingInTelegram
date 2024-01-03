@@ -29,6 +29,7 @@ export class CronNotificationsService {
       for (const user of inactiveUsers) {
         await this.sendNotification(user);
         await this.updateLastActivity(user);
+        await this.deductPremiumFromBalance(user);
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
     } catch (error) {
@@ -62,14 +63,12 @@ export class CronNotificationsService {
         parse_mode: 'HTML',
         reply_markup: backToStartButton().reply_markup,
       });
-
       this.logger.log(`Sent notification to user ${userId}`);
       this.notificationCount++;
     } catch (error) {
       if (error.code === 403) {
         await this.markUserAsBanned(user);
       }
-
       this.logger.error(`Error sending notification to user ${user.userId}`, error);
     }
   }
@@ -95,6 +94,19 @@ export class CronNotificationsService {
       this.logger.log(`Updated lastActivity for user ${user.userId}`);
     } catch (error) {
       this.logger.error(`Error updating lastActivity for user ${user.userId}`, error);
+    }
+  }
+
+  private async deductPremiumFromBalance(user: Balance) {
+    try {
+      if (user.dayOfPremium <= new Date()) {
+        user.isPremium = false;
+        user.dayOfPremium = null;
+        await user.save();
+        this.logger.log(`Deducted premium from balance for user ${user.userId}`);
+      } else return;
+    } catch (error) {
+      this.logger.error(`Error deducting premium from balance for user ${user.userId}`, error);
     }
   }
 }

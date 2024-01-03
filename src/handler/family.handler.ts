@@ -4,6 +4,7 @@ import { Telegraf } from 'telegraf';
 import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 import { acceptButton, backFamilyButton, backStartButton, groupButton } from '../battons';
+import { resetSession } from '../common/reset.session';
 
 @Update()
 export class FamilyHandler {
@@ -216,11 +217,7 @@ export class FamilyHandler {
   @Action('backF')
   async backF(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backF`);
-    delete ctx.session.selectedDate;
-    delete ctx.session.selectedMonth;
-    delete ctx.session.selectedYear;
-    ctx.session.awaitingUserIdInput = false;
-    delete ctx.session.type;
+    resetSession(ctx);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
