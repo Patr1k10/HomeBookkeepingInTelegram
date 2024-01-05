@@ -172,7 +172,7 @@ export class StatisticsService {
       transactions.forEach((transaction) => {
         const timestamp =
           transaction.timestamp instanceof Date ? transaction.timestamp : new Date(transaction.timestamp);
-        if (!isNaN(timestamp.valueOf())) {
+        if (!isNaN(timestamp.valueOf()) && timestamp.getFullYear() === selectedYear) {
           const month = timestamp.getMonth() + 1;
           uniqueMonths.add(month);
         }

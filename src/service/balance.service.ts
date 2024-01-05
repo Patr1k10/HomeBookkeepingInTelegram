@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateBalanceDto } from '../dto/balance.dto';
 import { Balance } from '../shemas/balance.shemas';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import * as dotenv from 'dotenv';
@@ -35,6 +34,11 @@ export class BalanceService {
 
   async getIsPremium(userId: number): Promise<boolean> {
     const balance = await this.balanceModel.findOne({ userId }).exec();
+    if (!balance.isPremium) {
+      balance.isPremium;
+      await balance.save();
+      return balance.isPremium;
+    }
     return balance.isPremium;
   }
 
@@ -50,9 +54,8 @@ export class BalanceService {
     }
   }
 
-  async createBalance(createBalanceDto: CreateBalanceDto): Promise<Balance> {
+  async createBalance(userId: number): Promise<Balance> {
     try {
-      const userId = createBalanceDto.userId;
       const existingBalance = await this.getOrCreateBalance(userId);
       if (existingBalance) {
         this.logger.log(`Balance already exists for user ${userId}`);

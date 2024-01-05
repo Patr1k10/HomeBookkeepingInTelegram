@@ -1,6 +1,6 @@
 export const MAIN_MENU = {
-  en: '👋Welcome to the main menu⤵️',
-  ua: '👋Вітаю вас у головному меню⤵️',
+  en: '👋Welcome to the main menu, select the desired item⤵️',
+  ua: '👋Вітаю вас у головному меню оберіть потрібний пункт⤵️',
 };
 
 export const ERROR_MESSAGE = {
@@ -153,4 +153,14 @@ export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
 export const SELECT_SETTING_MESSAGE = {
   en: 'Select the Settings:🔽',
   ua: 'Оберіть налаштування:🔽',
+};
+
+export const PREMIUM_MESSAGE = {
+  en: 'днів залишилось до закінчення преміуму',
+  ua: 'days left until the end of the premium',
+};
+
+export const PREMIUM_MENU = {
+  ua: 'Тут можна придбати преміум та дізнатися скільки днів преміуму залишилось ',
+  en: 'Here you can purchase a premium and find out how many premium days are left',
 };

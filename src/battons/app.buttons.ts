@@ -15,15 +15,26 @@ export function actionButtonsStart(language: string = 'ua') {
 }
 
 export function actionButtonsSettings(language: string = 'ua') {
-  return Markup.inlineKeyboard(
+  const baseButtons = [
     [
       Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
       Markup.button.callback(BUTTONS[language].LANGUAGE, 'language'),
-      Markup.button.callback(BUTTONS[language].RESET, 'reset'),
+    ],
+    [Markup.button.callback(BUTTONS[language].RESET, 'reset')],
+    [
+      Markup.button.callback(BUTTONS[language].GET_PREMIUM, 'premium'),
       Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
-    { columns: 2 },
-  );
+  ];
+  return Markup.inlineKeyboard(baseButtons);
+}
+export function actionButtonsPremium(language: string = 'ua', isPremium: boolean = false) {
+  const baseButtons = [[Markup.button.callback(`${BUTTONS[language].SET_PREMIUM}`, 'setPremium')]];
+  if (isPremium) {
+    baseButtons[0].push(Markup.button.callback(`${BUTTONS[language].DAY_PREMIUM}`, 'getPremium'));
+  }
+  baseButtons.push([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
+  return Markup.inlineKeyboard(baseButtons);
 }
 
 export function languageSet() {
