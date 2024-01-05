@@ -35,7 +35,19 @@ export class BalanceService {
 
   async getIsPremium(userId: number): Promise<boolean> {
     const balance = await this.balanceModel.findOne({ userId }).exec();
-    return balance.isPremium !== false;
+    return balance.isPremium;
+  }
+
+  async getRemainingPremiumDays(userId: number): Promise<number> {
+    const balance = await this.balanceModel.findOne({ userId }).exec();
+    if (balance && balance.dayOfPremium) {
+      const currentDate = new Date();
+      const premiumEndDate = new Date(balance.dayOfPremium);
+      const timeDifference = premiumEndDate.getTime() - currentDate.getTime();
+      return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    } else {
+      return 0;
+    }
   }
 
   async createBalance(createBalanceDto: CreateBalanceDto): Promise<Balance> {

@@ -4,8 +4,6 @@ import { Redis } from '@telegraf/session/redis';
 import { createClient } from 'redis';
 import { IContext } from '../interface';
 
-
-
 const redisClient = createClient({
   username: process.env.REDIS_USERNAME,
   password: process.env.REDIS_PASSWORD,

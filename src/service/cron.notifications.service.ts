@@ -4,7 +4,7 @@ import { IContext } from '../interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
-import { CRON_NOTIFICATION_NEW_YEAR } from '../constants';
+import { CRON_NOTIFICATION, CRON_NOTIFICATION_NEW_YEAR } from '../constants';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
 import { backToStartButton } from '../battons';
@@ -45,7 +45,7 @@ export class CronNotificationsService {
 
   private async getInactiveUsers(): Promise<Balance[]> {
     const cutoffDate = new Date();
-    cutoffDate.setHours(cutoffDate.getHours() - 48); // to everyone who is not active
+    cutoffDate.setHours(cutoffDate.getHours() - 72); // to everyone who is not active
     return await this.balanceModel
       .find({
         $or: [
@@ -59,7 +59,7 @@ export class CronNotificationsService {
   private async sendNotification(user: Balance) {
     try {
       const userId = user.userId;
-      await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION_NEW_YEAR, {
+      await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION, {
         parse_mode: 'HTML',
         reply_markup: backToStartButton().reply_markup,
       });
