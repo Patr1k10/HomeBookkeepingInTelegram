@@ -4,7 +4,7 @@ import { IContext } from '../interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
-import { CRON_NOTIFICATION, CRON_NOTIFICATION_NEW_YEAR } from '../constants';
+import { CRON_NOTIFICATION } from '../constants';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
 import { backToStartButton } from '../battons';
