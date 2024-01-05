@@ -1,14 +1,31 @@
 import { Action, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { BalanceService } from '../service';
-import { IContext } from '../interface';
-import { PREMIUM_MENU, PREMIUM_MESSAGE, PREMIUM_SET, TRIAL_PROVIDED, TRIAL_PROVIDED_FALSE } from '../constants';
-import { actionButtonsPremium, actionButtonsPremiumMenu, actionSetPremium, backStartButton } from '../battons';
+import { BalanceService, CurrencyService } from '../service';
+import { CustomCallbackQuery, IContext, ICurrencyRates } from '../interface';
+import {
+  CURRENCY_MESSAGE,
+  PREMIUM_MENU,
+  PREMIUM_MESSAGE,
+  PREMIUM_SET,
+  SELECT_CURRENCY_MESSAGE,
+  TRIAL_PROVIDED,
+  TRIAL_PROVIDED_FALSE,
+} from '../constants';
+import {
+  actionButtonsPremium,
+  actionButtonsPremiumMenu,
+  actionSetPremium,
+  backStartButton,
+  generateCurrencyButtons,
+} from '../battons';
 
 @Update()
 export class PremiumHandler {
   private readonly logger: Logger = new Logger(PremiumHandler.name);
-  constructor(private readonly balanceService: BalanceService) {}
+  constructor(
+    private readonly balanceService: BalanceService,
+    private readonly currencyService: CurrencyService,
+  ) {}
 
   @Action('getPremium')
   async getPremium(ctx: IContext) {
@@ -96,5 +113,39 @@ export class PremiumHandler {
       disable_web_page_preview: true,
       parse_mode: 'HTML',
     });
+  }
+  @Action('exchange_rate')
+  async exchangeRate(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} getPremiumMenu`);
+    const currencyData = await this.currencyService.getCurrencyData();
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      `${SELECT_CURRENCY_MESSAGE[ctx.session.language]}`,
+      {
+        reply_markup: generateCurrencyButtons(currencyData).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      },
+    );
+  }
+  @Action(/Currency:(.+)/)
+  async exchangeCurrency(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} exchangeCurrency`);
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+      const currencyName = parts[1];
+      const currencyBay = parts[2];
+      const currencySell = parts[3];
+      const message = CURRENCY_MESSAGE(currencyName, currencyBay, currencySell, ctx.session.language);
+      await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `${message}`, {
+        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      });
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { BalanceService, TransactionService } from '../service';
+import { BalanceService, CurrencyService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import {
   ERROR_MESSAGE,

@@ -144,7 +144,6 @@ export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
   const messages = {
     en: `You have been invited to the group by user: ${userId}. Do you accept?`,
     ua: `Ви були запрошені в групу користувачем: ${userId}. Приймаєте?`,
-    // ... другие языки
   };
 
   return messages[language];
@@ -153,4 +152,20 @@ export const GROUP_INVITATION_MESSAGE = (userId: number, language: string) => {
 export const SELECT_SETTING_MESSAGE = {
   en: 'Select the Settings:🔽',
   ua: 'Оберіть налаштування:🔽',
+};
+
+export const CURRENCY_MESSAGE = (currencyName: string, currencyBay: string, currencySell: string, language: string) => {
+  const messages = {
+    en: `Average rate of currency: <b>${currencyName}</b> in exchangers for today:
+     <b>sell:</b> ${currencySell}UAH
+     <b>buy:</b> ${currencyBay}UAH `,
+    ua: `Середній курс валюти: <b>${currencyName}</b> в обмінниках на сьогодні: 
+    <b>продаж:</b> ${currencySell}грн. 
+    <b>купівля:</b> ${currencyBay}грн.`,
+  };
+  return messages[language];
+};
+export const SELECT_CURRENCY_MESSAGE = {
+  en: 'Choose the currency you need:🔽',
+  ua: 'Оберіть потрібну вам валюту:🔽',
 };
