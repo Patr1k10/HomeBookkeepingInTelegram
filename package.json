@@ -30,6 +30,8 @@
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/typeorm": "^10.0.0",
     "@telegraf/session": "^2.0.0-beta.6",
+    "axios": "^1.6.4",
+    "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.3.1",
     "mongodb": "^5.9.0",
     "mongoose": "^7.5.1",

@@ -1,5 +1,5 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { BalanceService, TransactionService } from '../service';
+import { BalanceService, CurrencyService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import {
   ERROR_MESSAGE,
@@ -28,12 +28,14 @@ export class BasicCommandsHandler {
   constructor(
     private readonly balanceService: BalanceService,
     private readonly transactionService: TransactionService,
+    private readonly currencyService: CurrencyService,
   ) {}
 
   @Start()
   async startCommand(ctx: IContext) {
     try {
       resetSession(ctx);
+      await this.currencyService.getData();
       await this.balanceService.deductPremiumFromUser(ctx.from.id);
       await this.balanceService.createBalance(ctx.from.id);
       const user = ctx.from;
