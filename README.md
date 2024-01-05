@@ -1,73 +1,40 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Telegram bot for home accounting simplifies financial tracking, 
+allowing you to monitor income, expenses, and current balance directly in the messenger.
+### Link
+[HomeBookkeepingInBot](https://t.me/HomeBookkeepingInBot)
 
-## Installation
 
-```bash
-$ npm install
-```
+## how to use
 
-## Running the app
+<b>📘 Guide to using your financial bot. 📘</b>
 
-```bash
-# development
-$ npm run start
+<i>This bot is designed to effectively manage your finances.</i> It offers the following main commands:
 
-# watch mode
-$ npm run start:dev
+- <b>Transactions 💸:</b> Allows you to view and manage your transactions.
+- <b>Balance 💰:</b> Shows your current balance.
+- <b>Statistics 📊:</b> Provides statistics of your financial activity.
+- <b>Choose a language📝:</b> To change the interface language.
+- <b>Family👨‍👩‍👧‍:</b> Family management menu.
+- <b>⛔️Delete all data🗑️:</b> Deletes all your data and resets your account.
 
-# production mode
-$ npm run start:prod
-```
+👇 <i>Additional Options:</i>
+- <b>Income:</b> To add an income.
+- <b>Expense:</b> To add an expense.
+- <b>Delete Last️:</b> To delete the last transactions.
 
-## Test
+<b>👨‍👩‍👧‍👦 Family Access:</b>
+1️⃣ <i>Your and your partner's transactions will be combined into one.</i>
+2️⃣ <i>Ask your partner for their ID, obtainable through the family menu.</i>
+3️⃣ <i>Press 'Create Family👩‍❤️‍👨'.</i>
+4️⃣ <i>Add a family member using the received ID.</i>
+5️⃣ <i>The family member must confirm the invitation.</i>
+🔄 <i>This will combine your balance and transactions. If you change your mind, your data will remain yours.</i>
+🚫 <i>You can remove family access at any time, and your balance and transactions will revert to being only yours.</i>`,
 
-```bash
-# unit tests
-$ npm run test
+🔧 <i>If you have any questions or suggestions, feel free to contact us.</i>
 
-# e2e tests
-$ npm run test:e2e
+📩 <b>For additional help or questions, please email us at: [help.tgbot@icloud.com]()</b> 📩
 
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
