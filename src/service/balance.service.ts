@@ -179,4 +179,19 @@ export class BalanceService {
       throw error;
     }
   }
+  async countPremiumUsers(): Promise<number> {
+    try {
+      const premiumUsersCount = await this.balanceModel
+        .countDocuments({
+          isPremium: true,
+        })
+        .exec();
+
+      this.logger.log(`Number of premium users: ${premiumUsersCount}`);
+      return premiumUsersCount;
+    } catch (error) {
+      this.logger.error('Error counting premium users', error);
+      throw error;
+    }
+  }
 }

@@ -41,6 +41,7 @@ export class BasicCommandsHandler {
       const count = await this.balanceService.countAllBalances();
       const activeUsers = await this.balanceService.countActiveUsersLast3Days();
       const bannedUsers = await this.balanceService.countBannedUsers();
+      const countIsPremiumUser = await this.balanceService.countPremiumUsers();
       const bosId = process.env.BOSID;
       this.logger.log(`
       User ID: ${user.id}
@@ -49,7 +50,9 @@ export class BasicCommandsHandler {
       Username: ${user.username}
       ActiveUsers: ${activeUsers}
       Count Users: ${count}
-      BannedUsers: ${bannedUsers}`);
+      Count PremiumUsers: ${countIsPremiumUser}
+      BannedUsers: ${bannedUsers}
+      `);
       await ctx.telegram.sendMessage(
         bosId,
         `New User created:
@@ -59,6 +62,7 @@ export class BasicCommandsHandler {
       Username: ${user.username}
       ActiveUsers: ${activeUsers}
       Count Users: ${count}
+      Count PremiumUsers: ${countIsPremiumUser}
       BannedUsers: ${bannedUsers}`,
       );
       const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
