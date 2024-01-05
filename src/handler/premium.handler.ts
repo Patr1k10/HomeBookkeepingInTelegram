@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import { BalanceService } from '../service';
 import { IContext } from '../interface';
 import { PREMIUM_MENU, PREMIUM_MESSAGE, PREMIUM_SET, TRIAL_PROVIDED, TRIAL_PROVIDED_FALSE } from '../constants';
-import { actionButtonsPremium, actionSetPremium, backStartButton } from '../battons';
+import { actionButtonsPremium, actionButtonsPremiumMenu, actionSetPremium, backStartButton } from '../battons';
 
 @Update()
 export class PremiumHandler {
@@ -87,5 +87,14 @@ export class PremiumHandler {
         },
       );
     }
+  }
+  @Action('premiumMenu')
+  async premiumMenu(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} getPremiumMenu`);
+    await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `Тут буде преміум функционал`, {
+      reply_markup: actionButtonsPremiumMenu(ctx.session.language).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
 }

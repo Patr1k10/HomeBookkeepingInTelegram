@@ -14,3 +14,15 @@ export function actionSetPremium(language: string = 'ua', isPremium: boolean = f
   baseButtons.push([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
   return Markup.inlineKeyboard(baseButtons);
 }
+
+export function actionButtonsPremiumMenu(language: string = 'ua') {
+  const baseButtons = [
+    [
+      Markup.button.callback(`Курс валют💸(тест)`, 'exchange_rate'),
+      Markup.button.callback(`Курс крипто валют👾(тест)`, 'сrypto_currency_course'),
+    ],
+    [Markup.button.callback(BUTTONS[language].BACK, 'back')],
+  ];
+
+  return Markup.inlineKeyboard(baseButtons);
+}
