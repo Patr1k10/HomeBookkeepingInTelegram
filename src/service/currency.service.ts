@@ -1,18 +1,21 @@
-import { Logger } from '@nestjs/common';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
 import { ICurrencyRates } from '../interface';
+
 @Injectable()
 export class CurrencyService {
   private readonly logger: Logger = new Logger(CurrencyService.name);
 
-  async getData() {
-    const url = 'https://rate.in.ua/kiev';
-    const response = await axios.get(url);
-    const currencyRates = this.parseCurrencyRates(response.data);
-    this.logger.log(currencyRates);
-    return currencyRates;
+  async getCurrencyData() {
+    try {
+      this.logger.log('getCurrencyData');
+      const url = process.env.CURRENT_URL;
+      const response = await axios.get(url);
+      return this.parseCurrencyRates(response.data);
+    } catch (err) {
+      this.logger.error('invalid response.data', err);
+    }
   }
 
   private parseCurrencyRates(html: string) {

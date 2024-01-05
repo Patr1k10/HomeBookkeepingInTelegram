@@ -6,3 +6,4 @@ export * from './start.messages';
 export * from './regex';
 export * from './cron.messages';
 export * from './premium.messages';
+export * from './flag.const';

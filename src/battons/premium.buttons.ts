@@ -1,5 +1,6 @@
 import { Markup } from 'telegraf';
-import { BUTTONS } from '../constants';
+import { BUTTONS, currencyFlagMapping } from '../constants';
+import { ICurrencyRates } from '../interface';
 
 export function actionButtonsPremium(language: string = 'ua', isPremium: boolean = false) {
   const baseButtons = [[Markup.button.callback(`${BUTTONS[language].SET_PREMIUM}`, 'setPremium')]];
@@ -25,4 +26,18 @@ export function actionButtonsPremiumMenu(language: string = 'ua') {
   ];
 
   return Markup.inlineKeyboard(baseButtons);
+}
+
+export function generateCurrencyButtons(currencyData: ICurrencyRates[], language: string = 'ua') {
+  const buttons = currencyData.map((currency) => {
+    const flag = currencyFlagMapping[currency.currencyCode] || '';
+    return Markup.button.callback(
+      `${flag} ${currency.currencyCode}`,
+      `Currency:${currency.currencyName}:${currency.buyRate}:${currency.sellRate}`,
+    );
+  });
+
+  buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'back'));
+
+  return Markup.inlineKeyboard(buttons, { columns: 3 });
 }
