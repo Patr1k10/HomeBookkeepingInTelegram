@@ -48,6 +48,7 @@ export const BUTTONS = {
     GET_PREMIUM: '🏆Преміум🏆(test)',
     SET_PREMIUM: 'Отримати преміум💸',
     DAY_PREMIUM: 'Днів залишилось🗓️',
+    TRIAL_PREMIUM: 'Отримати пробні 14 днів✅',
   },
   en: {
     SETTING: 'Settings⚙️',
@@ -98,5 +99,6 @@ export const BUTTONS = {
     GET_PREMIUM: '🏆Premium🏆(test)',
     SET_PREMIUM: 'Set premium💸',
     DAY_PREMIUM: 'Days left🗓️',
+    TRIAL_PREMIUM: 'Get a 14-day trial✅',
   },
 };

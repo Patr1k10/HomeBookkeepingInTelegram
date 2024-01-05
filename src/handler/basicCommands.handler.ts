@@ -34,6 +34,7 @@ export class BasicCommandsHandler {
   async startCommand(ctx: IContext) {
     try {
       resetSession(ctx);
+      await this.balanceService.deductPremiumFromUser(ctx.from.id);
       await this.balanceService.createBalance(ctx.from.id);
       const user = ctx.from;
       ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
@@ -74,7 +75,7 @@ export class BasicCommandsHandler {
   @Action('USD')
   async usdCommand(ctx: IContext) {
     ctx.session.currency = 'USD';
-    const markup = actionButtonsStart(ctx.session.language);
+    const markup = actionButtonsStart(ctx.session.language, ctx.session.isPremium);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -93,7 +94,7 @@ export class BasicCommandsHandler {
   async uahCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} uahCommand `);
     ctx.session.currency = 'UAH';
-    const markup = actionButtonsStart(ctx.session.language);
+    const markup = actionButtonsStart(ctx.session.language, ctx.session.isPremium);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -188,7 +189,7 @@ export class BasicCommandsHandler {
       ctx.session.lastBotMessage,
       null,
       RESETS_ALL[ctx.session.language || 'ua'].RESET_CANCELED,
-      actionButtonsStart(ctx.session.language),
+      actionButtonsStart(ctx.session.language, ctx.session.isPremium),
     );
     delete ctx.session.type;
   }
@@ -205,7 +206,7 @@ export class BasicCommandsHandler {
     await this.balanceService.createBalance(ctx.from.id);
     const sendMessage = await ctx.replyWithHTML(
       START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
-      actionButtonsStart(ctx.session.language || 'ua'),
+      actionButtonsStart(ctx.session.language || 'ua', ctx.session.isPremium),
     );
     ctx.session.lastBotMessage = sendMessage.message_id;
 
@@ -256,6 +257,8 @@ export class BasicCommandsHandler {
 
   @Action('back')
   async back(ctx: IContext) {
+    await this.balanceService.deductPremiumFromUser(ctx.from.id);
+    ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
     this.logger.log(`user:${ctx.from.id} back`);
     resetSession(ctx);
     await ctx.telegram.editMessageText(
@@ -263,7 +266,7 @@ export class BasicCommandsHandler {
       ctx.session.lastBotMessage,
       null,
       MAIN_MENU[ctx.session.language || 'ua'],
-      actionButtonsStart(ctx.session.language || 'ua'),
+      actionButtonsStart(ctx.session.language || 'ua', ctx.session.isPremium),
     );
   }
 }
