@@ -1,6 +1,6 @@
-import { languageSet } from '../battons/app.buttons';
 import { IContext } from '../interface';
 import { Middleware } from 'telegraf';
+import { languageSet } from '../battons';
 
 export function errorHandlingMiddleware(): Middleware<IContext> {
   return async (ctx, next) => {

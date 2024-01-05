@@ -22,14 +22,20 @@ export class BalanceService {
     }
     return balance;
   }
-  async setIsPremium(userId: number, month: number): Promise<void> {
+  async setIsPremium(userId: number, days: number): Promise<boolean> {
     const balance = await this.balanceModel.findOne({ userId }).exec();
-    balance.isPremium = true;
-    const expirationDate = new Date();
-    expirationDate.setMonth(expirationDate.getMonth() + month);
-    balance.dayOfPremium = expirationDate;
-    this.logger.log(`Set is premium to ${month} months`);
-    await balance.save();
+    if (balance.dayOfPremium.getDate() > 3) {
+      this.logger.log(`User:${userId} Premium already active for more than 3 days. No changes made.`);
+      return false;
+    } else {
+      balance.isPremium = true;
+      const currentDate = new Date();
+      currentDate.setDate(currentDate.getDate() + days);
+      balance.dayOfPremium = currentDate;
+      this.logger.log(`User:${userId} Set is premium for ${days} days`);
+      await balance.save();
+      return true;
+    }
   }
 
   async getIsPremium(userId: number): Promise<boolean> {
@@ -51,6 +57,21 @@ export class BalanceService {
       return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     } else {
       return 0;
+    }
+  }
+  async deductPremiumFromUser(userId: number) {
+    try {
+      const user = await this.balanceModel.findOne({ userId });
+      if (user.isPremium === false) {
+        return;
+      }
+      if (user.dayOfPremium <= new Date()) {
+        user.isPremium = false;
+        await user.save();
+        this.logger.log(`Deducted premium from balance for user ${user.userId}`);
+      } else return;
+    } catch (error) {
+      this.logger.error(`Error deducting premium from balance for user ${userId}`, error);
     }
   }
 
@@ -155,6 +176,21 @@ export class BalanceService {
       return activeUsersCount;
     } catch (error) {
       this.logger.error('Error counting active users in the last 3 days', error);
+      throw error;
+    }
+  }
+  async countPremiumUsers(): Promise<number> {
+    try {
+      const premiumUsersCount = await this.balanceModel
+        .countDocuments({
+          isPremium: true,
+        })
+        .exec();
+
+      this.logger.log(`Number of premium users: ${premiumUsersCount}`);
+      return premiumUsersCount;
+    } catch (error) {
+      this.logger.error('Error counting premium users', error);
       throw error;
     }
   }

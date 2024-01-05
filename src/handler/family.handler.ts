@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Telegraf } from 'telegraf';
 import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
-import { acceptButton, backFamilyButton, backStartButton, groupButton } from '../battons';
+import { acceptButton, backFamilyButton, backStartButton, familyButton } from '../battons';
 import { resetSession } from '../common/reset.session';
 
 @Update()
@@ -23,7 +23,7 @@ export class FamilyHandler {
       ctx.session.lastBotMessage,
       null,
       FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU,
-      groupButton(ctx.session.language || 'ua'),
+      familyButton(ctx.session.language || 'ua'),
     );
   }
 
@@ -93,7 +93,7 @@ export class FamilyHandler {
         ctx.session.lastBotMessage,
         null,
         `${FAMILY_TEXT[ctx.session.language || 'ua'].INVITE_SENT} ${recipientId}.`,
-        groupButton(ctx.session.language || 'ua'),
+        familyButton(ctx.session.language || 'ua'),
       );
     } else {
       await ctx.deleteMessage();
@@ -102,7 +102,7 @@ export class FamilyHandler {
         ctx.session.lastBotMessage,
         null,
         `${FAMILY_TEXT[ctx.session.language || 'ua'].ID_ALREADY_EXISTS} ${recipientId}.`,
-        groupButton(ctx.session.language || 'ua'),
+        familyButton(ctx.session.language || 'ua'),
       );
       ctx.session.awaitingUserIdInput = false;
     }
@@ -149,7 +149,11 @@ export class FamilyHandler {
       acceptButton(ctx.session.language, recipientId),
     );
     await ctx.deleteMessage();
-    const sendMessage = await ctx.telegram.sendMessage(recipientId, message, groupButton(ctx.session.language || 'ua'));
+    const sendMessage = await ctx.telegram.sendMessage(
+      recipientId,
+      message,
+      familyButton(ctx.session.language || 'ua'),
+    );
     ctx.session.lastBotMessage = sendMessage.message_id;
   }
   @Action(/^accept_user:\d+$/)
@@ -166,7 +170,7 @@ export class FamilyHandler {
     const sendMessage = await ctx.telegram.sendMessage(
       initiatorId,
       FAMILY_TEXT[ctx.session.language].GROUP_CREATED,
-      groupButton(ctx.session.language || 'ua'),
+      familyButton(ctx.session.language || 'ua'),
     );
     ctx.session.lastBotMessage = sendMessage.message_id;
     this.logger.log('GROUP_CREATED');
@@ -186,7 +190,7 @@ export class FamilyHandler {
     const sendMessage = await ctx.telegram.sendMessage(
       recipientId,
       FAMILY_TEXT[ctx.session.language || 'ua'].INVITATION_DECLINED,
-      groupButton(ctx.session.language || 'ua'),
+      familyButton(ctx.session.language || 'ua'),
     );
     ctx.session.lastBotMessage = sendMessage.message_id;
   }
@@ -223,7 +227,7 @@ export class FamilyHandler {
       ctx.session.lastBotMessage,
       null,
       FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU,
-      groupButton(ctx.session.language || 'ua'),
+      familyButton(ctx.session.language || 'ua'),
     );
   }
 }

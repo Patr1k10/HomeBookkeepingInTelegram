@@ -4,7 +4,7 @@ import { IContext } from '../interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
-import { CRON_NOTIFICATION, CRON_NOTIFICATION_NEW_YEAR } from '../constants';
+import { CRON_NOTIFICATION } from '../constants';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
 import { backToStartButton } from '../battons';
@@ -19,7 +19,7 @@ export class CronNotificationsService {
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
   ) {}
 
-  @Cron('46 10 * * *', { timeZone: 'Europe/Kiev' })
+  @Cron('47 17 * * *', { timeZone: 'Europe/Kiev' })
   async notificationsAll() {
     const startTime = new Date();
     this.logger.log(`Cron task started at: ${startTime}`);
@@ -101,7 +101,7 @@ export class CronNotificationsService {
     try {
       if (user.dayOfPremium <= new Date()) {
         user.isPremium = false;
-        user.dayOfPremium = null;
+
         await user.save();
         this.logger.log(`Deducted premium from balance for user ${user.userId}`);
       } else return;
