@@ -46,8 +46,8 @@ export function actionButtonsDays(
   );
   const backButton = Markup.button.callback(BUTTONS[language].BACK, 'backS');
   const buttonsInColumns: ReturnType<typeof Markup.button.callback>[][] = [];
-  for (let i = 0; i < buttons.length; i += 5) {
-    buttonsInColumns.push(buttons.slice(i, i + 5));
+  for (let i = 0; i < buttons.length; i += 7) {
+    buttonsInColumns.push(buttons.slice(i, i + 7));
   }
   buttonsInColumns.push([monthButton, backButton]);
 

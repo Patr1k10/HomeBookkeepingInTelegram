@@ -4,7 +4,7 @@ import { IContext } from '../interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
-import { CRON_NOTIFICATION_NEW_YEAR } from '../constants';
+import { CRON_NOTIFICATION, CRON_NOTIFICATION_NEW_YEAR } from '../constants';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
 import { backToStartButton } from '../battons';
@@ -29,6 +29,7 @@ export class CronNotificationsService {
       for (const user of inactiveUsers) {
         await this.sendNotification(user);
         await this.updateLastActivity(user);
+        await this.deductPremiumFromBalance(user);
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
     } catch (error) {
@@ -44,7 +45,7 @@ export class CronNotificationsService {
 
   private async getInactiveUsers(): Promise<Balance[]> {
     const cutoffDate = new Date();
-    cutoffDate.setHours(cutoffDate.getHours() - 48); // to everyone who is not active
+    cutoffDate.setHours(cutoffDate.getHours() - 72); // to everyone who is not active
     return await this.balanceModel
       .find({
         $or: [
@@ -58,18 +59,16 @@ export class CronNotificationsService {
   private async sendNotification(user: Balance) {
     try {
       const userId = user.userId;
-      await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION_NEW_YEAR, {
+      await this.bot.telegram.sendMessage(userId, CRON_NOTIFICATION, {
         parse_mode: 'HTML',
         reply_markup: backToStartButton().reply_markup,
       });
-
       this.logger.log(`Sent notification to user ${userId}`);
       this.notificationCount++;
     } catch (error) {
       if (error.code === 403) {
         await this.markUserAsBanned(user);
       }
-
       this.logger.error(`Error sending notification to user ${user.userId}`, error);
     }
   }
@@ -95,6 +94,19 @@ export class CronNotificationsService {
       this.logger.log(`Updated lastActivity for user ${user.userId}`);
     } catch (error) {
       this.logger.error(`Error updating lastActivity for user ${user.userId}`, error);
+    }
+  }
+
+  private async deductPremiumFromBalance(user: Balance) {
+    try {
+      if (user.dayOfPremium <= new Date()) {
+        user.isPremium = false;
+        user.dayOfPremium = null;
+        await user.save();
+        this.logger.log(`Deducted premium from balance for user ${user.userId}`);
+      } else return;
+    } catch (error) {
+      this.logger.error(`Error deducting premium from balance for user ${user.userId}`, error);
     }
   }
 }

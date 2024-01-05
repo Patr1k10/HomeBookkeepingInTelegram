@@ -23,6 +23,32 @@ export class BalanceService {
     }
     return balance;
   }
+  async setIsPremium(userId: number, month: number): Promise<void> {
+    const balance = await this.balanceModel.findOne({ userId }).exec();
+    balance.isPremium = true;
+    const expirationDate = new Date();
+    expirationDate.setMonth(expirationDate.getMonth() + month);
+    balance.dayOfPremium = expirationDate;
+    this.logger.log(`Set is premium to ${month} months`);
+    await balance.save();
+  }
+
+  async getIsPremium(userId: number): Promise<boolean> {
+    const balance = await this.balanceModel.findOne({ userId }).exec();
+    return balance.isPremium;
+  }
+
+  async getRemainingPremiumDays(userId: number): Promise<number> {
+    const balance = await this.balanceModel.findOne({ userId }).exec();
+    if (balance && balance.dayOfPremium) {
+      const currentDate = new Date();
+      const premiumEndDate = new Date(balance.dayOfPremium);
+      const timeDifference = premiumEndDate.getTime() - currentDate.getTime();
+      return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    } else {
+      return 0;
+    }
+  }
 
   async createBalance(createBalanceDto: CreateBalanceDto): Promise<Balance> {
     try {

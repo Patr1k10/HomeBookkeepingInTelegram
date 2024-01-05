@@ -12,8 +12,8 @@ export const FAMILY_TEXT = {
     GROUP_DELETED: 'Групу успішно видалено🗑️',
     GROUP_EMPTY: 'Група вже порожня або не існує',
     INVALID_INPUT: '❌Невірні данні❌',
-    ACCEPT:'Користувач прийняв запрошення✅',
-    DECLINE: 'Користувач не прийняв запрошення🤨'
+    ACCEPT: 'Користувач прийняв запрошення✅',
+    DECLINE: 'Користувач не прийняв запрошення🤨',
   },
   en: {
     FAMILY_MENU: '🔽Family menu use first:🔽 ',
@@ -28,7 +28,7 @@ export const FAMILY_TEXT = {
     GROUP_DELETED: 'Group successfully deleted🗑️',
     GROUP_EMPTY: 'The group is already empty or does not exist',
     INVALID_INPUT: '❌Invalid input❌',
-    ACCEPT:'The user has accepted the invitation✅',
-    DECLINE: 'The user did not accept the invitation🤨'
+    ACCEPT: 'The user has accepted the invitation✅',
+    DECLINE: 'The user did not accept the invitation🤨',
   },
 };

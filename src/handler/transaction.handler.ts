@@ -15,6 +15,7 @@ import {
 } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 import { actionButtonsTransaction, backTranButton } from '../battons';
+import { resetSession } from '../common/reset.session';
 
 @Update()
 export class TransactionHandler {
@@ -171,11 +172,7 @@ export class TransactionHandler {
   @Action('backT')
   async backT(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backT executed`);
-    delete ctx.session.selectedDate;
-    delete ctx.session.selectedMonth;
-    delete ctx.session.selectedYear;
-    ctx.session.awaitingUserIdInput = false;
-    delete ctx.session.type;
+    resetSession(ctx);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
