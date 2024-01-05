@@ -3,7 +3,7 @@ import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../interface';
-import { backStartButton, languageSet } from '../battons';
+import { backStatisticButton, languageSet } from '../battons';
 import { resetSession } from '../common/reset.session';
 
 @Update()
@@ -17,7 +17,7 @@ export class BalanceHandler {
       resetSession(ctx);
       const userId = ctx.from.id;
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
-      const markup = backStartButton(ctx.session.language);
+      const markup = backStatisticButton(ctx.session.language);
       const balanceMessage = getBalanceMessage(balance, ctx.session.language || 'ua', ctx.session.currency || 'UAH');
       await ctx.telegram.editMessageText(ctx.chat.id, ctx.session.lastBotMessage, null, balanceMessage, {
         parse_mode: 'HTML',

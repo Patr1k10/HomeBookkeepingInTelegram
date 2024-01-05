@@ -1,7 +1,6 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { BalanceService } from '../service';
+import { BalanceService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
-import { TransactionService } from '../service';
 import {
   ERROR_MESSAGE,
   HELP_MESSAGE,
@@ -35,8 +34,9 @@ export class BasicCommandsHandler {
   async startCommand(ctx: IContext) {
     try {
       resetSession(ctx);
-      const userId = ctx.from.id;
+      await this.balanceService.createBalance(ctx.from.id);
       const user = ctx.from;
+      ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
       const count = await this.balanceService.countAllBalances();
       const activeUsers = await this.balanceService.countActiveUsersLast3Days();
       const bannedUsers = await this.balanceService.countBannedUsers();
@@ -49,7 +49,6 @@ export class BasicCommandsHandler {
       ActiveUsers: ${activeUsers}
       Count Users: ${count}
       BannedUsers: ${bannedUsers}`);
-      await this.balanceService.createBalance({ userId });
       await ctx.telegram.sendMessage(
         bosId,
         `New User created:
@@ -200,11 +199,10 @@ export class BasicCommandsHandler {
     }
     this.logger.log(`user:${ctx.from.id} resetAllCommand`);
     await ctx.deleteMessage();
-    const userId = ctx.from.id;
-    await this.balanceService.deleteAllBalancesOfUser(userId);
-    await this.transactionService.deleteAllTransactionsOfUser(userId);
+    await this.balanceService.deleteAllBalancesOfUser(ctx.from.id);
+    await this.transactionService.deleteAllTransactionsOfUser(ctx.from.id);
     await ctx.reply(RESETS_ALL[ctx.session.language || 'ua'].RESET_SUCCESSFUL);
-    await this.balanceService.createBalance({ userId });
+    await this.balanceService.createBalance(ctx.from.id);
     const sendMessage = await ctx.replyWithHTML(
       START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
       actionButtonsStart(ctx.session.language || 'ua'),
@@ -251,6 +249,7 @@ export class BasicCommandsHandler {
     this.logger.log(`user:${ctx.from.id} backToStart`);
     await ctx.deleteMessage();
     resetSession(ctx);
+    ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
     const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
     ctx.session.lastBotMessage = sentMessage.message_id;
   }

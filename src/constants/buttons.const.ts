@@ -45,6 +45,9 @@ export const BUTTONS = {
     DISAGREE: 'Не згоден❌',
     BACK: '↩️Повернутися',
     SELECT_YEAR: 'Оберіть дату🗓️',
+    GET_PREMIUM: '🏆Преміум🏆(test)',
+    SET_PREMIUM: 'Отримати преміум💸',
+    DAY_PREMIUM: 'Днів залишилось🗓️',
   },
   en: {
     SETTING: 'Settings⚙️',
@@ -92,5 +95,8 @@ export const BUTTONS = {
     DISAGREE: 'Disagree❌',
     BACK: '↩️Back',
     SELECT_YEAR: 'Selected date🗓️',
+    GET_PREMIUM: '🏆Premium🏆(test)',
+    SET_PREMIUM: 'Set premium💸',
+    DAY_PREMIUM: 'Days left🗓️',
   },
 };
