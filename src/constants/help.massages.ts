@@ -72,7 +72,6 @@ export const HELP_MESSAGE = {
    <b>Якщо ви хочете підтримати проєкт фінансово тисніть на кнопку нижче 🔽🔽🔽🔽🔽</b>`,
 };
 
-
 export const SUPPORT_MESSAGE = {
   en: `<u>Choose a convenient way to help the project:</u>
 <b>USDT Address (TRC20):</b> ${process.env.USDT}

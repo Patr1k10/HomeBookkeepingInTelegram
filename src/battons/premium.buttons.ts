@@ -1,6 +1,6 @@
 import { Markup } from 'telegraf';
-import { BUTTONS, currencyFlagMapping, CURRNCY } from '../constants';
-import { ICryptoAsset, ICurrencyRates } from '../interface';
+import { BUTTONS, currencyFlagMapping } from '../constants';
+import { ICryptoAsset } from '../interface';
 
 export function actionButtonsPremium(language: string = 'ua', isPremium: boolean = false) {
   const baseButtons = [[Markup.button.callback(`${BUTTONS[language].SET_PREMIUM}`, 'setPremium')]];
