@@ -22,7 +22,13 @@ export const HELP_MESSAGE = {
 4️⃣ <i>Add a family member using the received ID.</i>
 5️⃣ <i>The family member must confirm the invitation.</i>
 🔄 <i>This will combine your balance and transactions. If you change your mind, your data will remain yours.</i>
-🚫 <i>You can remove family access at any time, and your balance and transactions will revert to being only yours.</i>\`,
+🚫 <i>You can remove family access at any time, and your balance and transactions will revert to being only yours.</i>
+
+🌟 <b>Premium Access:</b>
+🔓 In the testing phase, you can now get Premium Access through settings.
+💹 Currently includes currency and cryptocurrency exchange rates.
+🔄 More features are planned for Premium Access.
+💡 Also considering a subscription feature for currency and cryptocurrency rates, allowing hourly updates.
 
 🔧 <i>If you have any questions or suggestions, feel free to contact us.</i>
 
@@ -52,14 +58,20 @@ export const HELP_MESSAGE = {
 4️⃣ <i>Додайте учасника сім'ї, використовуючи отриманий ID.</i>
 5️⃣ <i>Учасник повинен підтвердити запрошення.</i>
 🔄 <i>Це об'єднає ваш баланс та транзакції. Але якщо ви передумаєте, ваші дані залишаться вашими.</i>
-🚫 <i>Ви можете видалити сімейний доступ в будь-який момент, і ваш баланс та транзакції залишаться вашими.</i>\`
+🚫 <i>Ви можете видалити сімейний доступ в будь-який момент, і ваш баланс та транзакції залишаться вашими.</i>
 
+🌟 <b>Преміум Доступ:</b>
+🔓 На тестовому етапі ви тепер можете отримати Преміум Доступ через налаштування.
+💹 Наразі включає курси валют та криптовалют.
+🔄 Планується додати більше функцій для Преміум Доступу.
+💡 Також розглядаємо можливість підписки на курси валют та криптовалют з щогодинними оновленнями.
 
 🔧 <i>Якщо у вас є питання або пропозиції, не соромтесь звертатися.</i>
 
 📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: help.tgbot@icloud.com</b> 📩
    <b>Якщо ви хочете підтримати проєкт фінансово тисніть на кнопку нижче 🔽🔽🔽🔽🔽</b>`,
 };
+
 
 export const SUPPORT_MESSAGE = {
   en: `<u>Choose a convenient way to help the project:</u>

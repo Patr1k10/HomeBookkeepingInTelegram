@@ -5,22 +5,24 @@ import { CustomCallbackQuery, IContext, ICurrencyRates } from '../interface';
 import {
   BAY_PREMIUM_MENU,
   CRYPTO_MESSAGE,
-  CURRENCY_MESSAGE,
+  CURRENCY_MESSAGE, FAMILY_TEXT,
   PREMIUM_MENU,
   PREMIUM_MESSAGE,
   PREMIUM_SET,
   SELECT_CURRENCY_MESSAGE,
   TRIAL_PROVIDED,
-  TRIAL_PROVIDED_FALSE,
-} from '../constants';
+  TRIAL_PROVIDED_FALSE
+} from "../constants";
 import {
+  actionButtonsBackPremium,
   actionButtonsPremium,
   actionButtonsPremiumMenu,
   actionSetPremium,
-  backStartButton,
+  backStartButton, familyButton,
   generateCryptoButtons,
-  generateCurrencyButtons,
-} from '../battons';
+  generateCurrencyButtons
+} from "../battons";
+import { resetSession } from "../common/reset.session";
 
 @Update()
 export class PremiumHandler {
@@ -151,7 +153,7 @@ export class PremiumHandler {
       const currencySell = parts[3];
       const message = CURRENCY_MESSAGE(currencyName, currencyBay, currencySell, ctx.session.language);
       await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `${message}`, {
-        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        reply_markup: actionButtonsBackPremium(ctx.session.language).reply_markup,
         disable_web_page_preview: true,
         parse_mode: 'HTML',
       });
@@ -192,11 +194,23 @@ export class PremiumHandler {
         ctx.session.language,
       );
       await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `${message}`, {
-        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        reply_markup: actionButtonsBackPremium(ctx.session.language).reply_markup,
         disable_web_page_preview: true,
         parse_mode: 'HTML',
       });
       this.logger.log(`User:${ctx.from.id} crypto ${cryptoSymbol}`);
     }
   }
+@Action('backP')
+  async backP(ctx: IContext) {
+  this.logger.log(`user:${ctx.from.id} backF`);
+  resetSession(ctx);
+  await ctx.telegram.editMessageText(
+    ctx.from.id,
+    ctx.session.lastBotMessage,
+    null,
+    `${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`,
+    actionButtonsPremiumMenu(ctx.session.language || 'ua'),
+  );
+}
 }

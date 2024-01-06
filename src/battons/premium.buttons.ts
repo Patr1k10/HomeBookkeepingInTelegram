@@ -35,7 +35,7 @@ export function generateCurrencyButtons(currencyData: any[], language: string = 
     );
   });
 
-  buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'back'));
+  buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'backP'));
 
   return Markup.inlineKeyboard(buttons, { columns: 3 });
 }
@@ -47,7 +47,12 @@ export function generateCryptoButtons(cryptoAssetData: ICryptoAsset[], language:
     );
   });
 
-  buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'back'));
+  buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'backP'));
 
   return Markup.inlineKeyboard(buttons, { columns: 3 });
+}
+export function actionButtonsBackPremium(language: string = 'ua') {
+  const baseButtons = [[Markup.button.callback(BUTTONS[language].BACK, 'backP')]];
+
+  return Markup.inlineKeyboard(baseButtons);
 }
