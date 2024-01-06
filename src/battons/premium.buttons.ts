@@ -28,7 +28,7 @@ export function actionButtonsPremiumMenu(language: string = 'ua') {
   return Markup.inlineKeyboard(baseButtons);
 }
 
-export function generateCurrencyButtons(currencyData: ICurrencyRates[], language: string = 'ua') {
+export function generateCurrencyButtons(currencyData: any[], language: string = 'ua') {
   const buttons = currencyData.map((currency) => {
     const flag = currencyFlagMapping[currency.currencyCode] || '';
     return Markup.button.callback(

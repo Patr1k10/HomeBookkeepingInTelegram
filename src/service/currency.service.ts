@@ -12,23 +12,40 @@ export class CurrencyService {
       this.logger.log('getCurrencyData');
       const url = process.env.CURRENT_URL;
       const response = await axios.get(url);
-      return this.parseCurrencyRates(response.data);
+      const result = this.parseCurrencyRates(response.data);
+      // this.logger.log(result);
+      return result;
     } catch (err) {
       this.logger.error('invalid response.data', err);
     }
   }
 
-  private parseCurrencyRates(html: string) {
+  private async parseCurrencyRates(html: string): Promise<ICurrencyRates[]> {
     const $ = cheerio.load(html);
     const currencyRates: ICurrencyRates[] = [];
 
-    $('table.summary-rates.full-rates tbody tr').each((index, element) => {
-      const currencyCode = $(element).find('td:nth-child(2)').text().trim();
-      const currencyName = $(element).find('td:nth-child(3)').text().trim();
-      const buyRate = $(element).find('td:nth-child(4)').text().trim();
-      const sellRate = $(element).find('td:nth-child(5)').text().trim();
+    const headers: string[] = [];
+    $('table.summary-rates.full-rates thead th').each((index, element) => {
+      headers.push($(element).text().trim().toLowerCase());
+    });
 
-      currencyRates.push({ currencyCode, currencyName, buyRate, sellRate });
+    $('table.summary-rates.full-rates tbody tr').each((index, element) => {
+      const rowData: any = {};
+      $(element)
+        .find('td')
+        .each((tdIndex, tdElement) => {
+          const header = headers[tdIndex];
+          rowData[header] = $(tdElement).text().trim();
+        });
+
+      const currencyRate: ICurrencyRates = {
+        currencyCode: rowData['код'],
+        currencyName: rowData['валюта'],
+        buyRate: rowData['купівля'],
+        sellRate: rowData['продаж'],
+      };
+
+      currencyRates.push(currencyRate);
     });
 
     return currencyRates;
