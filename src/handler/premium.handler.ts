@@ -132,7 +132,6 @@ export class PremiumHandler {
   }
   @Action(/Currency:(.+)/)
   async exchangeCurrency(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} exchangeCurrency`);
     const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     if (callbackQuery) {
       const callbackData = callbackQuery.data;
@@ -146,6 +145,7 @@ export class PremiumHandler {
         disable_web_page_preview: true,
         parse_mode: 'HTML',
       });
+      this.logger.log(`user:${ctx.from.id} exchangeCurrency Currency:${currencyName}`);
     }
   }
 }
