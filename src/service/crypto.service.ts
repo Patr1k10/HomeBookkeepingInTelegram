@@ -1,10 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { Injectable, Logger, Res } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
-import { interval } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ICryptoAsset } from '../interface';
 
 export class CryptoService {
