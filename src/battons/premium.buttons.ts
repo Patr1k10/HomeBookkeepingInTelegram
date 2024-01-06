@@ -1,6 +1,6 @@
 import { Markup } from 'telegraf';
-import { BUTTONS, currencyFlagMapping } from '../constants';
-import { ICurrencyRates } from '../interface';
+import { BUTTONS, currencyFlagMapping, CURRNCY } from '../constants';
+import { ICryptoAsset, ICurrencyRates } from '../interface';
 
 export function actionButtonsPremium(language: string = 'ua', isPremium: boolean = false) {
   const baseButtons = [[Markup.button.callback(`${BUTTONS[language].SET_PREMIUM}`, 'setPremium')]];
@@ -18,10 +18,8 @@ export function actionSetPremium(language: string = 'ua', isPremium: boolean = f
 
 export function actionButtonsPremiumMenu(language: string = 'ua') {
   const baseButtons = [
-    [
-      Markup.button.callback(`Курс валют💸(тест)`, 'exchange_rate'),
-      Markup.button.callback(`Курс крипто валют👾(тест)`, 'сrypto_currency_course'),
-    ],
+    [Markup.button.callback(`${BUTTONS[language].CURRENCY}`, 'exchange_rate')],
+    [Markup.button.callback(`${BUTTONS[language].CRYPTO}`, 'crypto_currency_course')],
     [Markup.button.callback(BUTTONS[language].BACK, 'back')],
   ];
 
@@ -34,6 +32,18 @@ export function generateCurrencyButtons(currencyData: any[], language: string = 
     return Markup.button.callback(
       `${flag} ${currency.currencyCode}`,
       `Currency:${currency.currencyName}:${currency.buyRate}:${currency.sellRate}`,
+    );
+  });
+
+  buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'back'));
+
+  return Markup.inlineKeyboard(buttons, { columns: 3 });
+}
+export function generateCryptoButtons(cryptoAssetData: ICryptoAsset[], language: string = 'ua') {
+  const buttons = cryptoAssetData.map((crypto) => {
+    return Markup.button.callback(
+      `${crypto.symbol}`,
+      `Crypto:${crypto.name}:${crypto.symbol}:${crypto.priceUsd}:${crypto.changePercent24Hr}`,
     );
   });
 

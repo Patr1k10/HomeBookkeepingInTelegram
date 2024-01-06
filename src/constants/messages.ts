@@ -156,12 +156,33 @@ export const SELECT_SETTING_MESSAGE = {
 
 export const CURRENCY_MESSAGE = (currencyName: string, currencyBay: string, currencySell: string, language: string) => {
   const messages = {
-    en: `Average rate of currency: <b>${currencyName}</b> in exchangers for today:
+    en: `Average rate of currency:
+ <b>${currencyName}</b> in exchangers for today:
      <b>sell:</b> ${currencySell}UAH
      <b>buy:</b> ${currencyBay}UAH `,
-    ua: `Середній курс валюти: <b>${currencyName}</b> в обмінниках на сьогодні: 
+    ua: `Середній курс валюти:
+ <b>${currencyName}</b> в обмінниках на сьогодні: 
     <b>продаж:</b> ${currencySell}грн. 
     <b>купівля:</b> ${currencyBay}грн.`,
+  };
+  return messages[language];
+};
+
+export const CRYPTO_MESSAGE = (
+  cryptoName: string,
+  cryptoSymbol: string,
+  cryptoPriceUsd: string,
+  cryptoChangePercent24Hr: string,
+  language: string,
+) => {
+  const messages = {
+    en: `Coin rate: 🪙${cryptoSymbol} <b>${cryptoName}</b> in average for today:
+    <b>Price:</b> ${parseFloat(cryptoPriceUsd).toFixed(3)}$.
+    <b>Crypto change over the last 24 hours 📊:</b> ${parseFloat(cryptoChangePercent24Hr).toFixed(3)}%.`,
+    ua: `Курс монеты: 
+    ${cryptoSymbol} <b>${cryptoName}</b> в середньому на сьогодні: 
+    <b>Ціна:</b> ${parseFloat(cryptoPriceUsd).toFixed(3)}$. 
+    <b>Зміна ціни за останні 24 години 📊:</b> ${parseFloat(cryptoChangePercent24Hr).toFixed(3)}%.`,
   };
   return messages[language];
 };

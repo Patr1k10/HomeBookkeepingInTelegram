@@ -3,13 +3,9 @@ export const PREMIUM_MESSAGE = {
   en: 'days left until the end of the premium',
 };
 
-export const PREMIUM_MENU = {
-  ua:
-    'Тут можна придбати преміум та дізнатися скільки днів преміуму залишилось\n' +
-    'після отримання преміуму вам відкриються додаткові функції в основному меню ',
-  en:
-    'Here you can purchase a premium and find out how many premium days are left\n' +
-    'after receiving the premium, additional functions will open to you in the main menu',
+export const BAY_PREMIUM_MENU = {
+  ua: 'Оберіть потрібній вам розділ🔽',
+  en: 'Choose the section you need🔽',
 };
 export const PREMIUM_SET = {
   ua: 'Тут буде функціонал для отримання преміум доступу😎',
@@ -23,4 +19,13 @@ export const TRIAL_PROVIDED = {
 export const TRIAL_PROVIDED_FALSE = {
   en: 'You already have a premium try later',
   ua: 'Ви вже маєте преміум спробуйте пізніше',
+};
+
+export const PREMIUM_MENU = {
+  ua:
+    'Тут можна придбати преміум та дізнатися скільки днів преміуму залишилось\n' +
+    'після отримання преміуму вам відкриються додаткові функції в основному меню ',
+  en:
+    'Here you can purchase a premium and find out how many premium days are left\n' +
+    'after receiving the premium, additional functions will open to you in the main menu',
 };

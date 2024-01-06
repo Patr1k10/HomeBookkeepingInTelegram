@@ -1,8 +1,10 @@
 import { Action, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { BalanceService, CurrencyService } from '../service';
+import { BalanceService, CryptoService, CurrencyService } from '../service';
 import { CustomCallbackQuery, IContext, ICurrencyRates } from '../interface';
 import {
+  BAY_PREMIUM_MENU,
+  CRYPTO_MESSAGE,
   CURRENCY_MESSAGE,
   PREMIUM_MENU,
   PREMIUM_MESSAGE,
@@ -16,6 +18,7 @@ import {
   actionButtonsPremiumMenu,
   actionSetPremium,
   backStartButton,
+  generateCryptoButtons,
   generateCurrencyButtons,
 } from '../battons';
 
@@ -25,6 +28,7 @@ export class PremiumHandler {
   constructor(
     private readonly balanceService: BalanceService,
     private readonly currencyService: CurrencyService,
+    private readonly cryptoService: CryptoService,
   ) {}
 
   @Action('getPremium')
@@ -50,7 +54,7 @@ export class PremiumHandler {
       ctx.from.id,
       ctx.session.lastBotMessage,
       null,
-      `${PREMIUM_MENU[ctx.session.language]}`,
+      `${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`,
       {
         reply_markup: actionButtonsPremium(ctx.session.language, ctx.session.isPremium).reply_markup,
         disable_web_page_preview: true,
@@ -108,11 +112,17 @@ export class PremiumHandler {
   @Action('premiumMenu')
   async premiumMenu(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getPremiumMenu`);
-    await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `Тут буде преміум функционал`, {
-      reply_markup: actionButtonsPremiumMenu(ctx.session.language).reply_markup,
-      disable_web_page_preview: true,
-      parse_mode: 'HTML',
-    });
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      `${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`,
+      {
+        reply_markup: actionButtonsPremiumMenu(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      },
+    );
   }
   @Action('exchange_rate')
   async exchangeRate(ctx: IContext) {
@@ -146,6 +156,47 @@ export class PremiumHandler {
         parse_mode: 'HTML',
       });
       this.logger.log(`user:${ctx.from.id} exchangeCurrency Currency:${currencyName}`);
+    }
+  }
+  @Action('crypto_currency_course')
+  async cryptoCourse(ctx: IContext) {
+    this.logger.log(`User:${ctx.from.id}cryptoCourse`);
+    const cryptoAssetData = await this.cryptoService.getCryptoAsset();
+    await ctx.telegram.editMessageText(
+      ctx.from.id,
+      ctx.session.lastBotMessage,
+      null,
+      `${SELECT_CURRENCY_MESSAGE[ctx.session.language]}`,
+      {
+        reply_markup: generateCryptoButtons(cryptoAssetData).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      },
+    );
+  }
+  @Action(/Crypto:(.+)/)
+  async crypto(ctx: IContext) {
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+      const cryptoName = parts[1];
+      const cryptoSymbol = parts[2];
+      const cryptoPriceUsd = parts[3];
+      const cryptoChangePercent24Hr = parts[4];
+      const message = CRYPTO_MESSAGE(
+        cryptoName,
+        cryptoSymbol,
+        cryptoPriceUsd,
+        cryptoChangePercent24Hr,
+        ctx.session.language,
+      );
+      await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `${message}`, {
+        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      });
+      this.logger.log(`User:${ctx.from.id} crypto ${cryptoSymbol}`);
     }
   }
 }
