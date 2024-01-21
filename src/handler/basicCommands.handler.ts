@@ -1,5 +1,5 @@
 import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { BalanceService, CurrencyService, TransactionService } from '../service';
+import { BalanceService, PremiumService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import {
   ERROR_MESSAGE,
@@ -28,20 +28,21 @@ export class BasicCommandsHandler {
   constructor(
     private readonly balanceService: BalanceService,
     private readonly transactionService: TransactionService,
+    private readonly premiumService: PremiumService,
   ) {}
 
   @Start()
   async startCommand(ctx: IContext) {
     try {
       resetSession(ctx);
-      await this.balanceService.deductPremiumFromUser(ctx.from.id);
+      await this.premiumService.deductPremiumFromUser(ctx.from.id);
       await this.balanceService.createBalance(ctx.from.id);
       const user = ctx.from;
-      ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
+      ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
       const count = await this.balanceService.countAllBalances();
       const activeUsers = await this.balanceService.countActiveUsersLast3Days();
       const bannedUsers = await this.balanceService.countBannedUsers();
-      const countIsPremiumUser = await this.balanceService.countPremiumUsers();
+      const countIsPremiumUser = await this.premiumService.countPremiumUsers();
       const bosId = process.env.BOSID;
       this.logger.log(`
       User ID: ${user.id}
@@ -254,15 +255,15 @@ export class BasicCommandsHandler {
     this.logger.log(`user:${ctx.from.id} backToStart`);
     await ctx.deleteMessage();
     resetSession(ctx);
-    ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
+    ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
     const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
     ctx.session.lastBotMessage = sentMessage.message_id;
   }
 
   @Action('back')
   async back(ctx: IContext) {
-    await this.balanceService.deductPremiumFromUser(ctx.from.id);
-    ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
+    await this.premiumService.deductPremiumFromUser(ctx.from.id);
+    ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
     this.logger.log(`user:${ctx.from.id} back`);
     resetSession(ctx);
     await ctx.telegram.editMessageText(

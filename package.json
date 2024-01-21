@@ -36,6 +36,7 @@
     "mongodb": "^5.9.0",
     "mongoose": "^7.5.1",
     "nestjs-telegraf": "^2.7.0",
+    "openai": "^4.24.7",
     "redis": "^4.6.10",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

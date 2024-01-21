@@ -5,3 +5,4 @@ export * from './transaction.service';
 export * from './cron.notifications.service';
 export * from './currency.service';
 export * from './crypto.service';
+export * from './premium.service';
