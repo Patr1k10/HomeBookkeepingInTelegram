@@ -3,32 +3,41 @@ import { Mongo } from '@telegraf/session/mongodb';
 import { Redis } from '@telegraf/session/redis';
 import { createClient } from 'redis';
 import { IContext } from '../interface';
+import { ConfigService } from '@nestjs/config';
 
-const redisClient = createClient({
-  username: process.env.REDIS_USERNAME,
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT, 10),
-  },
-});
+export function createSessionMiddleware(configService: ConfigService): Middleware<IContext> {
+  const redisUsername = configService.getOrThrow('REDIS_USERNAME');
+  const redisPassword = configService.getOrThrow('REDIS_PASSWORD');
+  const redisHost = configService.getOrThrow('REDIS_HOST');
+  const redisPort = parseInt(configService.getOrThrow('REDIS_PORT'), 10);
 
-redisClient.on('error', (err) => {
-  console.error('Redis Client Error', err);
-});
+  const mongodbUrl = configService.getOrThrow('MONGODB_URL');
+  const mongodbName = configService.getOrThrow('MONGODB_NAME');
 
-redisClient.on('connect', () => {
-  console.log('Connected to Redis');
-});
+  const redisClient = createClient({
+    username: redisUsername,
+    password: redisPassword,
+    socket: {
+      host: redisHost,
+      port: redisPort,
+    },
+  });
 
-const redisStore = Redis({ client: redisClient });
+  redisClient.on('error', (err) => {
+    console.error('Redis Client Error', err);
+  });
 
-const mongoStore = Mongo({
-  url: process.env.MONGODB_URL,
-  database: process.env.MONGODB_NAME,
-});
+  redisClient.on('connect', () => {
+    console.log('Connected to Redis');
+  });
 
-export function createSessionMiddleware(): Middleware<IContext> {
+  const redisStore = Redis({ client: redisClient });
+
+  const mongoStore = Mongo({
+    url: mongodbUrl,
+    database: mongodbName,
+  });
+
   return async (ctx, next) => {
     const key = ctx.from && ctx.chat ? `${ctx.from.id}:${ctx.chat.id}` : null;
 

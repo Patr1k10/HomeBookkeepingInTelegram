@@ -1,5 +1,3 @@
-import { generateCurrencyButtons } from '../battons';
-
 export const BUTTONS = {
   ua: {
     SETTING: 'Налаштування⚙️',
@@ -53,6 +51,12 @@ export const BUTTONS = {
     TRIAL_PREMIUM: 'Отримати пробні 14 днів✅',
     CURRENCY: 'Курс валют💸',
     CRYPTO: 'Курс крипто 🪙',
+    PREMIUM_GPT: 'GPT можливості',
+    COMPARED: 'Додати до порівняння',
+    GET_COMPARED: 'Отримати порівняння',
+    SEE_COMPARED: 'Подивитися що порівнюємо',
+    DELL_COMPARED: 'Видалити порівняння🗑️',
+
   },
   en: {
     SETTING: 'Settings⚙️',
@@ -106,5 +110,10 @@ export const BUTTONS = {
     TRIAL_PREMIUM: 'Get a 14-day trial✅',
     CURRENCY: 'Exchange rate💸',
     CRYPTO: 'Rate of crypto🪙',
+    PREMIUM_GPT: 'GPT opportunities',
+    COMPARED: 'Add to compare',
+    GET_COMPARED: 'Get a comparison',
+    SEE_COMPARED: 'See what we compare',
+    DELL_COMPARED: 'Remove comparison🗑️',
   },
 };

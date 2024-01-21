@@ -20,6 +20,7 @@ export function actionButtonsPremiumMenu(language: string = 'ua') {
   const baseButtons = [
     [Markup.button.callback(`${BUTTONS[language].CURRENCY}`, 'exchange_rate')],
     [Markup.button.callback(`${BUTTONS[language].CRYPTO}`, 'crypto_currency_course')],
+    [Markup.button.callback(`${BUTTONS[language].PREMIUM_GPT}`, 'gpt')],
     [Markup.button.callback(BUTTONS[language].BACK, 'back')],
   ];
 
@@ -53,6 +54,38 @@ export function generateCryptoButtons(cryptoAssetData: ICryptoAsset[], language:
 }
 export function actionButtonsBackPremium(language: string = 'ua') {
   const baseButtons = [[Markup.button.callback(BUTTONS[language].BACK, 'backP')]];
+
+  return Markup.inlineKeyboard(baseButtons);
+}
+
+export function actionButtonsCompare(language: string = 'ua', isPremium: boolean = false) {
+  const baseButtons = [[Markup.button.callback(BUTTONS[language].BACK, 'backS')]];
+
+  if (isPremium) {
+    baseButtons.unshift([Markup.button.callback(`${BUTTONS[language].COMPARED}`, 'compare')]);
+  }
+  return Markup.inlineKeyboard(baseButtons);
+}
+
+export function actionButtonsGptMenu(language: string = 'ua') {
+  const baseButtons = [
+    [Markup.button.callback(`${BUTTONS[language].GET_COMPARED}`, 'get_compare')],
+    [Markup.button.callback(`${BUTTONS[language].SEE_COMPARED}`, 'see_compare')],
+    [Markup.button.callback(BUTTONS[language].BACK, 'backP')],
+  ];
+
+  return Markup.inlineKeyboard(baseButtons);
+}
+export function actionButtonsBeckP(language: string = 'ua') {
+  const baseButtons = [[Markup.button.callback(BUTTONS[language].BACK, 'backP')]];
+
+  return Markup.inlineKeyboard(baseButtons);
+}
+export function actionButtonsBeckPAndRemove(language: string = 'ua') {
+  const baseButtons = [
+    [Markup.button.callback(`${BUTTONS[language].DELL_COMPARED}`, 'compare_remove')],
+    [Markup.button.callback(`${BUTTONS[language].BACK}`, 'backP')],
+  ];
 
   return Markup.inlineKeyboard(baseButtons);
 }

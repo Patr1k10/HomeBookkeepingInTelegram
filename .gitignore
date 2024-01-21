@@ -4,6 +4,7 @@
 .env
 session_db.json
 todoo.txt
+test.json
 # Logs
 logs
 *.log

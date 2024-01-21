@@ -232,8 +232,7 @@ export class StatisticsService {
         const formattedTransactions = await Promise.all(
           transactions.map(async (transaction) => await this.messageService.formatTransaction(transaction)),
         );
-        const mark = backStatisticButton(ctx.session.language);
-
+        const mark = backStatisticButton(ctx.session.language || 'ua');
         const detailedStatistics = formattedTransactions.join('\n');
 
         await ctx.telegram.editMessageText(

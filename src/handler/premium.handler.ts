@@ -1,6 +1,6 @@
 import { Action, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { BalanceService, CryptoService, CurrencyService } from '../service';
+import { BalanceService, CryptoService, CurrencyService, PremiumService } from '../service';
 import { CustomCallbackQuery, IContext } from '../interface';
 import {
   BAY_PREMIUM_MENU,
@@ -30,12 +30,13 @@ export class PremiumHandler {
     private readonly balanceService: BalanceService,
     private readonly currencyService: CurrencyService,
     private readonly cryptoService: CryptoService,
+    private readonly premiumService: PremiumService,
   ) {}
 
   @Action('getPremium')
   async getPremium(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getPremium`);
-    const premiumDays = await this.balanceService.getRemainingPremiumDays(ctx.from.id);
+    const premiumDays = await this.premiumService.getRemainingPremiumDays(ctx.from.id);
     await ctx.telegram.editMessageText(
       ctx.from.id,
       ctx.session.lastBotMessage,
@@ -81,7 +82,7 @@ export class PremiumHandler {
   @Action('trialPremium')
   async trialPremium(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} trialPremium`);
-    const result = await this.balanceService.setIsPremium(ctx.from.id, 14);
+    const result = await this.premiumService.setIsPremium(ctx.from.id, 14);
     if (result === false) {
       this.logger.log(`User:${ctx.from.id} Premium is already active for more than 3 days. No changes made.`);
       await ctx.telegram.editMessageText(
@@ -96,7 +97,7 @@ export class PremiumHandler {
         },
       );
     } else {
-      ctx.session.isPremium = await this.balanceService.getIsPremium(ctx.from.id);
+      ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
       await ctx.telegram.editMessageText(
         ctx.from.id,
         ctx.session.lastBotMessage,

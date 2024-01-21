@@ -2,7 +2,7 @@ import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { CURRNCY, TOTAL_MESSAGES } from '../constants';
 import { IContext, Transaction } from '../interface';
-import { backStatisticButtonMessage } from '../battons';
+import { actionButtonsCompare, backStatisticButtonMessage } from '../battons';
 
 export class MessageService {
   constructor(
@@ -102,7 +102,7 @@ export class MessageService {
 
     await this.bot.telegram.editMessageText(userId, ctx.session.lastBotMessage, null, message, {
       parse_mode: 'HTML',
-      reply_markup: backStatisticButtonMessage(ctx.session.language, ctx).reply_markup,
+      reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium).reply_markup,
     });
   }
 

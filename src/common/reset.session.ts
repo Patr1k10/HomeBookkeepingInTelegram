@@ -6,4 +6,5 @@ export function resetSession(ctx: IContext): void {
   delete ctx.session.selectedYear;
   ctx.session.awaitingUserIdInput = false;
   delete ctx.session.type;
+  // delete ctx.session.compare
 }
