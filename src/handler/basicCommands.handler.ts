@@ -35,6 +35,7 @@ export class BasicCommandsHandler {
   async startCommand(ctx: IContext) {
     try {
       resetSession(ctx);
+      ctx.session.compare = [];
       await this.premiumService.deductPremiumFromUser(ctx.from.id);
       await this.balanceService.createBalance(ctx.from.id);
       const user = ctx.from;
