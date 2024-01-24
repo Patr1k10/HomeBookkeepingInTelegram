@@ -99,3 +99,37 @@ export function actionButtonsYears(years: number[], language: string = 'ua') {
 
   return Markup.inlineKeyboard(buttons, { columns: 1 });
 }
+
+export function actionButtonsTransactionNames(
+  transactionNames: string[],
+  language: string = 'ua',
+  currentPage: number = 1,
+) {
+  const buttons = [];
+  const totalItems = transactionNames.length;
+  const startIndex = (currentPage - 1) * 30;
+  const endIndex = Math.min(startIndex + 30, totalItems);
+
+  const transactionButtons = [];
+  for (let i = startIndex; i < endIndex; i++) {
+    const name = transactionNames[i];
+    transactionButtons.push(Markup.button.callback(name, `TransactionName:${name}`));
+
+    if (transactionButtons.length === 3) {
+      buttons.push([...transactionButtons]);
+      transactionButtons.length = 0;
+    }
+  }
+  const navigationButtons = [];
+  if (currentPage > 1) {
+    navigationButtons.push(Markup.button.callback(`⬅️`, `NextPage:${currentPage - 1}`));
+  }
+  if (endIndex < totalItems) {
+    navigationButtons.push(Markup.button.callback(`➡️`, `NextPage:${currentPage + 1}`));
+  }
+
+  buttons.push(navigationButtons);
+  buttons.push([Markup.button.callback(BUTTONS[language].BACK, 'backS')]);
+
+  return Markup.inlineKeyboard(buttons);
+}

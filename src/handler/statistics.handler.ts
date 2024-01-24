@@ -228,6 +228,25 @@ export class StatisticsHandler {
       this.logger.log(`user:${ctx.from.id} callbackQuery is undefined`);
     }
   }
+  @Action(/NextPage:(\d+)/)
+  async nextPageCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} nextPageCommand `);
+    const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(ctx);
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery) {
+      const callbackData = callbackQuery.data;
+      const parts = callbackData.split(':');
+      const page = Number(parts[1]);
+      const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames, ctx.session.language, page);
+      await ctx.telegram.editMessageText(
+        ctx.from.id,
+        ctx.session.lastBotMessage,
+        null,
+        SELECT_CATEGORY_MESSAGE[ctx.session.language || 'ua'],
+        transactionNameButtons,
+      );
+    }
+  }
 
   @Action('backS')
   async backS(ctx: IContext) {
