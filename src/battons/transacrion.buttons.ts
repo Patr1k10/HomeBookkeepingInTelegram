@@ -24,5 +24,5 @@ export function actionButtonsTransactionNames(transactionNames: string[], langua
 
   buttons.push(Markup.button.callback(BUTTONS[language].BACK, 'backS'));
 
-  return Markup.inlineKeyboard(buttons, { columns: 3 });
+  return Markup.inlineKeyboard(buttons, { columns: 2 });
 }
