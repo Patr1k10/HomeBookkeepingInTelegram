@@ -1,7 +1,7 @@
 import { Markup } from 'telegraf';
 import { BUTTONS } from '../constants';
 
-export function actionButtonsSettings(language: string = 'ua') {
+export function actionButtonsSettings(language: string = 'ua', bossId: number) {
   const baseButtons = [
     [
       Markup.button.callback(BUTTONS[language].FAMILY, 'family'),
@@ -12,6 +12,18 @@ export function actionButtonsSettings(language: string = 'ua') {
       Markup.button.callback(BUTTONS[language].GET_PREMIUM, 'premium'),
       Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
+  ];
+  if (bossId === +process.env.BOSID) {
+    baseButtons[1].push(Markup.button.callback('Адмін😎 панель🔓', 'admin'));
+  }
+  return Markup.inlineKeyboard(baseButtons);
+}
+
+export function actionButtonsAdmin(language: string = 'ua') {
+  const baseButtons = [
+    [Markup.button.callback('Отримати статистуки по боту', 'adminStat')],
+    [Markup.button.callback('Відправити новини', 'sendNews')],
+    [Markup.button.callback('Заглушка', 'Заглушка'), Markup.button.callback('Повирнутися ↩️', 'back')],
   ];
   return Markup.inlineKeyboard(baseButtons);
 }

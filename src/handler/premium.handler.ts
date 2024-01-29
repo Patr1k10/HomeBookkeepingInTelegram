@@ -37,47 +37,29 @@ export class PremiumHandler {
   async getPremium(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getPremium`);
     const premiumDays = await this.premiumService.getRemainingPremiumDays(ctx.from.id);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      `${premiumDays} ${PREMIUM_MESSAGE[ctx.session.language || 'ua']}`,
-      {
-        reply_markup: backStartButton(ctx.session.language).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(`${premiumDays} ${PREMIUM_MESSAGE[ctx.session.language || 'ua']}`, {
+      reply_markup: backStartButton(ctx.session.language).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
   @Action('premium')
   async premium(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} premium`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      `${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`,
-      {
-        reply_markup: actionButtonsPremium(ctx.session.language, ctx.session.isPremium).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(`${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`, {
+      reply_markup: actionButtonsPremium(ctx.session.language, ctx.session.isPremium).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
   @Action('setPremium')
   async setPremium(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} setPremium`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      `${PREMIUM_SET[ctx.session.language]}`,
-      {
-        reply_markup: actionSetPremium(ctx.session.language).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(`${PREMIUM_SET[ctx.session.language]}`, {
+      reply_markup: actionSetPremium(ctx.session.language).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
   @Action('trialPremium')
   async trialPremium(ctx: IContext) {
@@ -85,62 +67,38 @@ export class PremiumHandler {
     const result = await this.premiumService.setIsPremium(ctx.from.id, 14);
     if (result === false) {
       this.logger.log(`User:${ctx.from.id} Premium is already active for more than 3 days. No changes made.`);
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
-        `${TRIAL_PROVIDED_FALSE[ctx.session.language]}`,
-        {
-          reply_markup: backStartButton(ctx.session.language).reply_markup,
-          disable_web_page_preview: true,
-          parse_mode: 'HTML',
-        },
-      );
+      await ctx.editMessageText(`${TRIAL_PROVIDED_FALSE[ctx.session.language]}`, {
+        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      });
     } else {
       ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
-        `${TRIAL_PROVIDED[ctx.session.language]}`,
-        {
-          reply_markup: backStartButton(ctx.session.language).reply_markup,
-          disable_web_page_preview: true,
-          parse_mode: 'HTML',
-        },
-      );
+      await ctx.editMessageText(`${TRIAL_PROVIDED[ctx.session.language]}`, {
+        reply_markup: backStartButton(ctx.session.language).reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      });
     }
   }
   @Action('premiumMenu')
   async premiumMenu(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getPremiumMenu`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      `${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`,
-      {
-        reply_markup: actionButtonsPremiumMenu(ctx.session.language).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(`${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`, {
+      reply_markup: actionButtonsPremiumMenu(ctx.session.language).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
   @Action('exchange_rate')
   async exchangeRate(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getPremiumMenu`);
     const currencyData = await this.currencyService.getCurrencyData();
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      `${SELECT_CURRENCY_MESSAGE[ctx.session.language]}`,
-      {
-        reply_markup: generateCurrencyButtons(currencyData).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(`${SELECT_CURRENCY_MESSAGE[ctx.session.language]}`, {
+      reply_markup: generateCurrencyButtons(currencyData).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
   @Action(/Currency:(.+)/)
   async exchangeCurrency(ctx: IContext) {
@@ -152,7 +110,7 @@ export class PremiumHandler {
       const currencyBay = parts[2];
       const currencySell = parts[3];
       const message = CURRENCY_MESSAGE(currencyName, currencyBay, currencySell, ctx.session.language);
-      await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `${message}`, {
+      await ctx.editMessageText(`${message}`, {
         reply_markup: actionButtonsBackPremium(ctx.session.language).reply_markup,
         disable_web_page_preview: true,
         parse_mode: 'HTML',
@@ -164,17 +122,11 @@ export class PremiumHandler {
   async cryptoCourse(ctx: IContext) {
     this.logger.log(`User:${ctx.from.id}cryptoCourse`);
     const cryptoAssetData = await this.cryptoService.getCryptoAsset();
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      `${SELECT_CURRENCY_MESSAGE[ctx.session.language]}`,
-      {
-        reply_markup: generateCryptoButtons(cryptoAssetData).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(`${SELECT_CURRENCY_MESSAGE[ctx.session.language]}`, {
+      reply_markup: generateCryptoButtons(cryptoAssetData).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
   @Action(/Crypto:(.+)/)
   async crypto(ctx: IContext) {
@@ -193,7 +145,7 @@ export class PremiumHandler {
         cryptoChangePercent24Hr,
         ctx.session.language,
       );
-      await ctx.telegram.editMessageText(ctx.from.id, ctx.session.lastBotMessage, null, `${message}`, {
+      await ctx.editMessageText(`${message}`, {
         reply_markup: actionButtonsBackPremium(ctx.session.language).reply_markup,
         disable_web_page_preview: true,
         parse_mode: 'HTML',
@@ -205,10 +157,7 @@ export class PremiumHandler {
   async backP(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backF`);
     resetSession(ctx);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       `${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`,
       actionButtonsPremiumMenu(ctx.session.language || 'ua'),
     );
