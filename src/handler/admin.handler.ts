@@ -69,16 +69,17 @@ export class AdminHandler {
     ctx.session.type = 'sendNewsAllUser';
     this.logger.log(`${JSON.stringify(ctx.session)}`);
   }
-  @On('text')
-  async sendNewsAllUser(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} sendNewsAll`);
-    if (ctx.session.type !== 'sendNewsAllUser') {
-      return;
-    }
-    const message = ctx.message as MyMessage;
-    await this.notificationService.notificationsAll(message.text);
-    await ctx.deleteMessage();
-    await ctx.replyWithHTML(`Новини відправлені✅`, backStartButton());
-    delete ctx.session.type;
-  }
+  // @On('text')
+  // async sendNewsAllUser(ctx: IContext) {
+  //   this.logger.log(`user:${ctx.session.type} sendNewsAll`);
+  //   this.logger.log(`user:${ctx.from.id} sendNewsAll`);
+  //   if (ctx.session.type !== 'sendNewsAllUser') {
+  //     return;
+  //   }
+  //   const message = ctx.message as MyMessage;
+  //   await this.notificationService.notificationsAll(message.text);
+  //   await ctx.deleteMessage();
+  //   await ctx.replyWithHTML(`Новини відправлені✅`, backStartButton());
+  //   delete ctx.session.type;
+  // }
 }
