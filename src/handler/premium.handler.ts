@@ -1,4 +1,4 @@
-import { Action, Update } from 'nestjs-telegraf';
+import { Action, Ctx, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { BalanceService, CryptoService, CurrencyService, PremiumService } from '../service';
 import { CustomCallbackQuery, IContext } from '../interface';
@@ -22,6 +22,7 @@ import {
   generateCurrencyButtons,
 } from '../battons';
 import { resetSession } from '../common/reset.session';
+import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
 export class PremiumHandler {
@@ -154,9 +155,9 @@ export class PremiumHandler {
     }
   }
   @Action('backP')
-  async backP(ctx: IContext) {
+  async backP(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backF`);
-    resetSession(ctx);
+    await resetSession(ctx);
     await ctx.editMessageText(
       `${BAY_PREMIUM_MENU[ctx.session.language || 'ua']}`,
       actionButtonsPremiumMenu(ctx.session.language || 'ua'),

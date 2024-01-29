@@ -1,10 +1,11 @@
-import { Action, Hears, InjectBot, Update } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { Telegraf } from 'telegraf';
 import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 import { acceptButton, backFamilyButton, backStartButton, familyButton } from '../battons';
 import { resetSession } from '../common/reset.session';
+import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
 export class FamilyHandler {
@@ -192,9 +193,9 @@ export class FamilyHandler {
     }
   }
   @Action('backF')
-  async backF(ctx: IContext) {
+  async backF(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backF`);
-    resetSession(ctx);
+    await resetSession(ctx);
     await ctx.editMessageText(
       FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU,
       familyButton(ctx.session.language || 'ua'),

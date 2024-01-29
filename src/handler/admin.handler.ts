@@ -1,9 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { BalanceService, NotificationService, PremiumService } from '../service';
-import { Action, On, Update } from 'nestjs-telegraf';
-import { IContext, MyMessage } from '../interface';
+import { Action, Ctx, Update } from 'nestjs-telegraf';
+import { IContext } from '../interface';
 import { SELECT_SETTING_MESSAGE } from '../constants';
 import { actionButtonsAdmin, actionButtonsSettings, backStartButton } from '../battons';
+import { WizardContext } from 'telegraf/typings/scenes';
 @Update()
 export class AdminHandler {
   private readonly logger: Logger = new Logger(AdminHandler.name);
@@ -17,7 +18,6 @@ export class AdminHandler {
   @Action('settings')
   async getSettings(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getSettings`);
-    this.logger.log(`lastBotMessage:${ctx.session.lastBotMessage}`);
     await ctx.editMessageText(SELECT_SETTING_MESSAGE[ctx.session.language || 'ua'], {
       reply_markup: actionButtonsSettings(ctx.session.language, ctx.from.id).reply_markup,
       disable_web_page_preview: true,
@@ -63,16 +63,13 @@ export class AdminHandler {
     );
   }
   @Action('sendNews')
-  async sendNews(ctx: IContext) {
+  async sendNews(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} sendNews`);
     await ctx.editMessageText(`нваиши новини та її побачать усі🔽🔽🔽`, backStartButton());
-    ctx.session.type = 'sendNewsAllUser';
-    this.logger.log(`${JSON.stringify(ctx.session)}`);
+    await ctx.scene.enter('news');
   }
   // @On('text')
   // async sendNewsAllUser(ctx: IContext) {
-  //   this.logger.log(`user:${ctx.session.type} sendNewsAll`);
-  //   this.logger.log(`user:${ctx.from.id} sendNewsAll`);
   //   if (ctx.session.type !== 'sendNewsAllUser') {
   //     return;
   //   }

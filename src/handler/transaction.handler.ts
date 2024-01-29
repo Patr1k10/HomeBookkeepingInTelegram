@@ -1,4 +1,4 @@
-import { Action, On, Update } from 'nestjs-telegraf';
+import { Action, Ctx, On, Update } from 'nestjs-telegraf';
 import { TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { BalanceService } from '../service';
@@ -16,6 +16,7 @@ import {
 import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 import { actionButtonsTransaction, backTranButton } from '../battons';
 import { resetSession } from '../common/reset.session';
+import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
 export class TransactionHandler {
@@ -152,9 +153,9 @@ export class TransactionHandler {
   }
 
   @Action('backT')
-  async backT(ctx: IContext) {
+  async backT(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backT executed`);
-    resetSession(ctx);
+    await resetSession(ctx);
     await ctx.editMessageText(
       SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsTransaction(ctx.session.language || 'ua'),

@@ -1,10 +1,11 @@
-import { Action, Hears, Start, Update } from 'nestjs-telegraf';
+import { Action, Ctx, Hears, Start, Update } from 'nestjs-telegraf';
 import { BalanceService, PremiumService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext } from '../interface';
 import { actionButtonsStart, backHelpButton, backStartButton, currencySet, languageSet, resetButton } from '../battons';
 import { resetSession } from '../common/reset.session';
+import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
 export class BasicCommandsHandler {
@@ -16,10 +17,10 @@ export class BasicCommandsHandler {
   ) {}
 
   @Start()
-  async startCommand(ctx: IContext) {
+  async startCommand(@Ctx() ctx: IContext & WizardContext) {
     try {
       // await ctx.deleteMessage();
-      resetSession(ctx);
+      await resetSession(ctx);
       ctx.session.compare = [];
       await ctx.replyWithHTML('👋');
       await this.premiumService.deductPremiumFromUser(ctx.from.id);
@@ -160,22 +161,22 @@ export class BasicCommandsHandler {
   }
 
   @Action('backToStart')
-  async backToStart(ctx: IContext) {
+  async backToStart(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backToStart`);
     await ctx.deleteMessage();
-    resetSession(ctx);
+    await resetSession(ctx);
     ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
     const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
     ctx.session.lastBotMessage = sentMessage.message_id;
   }
 
   @Action('back')
-  async back(ctx: IContext) {
+  async back(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} back`);
     await this.premiumService.deductPremiumFromUser(ctx.from.id);
     ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
     this.logger.log(`user:${ctx.from.id} back`);
-    resetSession(ctx);
+    await resetSession(ctx);
     await ctx.editMessageText(
       MAIN_MENU[ctx.session.language || 'ua'],
       actionButtonsStart(ctx.session.language || 'ua', ctx.session.isPremium),

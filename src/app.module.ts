@@ -1,6 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { TelegrafModule } from 'nestjs-telegraf';
 import * as services from './service';
+import * as scene from './scene';
 import * as dotenv from 'dotenv';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -35,7 +36,7 @@ dotenv.config();
       { name: Transaction.name, schema: TransactionSchema },
     ]),
   ],
-  providers: [Logger, ...Object.values(services), ...Object.values(handlers)],
+  providers: [Logger, ...Object.values(services), ...Object.values(handlers), ...Object.values(scene)],
   exports: [],
 })
 export class AppModule {}

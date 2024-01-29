@@ -1,10 +1,11 @@
-import { Action, Update } from 'nestjs-telegraf';
+import { Action, Ctx, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../interface';
 import { backStartButton, backStatisticButton, languageSet } from '../battons';
 import { resetSession } from '../common/reset.session';
+import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
 export class BalanceHandler {
@@ -12,9 +13,9 @@ export class BalanceHandler {
   constructor(private readonly balanceService: BalanceService) {}
 
   @Action('balance')
-  async listCommand(ctx: IContext) {
+  async listCommand(@Ctx() ctx: IContext & WizardContext) {
     try {
-      resetSession(ctx);
+      await resetSession(ctx);
       const userId = ctx.from.id;
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
       const markup = backStatisticButton(ctx.session.language);
