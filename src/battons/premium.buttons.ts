@@ -18,7 +18,7 @@ export function actionSetPremium(language: string = 'ua', isPremium: boolean = f
 
 export function actionButtonsPremiumMenu(language: string = 'ua') {
   const baseButtons = [
-    [Markup.button.callback(`${BUTTONS[language].CURRENCY}`, 'exchange_rate')],
+    // [Markup.button.callback(`${BUTTONS[language].CURRENCY}`, 'exchange_rate')],
     [Markup.button.callback(`${BUTTONS[language].CRYPTO}`, 'crypto_currency_course')],
     [Markup.button.callback(`${BUTTONS[language].PREMIUM_GPT}`, 'gpt')],
     [Markup.button.callback(BUTTONS[language].BACK, 'back')],

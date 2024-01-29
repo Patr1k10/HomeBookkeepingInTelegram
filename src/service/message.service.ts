@@ -2,7 +2,7 @@ import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { CURRNCY, TOTAL_MESSAGES } from '../constants';
 import { IContext, Transaction } from '../interface';
-import { actionButtonsCompare, backStatisticButtonMessage } from '../battons';
+import { actionButtonsCompare } from '../battons';
 
 export class MessageService {
   constructor(
@@ -100,7 +100,7 @@ export class MessageService {
     // General summary
     message += `${localizedMessage}<b>${totalPositiveAmount - totalNegativeAmount}${setCurrency}</b>\n`;
 
-    await this.bot.telegram.editMessageText(userId, ctx.session.lastBotMessage, null, message, {
+    await ctx.editMessageText(message, {
       parse_mode: 'HTML',
       reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium).reply_markup,
     });

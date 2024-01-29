@@ -19,7 +19,7 @@ export class CronNotificationsService {
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
   ) {}
 
-  @Cron('47 17 * * *', { timeZone: 'Europe/Kiev' })
+  @Cron('47 15 * * *', { timeZone: 'Europe/Kiev' })
   async notificationsAll() {
     const startTime = new Date();
     this.logger.log(`Cron task started at: ${startTime}`);

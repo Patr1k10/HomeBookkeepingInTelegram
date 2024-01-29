@@ -190,3 +190,8 @@ export const SELECT_CURRENCY_MESSAGE = {
   en: 'Choose the currency you need:🔽',
   ua: 'Оберіть потрібну вам валюту:🔽',
 };
+
+export const DELETE_COMPARE_DATA = {
+  ua: 'Днанні успішно видалено✅',
+  en: 'Data deleted successfully✅.',
+};

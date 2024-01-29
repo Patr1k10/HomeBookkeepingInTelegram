@@ -18,10 +18,7 @@ export class FamilyHandler {
   @Action('family')
   async groupCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} Executing groupCommand`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU,
       familyButton(ctx.session.language || 'ua'),
     );
@@ -31,13 +28,7 @@ export class FamilyHandler {
   async getId(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} Executing getId`);
     const message = FAMILY_TEXT[ctx.session.language || 'ua'].YOUR_ID;
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      `${message} ${ctx.from.id}`,
-      backFamilyButton(ctx.session.language || 'ua'),
-    );
+    await ctx.editMessageText(`${message} ${ctx.from.id}`, backFamilyButton(ctx.session.language || 'ua'));
   }
 
   @Action('add_to_group')
@@ -49,10 +40,7 @@ export class FamilyHandler {
     if (!ctx.session.group.includes(ctx.from.id)) {
       ctx.session.group.push(ctx.from.id);
     }
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       FAMILY_TEXT[ctx.session.language || 'ua'].ENTER_USER_ID,
       backFamilyButton(ctx.session.language || 'ua'),
     );
@@ -71,10 +59,7 @@ export class FamilyHandler {
     const recipientId = parseInt(message.text, 10);
     if (isNaN(recipientId)) {
       await ctx.deleteMessage();
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
+      await ctx.editMessageText(
         FAMILY_TEXT[ctx.session.language || 'ua'].INVALID_INPUT,
         backFamilyButton(ctx.session.language || 'ua'),
       );
@@ -88,19 +73,13 @@ export class FamilyHandler {
     if (!ctx.session.group.includes(recipientId)) {
       await this.sendInvite(ctx, recipientId, initiatorId);
       await ctx.deleteMessage();
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
+      await ctx.editMessageText(
         `${FAMILY_TEXT[ctx.session.language || 'ua'].INVITE_SENT} ${recipientId}.`,
         familyButton(ctx.session.language || 'ua'),
       );
     } else {
       await ctx.deleteMessage();
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
+      await ctx.editMessageText(
         `${FAMILY_TEXT[ctx.session.language || 'ua'].ID_ALREADY_EXISTS} ${recipientId}.`,
         familyButton(ctx.session.language || 'ua'),
       );
@@ -201,18 +180,12 @@ export class FamilyHandler {
     this.logger.log(`user:${ctx.from.id} Executing deleteGroup`);
     if (ctx.session.group && ctx.session.group.length > 0) {
       ctx.session.group = [];
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
+      await ctx.editMessageText(
         FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_DELETED,
         backFamilyButton(ctx.session.language || 'ua'),
       );
     } else {
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
+      await ctx.editMessageText(
         FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_EMPTY,
         backFamilyButton(ctx.session.language || 'ua'),
       );
@@ -222,10 +195,7 @@ export class FamilyHandler {
   async backF(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backF`);
     resetSession(ctx);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       FAMILY_TEXT[ctx.session.language || 'ua'].FAMILY_MENU,
       familyButton(ctx.session.language || 'ua'),
     );

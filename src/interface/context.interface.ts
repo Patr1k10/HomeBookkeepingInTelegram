@@ -3,7 +3,7 @@ import { Context as ContextTelegraf } from 'telegraf';
 export interface IContext extends ContextTelegraf {
   session: {
     id?: string;
-    type?: 'done' | 'edit' | 'remove' | 'income' | 'expense' | 'balance' | 'delete';
+    type?: 'done' | 'edit' | 'remove' | 'income' | 'expense' | 'balance' | 'delete' | 'sendNewsAllUser';
     language?: string;
     currency?: string;
     group?: number[];

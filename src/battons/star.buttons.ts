@@ -13,7 +13,7 @@ export function actionButtonsStart(language: string = 'ua', isPremium: boolean =
     ],
   ];
   if (isPremium) {
-    baseButtons.push([Markup.button.callback(`🌟Преміум меню🌟`, 'premiumMenu')]);
+    baseButtons.push([Markup.button.callback(`${BUTTONS[language].PREMIUM_BUTTON}`, 'premiumMenu')]);
   }
   return Markup.inlineKeyboard(baseButtons);
 }

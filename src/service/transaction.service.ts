@@ -81,13 +81,7 @@ export class TransactionService {
       const transactions = await this.transactionModel.find({ userId }).sort({ timestamp: -1 }).limit(count).exec();
 
       if (transactions.length === 0) {
-        await this.bot.telegram.editMessageText(
-          userId,
-          ctx.session.lastBotMessage,
-          null,
-          DELETE_LAST_MESSAGE2[language],
-          backTranButton(ctx.session.language || 'ua'),
-        );
+        await ctx.editMessageText(DELETE_LAST_MESSAGE2[language], backTranButton(ctx.session.language || 'ua'));
         return;
       }
 
@@ -104,7 +98,7 @@ export class TransactionService {
         },
       ]);
 
-      await this.bot.telegram.editMessageText(userId, ctx.session.lastBotMessage, null, DELETE_LAST_MESSAGE[language], {
+      await ctx.editMessageText(DELETE_LAST_MESSAGE[language], {
         reply_markup: {
           inline_keyboard: buttons,
         },

@@ -29,10 +29,7 @@ export class TransactionHandler {
   async aboutCommand(ctx: IContext) {
     delete ctx.session.type;
     this.logger.log(`user:${ctx.from.id} transactions command executed`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsTransaction(ctx.session.language),
     );
@@ -41,26 +38,20 @@ export class TransactionHandler {
   async incomeCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} incomeCommand executed`);
     ctx.session.type = 'income';
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      ENTER_INCOME_MESSAGE[ctx.session.language || 'ua'],
-      { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
-    );
+    await ctx.editMessageText(ENTER_INCOME_MESSAGE[ctx.session.language || 'ua'], {
+      reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
+      parse_mode: 'HTML',
+    });
   }
 
   @Action('expense')
   async expenseCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} command executed`);
     ctx.session.type = 'expense';
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      ENTER_EXPENSE_MESSAGE[ctx.session.language || 'ua'],
-      { reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup, parse_mode: 'HTML' },
-    );
+    await ctx.editMessageText(ENTER_EXPENSE_MESSAGE[ctx.session.language || 'ua'], {
+      reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
+      parse_mode: 'HTML',
+    });
   }
   @Action('delete_last')
   async deleteLastCommand(ctx: IContext) {
@@ -82,10 +73,7 @@ export class TransactionHandler {
         if (callbackData.startsWith('delete_')) {
           const transactionIdToDelete = callbackData.replace('delete_', '');
           await this.transactionService.deleteTransactionById(ctx, transactionIdToDelete);
-          await ctx.telegram.editMessageText(
-            ctx.from.id,
-            ctx.session.lastBotMessage,
-            null,
+          await ctx.editMessageText(
             TRANSACTION_DELETED_MESSAGE[ctx.session.language || 'ua'],
             backTranButton(ctx.session.language || 'ua'),
           );
@@ -141,28 +129,22 @@ export class TransactionHandler {
       }
     }
     if (errorMessageSent) {
-      await ctx.deleteMessage();
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
+      await ctx.deleteMessage(ctx.message.message_id);
+      await ctx.deleteMessage(ctx.message.message_id - 1);
+      await ctx.replyWithHTML(
         INVALID_DATA_MESSAGE[ctx.session.language || 'ua'],
         backTranButton(ctx.session.language || 'ua'),
       );
     } else {
-      await ctx.deleteMessage();
+      await ctx.deleteMessage(ctx.message.message_id);
+      await ctx.deleteMessage(ctx.message.message_id - 1);
+
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
       const balanceMessage = getBalanceMessage(balance, ctx.session.language || 'ua', ctx.session.currency || 'UAH');
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
-        `${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`,
-        {
-          parse_mode: 'HTML',
-          reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
-        },
-      );
+      await ctx.replyWithHTML(`${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`, {
+        parse_mode: 'HTML',
+        reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
+      });
       this.logger.log(`user:${ctx.from.id} textCommand executed`);
     }
 
@@ -173,10 +155,7 @@ export class TransactionHandler {
   async backT(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backT executed`);
     resetSession(ctx);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsTransaction(ctx.session.language || 'ua'),
     );

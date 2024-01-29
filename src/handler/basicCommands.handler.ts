@@ -1,5 +1,5 @@
-import { Action, Hears, Start, Update } from 'nestjs-telegraf';
-import { BalanceService, PremiumService, TransactionService } from '../service';
+import { Action, Hears, On, Start, Update } from 'nestjs-telegraf';
+import { BalanceService, NotificationService, PremiumService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import {
   ERROR_MESSAGE,
@@ -10,8 +10,9 @@ import {
   START_MESSAGE,
   SUPPORT_MESSAGE,
 } from '../constants';
-import { CustomCallbackQuery, IContext } from '../interface';
+import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
 import {
+  actionButtonsAdmin,
   actionButtonsSettings,
   actionButtonsStart,
   backHelpButton,
@@ -29,49 +30,21 @@ export class BasicCommandsHandler {
     private readonly balanceService: BalanceService,
     private readonly transactionService: TransactionService,
     private readonly premiumService: PremiumService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   @Start()
   async startCommand(ctx: IContext) {
     try {
+      // await ctx.deleteMessage();
       resetSession(ctx);
       ctx.session.compare = [];
+      await ctx.replyWithHTML('👋');
       await this.premiumService.deductPremiumFromUser(ctx.from.id);
       await this.balanceService.createBalance(ctx.from.id);
-      const user = ctx.from;
       ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
-      const count = await this.balanceService.countAllBalances();
-      const activeUsers = await this.balanceService.countActiveUsersLast3Days();
-      const bannedUsers = await this.balanceService.countBannedUsers();
-      const countIsPremiumUser = await this.premiumService.countPremiumUsers();
-      const bosId = process.env.BOSID;
-      this.logger.log(`
-      User ID: ${user.id}
-      First Name: ${user.first_name}
-      Last Name: ${user.last_name}
-      Username: ${user.username}
-      ActiveUsers: ${activeUsers}
-      Count Users: ${count}
-      Count PremiumUsers: ${countIsPremiumUser}
-      BannedUsers: ${bannedUsers}
-      `);
-      await ctx.telegram.sendMessage(
-        bosId,
-        `New User created:
-      User ID: ${user.id}
-      First Name: ${user.first_name}
-      Last Name: ${user.last_name}
-      Username: ${user.username}
-      ActiveUsers: ${activeUsers}
-      Count Users: ${count}
-      Count PremiumUsers: ${countIsPremiumUser}
-      BannedUsers: ${bannedUsers}`,
-      );
       const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
       ctx.session.lastBotMessage = sentMessage.message_id;
-
-      await ctx.deleteMessage();
-      delete ctx.session.type;
       this.logger.log(`user:${ctx.from.id} startCommand executed successfully`);
     } catch (error) {
       this.logger.error('Error in startCommand:', error);
@@ -82,17 +55,11 @@ export class BasicCommandsHandler {
   async usdCommand(ctx: IContext) {
     ctx.session.currency = 'USD';
     const markup = actionButtonsStart(ctx.session.language, ctx.session.isPremium);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
-      {
-        reply_markup: markup.reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'], {
+      reply_markup: markup.reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
     this.logger.log(`user:${ctx.from.id} usdCommand `);
   }
 
@@ -101,13 +68,11 @@ export class BasicCommandsHandler {
     this.logger.log(`user:${ctx.from.id} uahCommand `);
     ctx.session.currency = 'UAH';
     const markup = actionButtonsStart(ctx.session.language, ctx.session.isPremium);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'],
-      { reply_markup: markup.reply_markup, disable_web_page_preview: true, parse_mode: 'HTML' },
-    );
+    await ctx.editMessageText(START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'], {
+      reply_markup: markup.reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
 
   @Action(/setLanguage:(.+)/)
@@ -118,13 +83,11 @@ export class BasicCommandsHandler {
       const parts = callbackData.split(':');
       const markup = currencySet();
       ctx.session.language = parts[1];
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
-        'Оберіть валюту / Choose currency',
-        { reply_markup: markup.reply_markup, disable_web_page_preview: true, parse_mode: 'HTML' },
-      );
+      await ctx.editMessageText('Оберіть валюту / Choose currency', {
+        reply_markup: markup.reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      });
       this.logger.log(`user:${ctx.from.id} setLanguage command executed`);
     } else {
       this.logger.log(`user:${ctx.from.id} callbackQuery is undefined`);
@@ -135,13 +98,11 @@ export class BasicCommandsHandler {
   async helpCommand(ctx: IContext) {
     const markup = backHelpButton(ctx.session.language);
     try {
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
-        HELP_MESSAGE[ctx.session.language || 'ua'],
-        { reply_markup: markup.reply_markup, disable_web_page_preview: true, parse_mode: 'HTML' },
-      );
+      await ctx.editMessageText(HELP_MESSAGE[ctx.session.language || 'ua'], {
+        reply_markup: markup.reply_markup,
+        disable_web_page_preview: true,
+        parse_mode: 'HTML',
+      });
       this.logger.log(`user:${ctx.from.id} helpCommand executed`);
     } catch (error) {
       this.logger.error(`user:${ctx.from.id} Error in helpCommand:`, error);
@@ -168,32 +129,18 @@ export class BasicCommandsHandler {
   @Action('reset')
   async resetCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} resetCommand executed`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      RESETS_ALL[ctx.session.language || 'ua'].ARE_YOU_SURE,
-      resetButton(ctx.session.language),
-    );
+    await ctx.editMessageText(RESETS_ALL[ctx.session.language || 'ua'].ARE_YOU_SURE, resetButton(ctx.session.language));
   }
   @Action('yes')
   async yesCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} yesCommand`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      RESETS_ALL[ctx.session.language || 'ua'].CONFIRM_RESET,
-    );
+    await ctx.editMessageText(RESETS_ALL[ctx.session.language || 'ua'].CONFIRM_RESET);
     ctx.session.type = 'delete';
   }
   @Action('no')
   async noCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} noCommand`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       RESETS_ALL[ctx.session.language || 'ua'].RESET_CANCELED,
       actionButtonsStart(ctx.session.language, ctx.session.isPremium),
     );
@@ -223,34 +170,81 @@ export class BasicCommandsHandler {
   async getProjectSupport(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getProjectSupport `);
     await ctx.telegram.sendMessage(process.env.BOSID, `user:${ctx.from.id} getProjectSupport`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      SUPPORT_MESSAGE[ctx.session.language || 'ua'],
-      {
-        reply_markup: backStartButton(ctx.session.language).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    await ctx.editMessageText(SUPPORT_MESSAGE[ctx.session.language || 'ua'], {
+      reply_markup: backStartButton(ctx.session.language).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
   @Action('settings')
   async getSettings(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} getSettings`);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      SELECT_SETTING_MESSAGE[ctx.session.language || 'ua'],
-      {
-        reply_markup: actionButtonsSettings(ctx.session.language).reply_markup,
-        disable_web_page_preview: true,
-        parse_mode: 'HTML',
-      },
-    );
+    this.logger.log(`lastBotMessage:${ctx.session.lastBotMessage}`);
+    await ctx.editMessageText(SELECT_SETTING_MESSAGE[ctx.session.language || 'ua'], {
+      reply_markup: actionButtonsSettings(ctx.session.language, ctx.from.id).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
   }
 
+  @Action('admin')
+  async adminMenuCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} admin menu command executed`);
+    await ctx.editMessageText('Це адмін манель ти знаешь що робити', actionButtonsAdmin());
+  }
+  @Action('adminStat')
+  async adminStatMenuCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} adminStat menu command executed`);
+    const user = ctx.from;
+    ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
+    const count = await this.balanceService.countAllBalances();
+    const activeUsers = await this.balanceService.countActiveUsersLast3Days();
+    const bannedUsers = await this.balanceService.countBannedUsers();
+    const countIsPremiumUser = await this.premiumService.countPremiumUsers();
+    this.logger.log(`
+      User ID: ${user.id}
+      First Name: ${user.first_name}
+      Last Name: ${user.last_name}
+      Username: ${user.username}
+      ActiveUsers: ${activeUsers}
+      Count Users: ${count}
+      Count PremiumUsers: ${countIsPremiumUser}
+      BannedUsers: ${bannedUsers}
+      `);
+    await ctx.editMessageText(
+      `New User created:
+      User ID: ${user.id}
+      First Name: ${user.first_name}
+      Last Name: ${user.last_name}
+      Username: ${user.username}
+      ActiveUsers: ${activeUsers}
+      Count Users: ${count}
+      Count PremiumUsers: ${countIsPremiumUser}
+      BannedUsers: ${bannedUsers}`,
+      backStartButton(),
+    );
+  }
+  @Action('sendNews')
+  async sendNews(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} sendNews`);
+    await ctx.editMessageText(`нваиши новини та її побачать усі🔽🔽🔽`, backStartButton());
+    ctx.session.type = 'sendNewsAllUser';
+  }
+  @On('text')
+  async sendNewsAllUser(ctx: IContext) {
+    if (ctx.session.type !== 'sendNewsAllUser') {
+      return;
+    }
+    const message = ctx.message as MyMessage;
+    const { elapsedTime, notificationCount } = await this.notificationService.notificationsAll(message.text);
+    await ctx.deleteMessage();
+    await ctx.replyWithHTML(
+      `час на відправку:${elapsedTime}сек. 
+       новину отримали ${notificationCount} юзерів `,
+      backStartButton(),
+    );
+    delete ctx.session.type;
+  }
   @Action('backToStart')
   async backToStart(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backToStart`);
@@ -263,14 +257,12 @@ export class BasicCommandsHandler {
 
   @Action('back')
   async back(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} back`);
     await this.premiumService.deductPremiumFromUser(ctx.from.id);
     ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
     this.logger.log(`user:${ctx.from.id} back`);
     resetSession(ctx);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       MAIN_MENU[ctx.session.language || 'ua'],
       actionButtonsStart(ctx.session.language || 'ua', ctx.session.isPremium),
     );

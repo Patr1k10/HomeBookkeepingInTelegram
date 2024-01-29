@@ -28,10 +28,7 @@ export class StatisticsHandler {
 
   @Action('statistics')
   async statisticsCommand(ctx: IContext) {
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsStatistics(ctx.session.language || 'ua'),
     );
@@ -54,23 +51,11 @@ export class StatisticsHandler {
     this.logger.log(`user:${ctx.from.id} by_category`);
     const uniqueTransactionNames = await this.statisticsService.getUniqueTransactionNames(ctx);
     if (uniqueTransactionNames === null) {
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
-        PERIOD_NULL[ctx.session.language],
-        backStatisticButton(ctx.session.language || 'ua'),
-      );
+      await ctx.editMessageText(PERIOD_NULL[ctx.session.language], backStatisticButton(ctx.session.language || 'ua'));
       return;
     }
     const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames, ctx.session.language);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      SELECT_CATEGORY_MESSAGE[ctx.session.language || 'ua'],
-      transactionNameButtons,
-    );
+    await ctx.editMessageText(SELECT_CATEGORY_MESSAGE[ctx.session.language || 'ua'], transactionNameButtons);
   }
 
   @Action(/TransactionName:(.+)/)
@@ -107,13 +92,7 @@ export class StatisticsHandler {
     this.logger.log(`user:${ctx.from.id} year menu command executed`);
     const uniqueYears = await this.statisticsService.getUniqueYears(ctx.from.id);
     const yearButtons = actionButtonsYears(uniqueYears, ctx.session.language);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
-      SELECT_YEAR_MESSAGE[ctx.session.language || 'ua'],
-      yearButtons,
-    );
+    await ctx.editMessageText(SELECT_YEAR_MESSAGE[ctx.session.language || 'ua'], yearButtons);
   }
 
   @Action(/Year:(.+)/)
@@ -133,10 +112,7 @@ export class StatisticsHandler {
   async monthListMenuCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} month menu command executed`);
     const availableMonths = await this.statisticsService.getUniqueMonths(ctx.session.selectedYear, ctx.from.id);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       SELECT_MONTH_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsMonths(ctx.session.language, ctx.session.selectedYear, availableMonths),
     );
@@ -201,10 +177,7 @@ export class StatisticsHandler {
       const availableDays = await this.statisticsService.getUniqueDays(selectedYear, selectedMonth, ctx.from.id);
       ctx.session.selectedYear = selectedYear;
       ctx.session.selectedMonth = selectedMonth;
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
+      await ctx.editMessageText(
         SELECT_DAY_MESSAGE[ctx.session.language || 'ua'],
         actionButtonsDays(ctx.session.language, selectedYear, selectedMonth, availableDays),
       );
@@ -238,13 +211,7 @@ export class StatisticsHandler {
       const parts = callbackData.split(':');
       const page = Number(parts[1]);
       const transactionNameButtons = actionButtonsTransactionNames(uniqueTransactionNames, ctx.session.language, page);
-      await ctx.telegram.editMessageText(
-        ctx.from.id,
-        ctx.session.lastBotMessage,
-        null,
-        SELECT_CATEGORY_MESSAGE[ctx.session.language || 'ua'],
-        transactionNameButtons,
-      );
+      await ctx.editMessageText(SELECT_CATEGORY_MESSAGE[ctx.session.language || 'ua'], transactionNameButtons);
     }
   }
 
@@ -252,10 +219,7 @@ export class StatisticsHandler {
   async backS(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backS `);
     resetSession(ctx);
-    await ctx.telegram.editMessageText(
-      ctx.from.id,
-      ctx.session.lastBotMessage,
-      null,
+    await ctx.editMessageText(
       WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsStatistics(ctx.session.language),
     );
