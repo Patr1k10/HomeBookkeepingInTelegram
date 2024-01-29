@@ -1,3 +1,4 @@
+export * from './admin.handler';
 export * from './balance.handler';
 export * from './basicCommands.handler';
 export * from './family.handler';

@@ -1,26 +1,9 @@
-import { Action, Hears, On, Start, Update } from 'nestjs-telegraf';
-import { BalanceService, NotificationService, PremiumService, TransactionService } from '../service';
+import { Action, Hears, Start, Update } from 'nestjs-telegraf';
+import { BalanceService, PremiumService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
-import {
-  ERROR_MESSAGE,
-  HELP_MESSAGE,
-  MAIN_MENU,
-  RESETS_ALL,
-  SELECT_SETTING_MESSAGE,
-  START_MESSAGE,
-  SUPPORT_MESSAGE,
-} from '../constants';
-import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
-import {
-  actionButtonsAdmin,
-  actionButtonsSettings,
-  actionButtonsStart,
-  backHelpButton,
-  backStartButton,
-  currencySet,
-  languageSet,
-  resetButton,
-} from '../battons';
+import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
+import { CustomCallbackQuery, IContext } from '../interface';
+import { actionButtonsStart, backHelpButton, backStartButton, currencySet, languageSet, resetButton } from '../battons';
 import { resetSession } from '../common/reset.session';
 
 @Update()
@@ -30,7 +13,6 @@ export class BasicCommandsHandler {
     private readonly balanceService: BalanceService,
     private readonly transactionService: TransactionService,
     private readonly premiumService: PremiumService,
-    private readonly notificationService: NotificationService,
   ) {}
 
   @Start()
@@ -176,75 +158,7 @@ export class BasicCommandsHandler {
       parse_mode: 'HTML',
     });
   }
-  @Action('settings')
-  async getSettings(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} getSettings`);
-    this.logger.log(`lastBotMessage:${ctx.session.lastBotMessage}`);
-    await ctx.editMessageText(SELECT_SETTING_MESSAGE[ctx.session.language || 'ua'], {
-      reply_markup: actionButtonsSettings(ctx.session.language, ctx.from.id).reply_markup,
-      disable_web_page_preview: true,
-      parse_mode: 'HTML',
-    });
-  }
 
-  @Action('admin')
-  async adminMenuCommand(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} admin menu command executed`);
-    await ctx.editMessageText('Це адмін манель ти знаешь що робити', actionButtonsAdmin());
-  }
-  @Action('adminStat')
-  async adminStatMenuCommand(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} adminStat menu command executed`);
-    const user = ctx.from;
-    ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
-    const count = await this.balanceService.countAllBalances();
-    const activeUsers = await this.balanceService.countActiveUsersLast3Days();
-    const bannedUsers = await this.balanceService.countBannedUsers();
-    const countIsPremiumUser = await this.premiumService.countPremiumUsers();
-    this.logger.log(`
-      User ID: ${user.id}
-      First Name: ${user.first_name}
-      Last Name: ${user.last_name}
-      Username: ${user.username}
-      ActiveUsers: ${activeUsers}
-      Count Users: ${count}
-      Count PremiumUsers: ${countIsPremiumUser}
-      BannedUsers: ${bannedUsers}
-      `);
-    await ctx.editMessageText(
-      `New User created:
-      User ID: ${user.id}
-      First Name: ${user.first_name}
-      Last Name: ${user.last_name}
-      Username: ${user.username}
-      ActiveUsers: ${activeUsers}
-      Count Users: ${count}
-      Count PremiumUsers: ${countIsPremiumUser}
-      BannedUsers: ${bannedUsers}`,
-      backStartButton(),
-    );
-  }
-  @Action('sendNews')
-  async sendNews(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} sendNews`);
-    await ctx.editMessageText(`нваиши новини та її побачать усі🔽🔽🔽`, backStartButton());
-    ctx.session.type = 'sendNewsAllUser';
-  }
-  @On('text')
-  async sendNewsAllUser(ctx: IContext) {
-    if (ctx.session.type !== 'sendNewsAllUser') {
-      return;
-    }
-    const message = ctx.message as MyMessage;
-    const { elapsedTime, notificationCount } = await this.notificationService.notificationsAll(message.text);
-    await ctx.deleteMessage();
-    await ctx.replyWithHTML(
-      `час на відправку:${elapsedTime}сек. 
-       новину отримали ${notificationCount} юзерів `,
-      backStartButton(),
-    );
-    delete ctx.session.type;
-  }
   @Action('backToStart')
   async backToStart(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} backToStart`);
