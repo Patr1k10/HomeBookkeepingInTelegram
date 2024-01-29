@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Action, Update } from 'nestjs-telegraf';
+import { Action, Ctx, Update } from 'nestjs-telegraf';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { StatisticsService } from '../service';
 import {
@@ -20,6 +20,7 @@ import {
   backStatisticButton,
 } from '../battons';
 import { resetSession } from '../common/reset.session';
+import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
 export class StatisticsHandler {
@@ -216,9 +217,9 @@ export class StatisticsHandler {
   }
 
   @Action('backS')
-  async backS(ctx: IContext) {
+  async backS(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backS `);
-    resetSession(ctx);
+    await resetSession(ctx);
     await ctx.editMessageText(
       WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsStatistics(ctx.session.language),
