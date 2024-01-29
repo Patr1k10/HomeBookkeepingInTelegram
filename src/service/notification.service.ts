@@ -5,7 +5,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Telegraf } from 'telegraf';
 import { InjectBot } from 'nestjs-telegraf';
-import { backToStartButton } from '../battons';
+import { backStartButton, backToStartButton } from '../battons';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotificationService {
@@ -17,16 +18,17 @@ export class NotificationService {
     @InjectBot()
     private readonly bot: Telegraf<IContext>,
     @InjectModel('Balance') private readonly balanceModel: Model<Balance>,
+    private readonly configService: ConfigService,
   ) {}
 
-  async notificationsAll(message: string): Promise<{ elapsedTime: number; notificationCount: number }> {
+  async notificationsAll(message: string): Promise<void> {
     const startTime = new Date();
     this.logger.log(`Cron task started at: ${startTime}`);
     try {
       const inactiveUsers = await this.getInactiveUsers();
       for (const user of inactiveUsers) {
         await this.sendNotification(user, message);
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 400));
       }
     } catch (error) {
       this.logger.error('Error in notificationsAll', error);
@@ -36,8 +38,12 @@ export class NotificationService {
       this.logger.log(
         `Notification task finished at: ${endTime}, elapsed time: ${this.elapsedTimeInSeconds} s, sent ${this.notificationCount} notifications`,
       );
+      await this.bot.telegram.sendMessage(
+        this.configService.get('BOSID'),
+        `Notification task finished at: ${endTime}, elapsed time: ${this.elapsedTimeInSeconds} s, sent ${this.notificationCount} notifications`,
+        backStartButton(),
+      );
     }
-    return { elapsedTime: this.elapsedTimeInSeconds, notificationCount: this.notificationCount };
   }
 
   private async getInactiveUsers(): Promise<Balance[]> {
