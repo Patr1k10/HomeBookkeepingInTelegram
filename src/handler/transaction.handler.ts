@@ -130,17 +130,11 @@ export class TransactionHandler {
       }
     }
     if (errorMessageSent) {
-      await ctx.deleteMessage(ctx.message.message_id);
-      await ctx.deleteMessage(ctx.message.message_id - 1);
-
       await ctx.replyWithHTML(
         INVALID_DATA_MESSAGE[ctx.session.language || 'ua'],
         backTranButton(ctx.session.language || 'ua'),
       );
     } else {
-      await ctx.deleteMessage(ctx.message.message_id);
-      await ctx.deleteMessage(ctx.message.message_id - 1);
-
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
       const balanceMessage = getBalanceMessage(balance, ctx.session.language || 'ua', ctx.session.currency || 'UAH');
       await ctx.replyWithHTML(`${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`, {
