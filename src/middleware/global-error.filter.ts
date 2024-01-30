@@ -13,7 +13,7 @@ export function errorHandlingMiddleware(): Middleware<IContext> {
         await ctx.telegram.sendMessage(bosId, `Произошла ошибка: ${error.message}`, backStartButton());
         return;
       }
-      await ctx.deleteMessage();
+      // await ctx.deleteMessage();
       const bosId = process.env.BOSID;
       await ctx.telegram.sendMessage(bosId, `Произошла ошибка: ${error.message}`, backStartButton());
       await ctx.replyWithHTML(`${MAIN_MENU[ctx.session.language || 'ua']}`, {

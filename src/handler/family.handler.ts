@@ -31,6 +31,18 @@ export class FamilyHandler {
     const message = FAMILY_TEXT[ctx.session.language || 'ua'].YOUR_ID;
     await ctx.editMessageText(`${message} ${ctx.from.id}`, backFamilyButton(ctx.session.language || 'ua'));
   }
+  @Action('get_group')
+  async getGroup(ctx: IContext) {
+    if (ctx.session.group.length <= 0) {
+      await ctx.editMessageText(`${FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_EMPTY}`, backFamilyButton());
+    } else {
+      this.logger.log(`user:${ctx.from.id} Executing getId`);
+      await ctx.editMessageText(
+        `${FAMILY_TEXT[ctx.session.language || 'ua'].GET_FAMILY} ${ctx.session.group}`,
+        backFamilyButton(),
+      );
+    }
+  }
 
   @Action('add_to_group')
   async addToGroup(ctx: IContext) {
@@ -59,28 +71,32 @@ export class FamilyHandler {
     const message = ctx.message as MyMessage;
     const recipientId = parseInt(message.text, 10);
     if (isNaN(recipientId)) {
-      await ctx.deleteMessage();
-      await ctx.editMessageText(
+      await ctx.deleteMessage(ctx.message.message_id);
+      await ctx.deleteMessage(ctx.message.message_id - 1);
+      await ctx.replyWithHTML(
         FAMILY_TEXT[ctx.session.language || 'ua'].INVALID_INPUT,
         backFamilyButton(ctx.session.language || 'ua'),
       );
       ctx.session.awaitingUserIdInput = false;
       return;
     }
-
     if (!ctx.session.group) {
       ctx.session.group = [];
     }
     if (!ctx.session.group.includes(recipientId)) {
+      await ctx.deleteMessage(ctx.message.message_id);
+      await ctx.deleteMessage(ctx.message.message_id - 1);
       await this.sendInvite(ctx, recipientId, initiatorId);
-      await ctx.deleteMessage();
-      await ctx.editMessageText(
+      await ctx.replyWithHTML(
         `${FAMILY_TEXT[ctx.session.language || 'ua'].INVITE_SENT} ${recipientId}.`,
         familyButton(ctx.session.language || 'ua'),
       );
+      ctx.session.awaitingUserIdInput = false;
+      return;
     } else {
-      await ctx.deleteMessage();
-      await ctx.editMessageText(
+      await ctx.deleteMessage(ctx.message.message_id);
+      await ctx.deleteMessage(ctx.message.message_id - 1);
+      await ctx.replyWithHTML(
         `${FAMILY_TEXT[ctx.session.language || 'ua'].ID_ALREADY_EXISTS} ${recipientId}.`,
         familyButton(ctx.session.language || 'ua'),
       );
@@ -89,7 +105,7 @@ export class FamilyHandler {
   }
 
   private async sendInvite(ctx: IContext, recipientId: number, initiatorId: number) {
-    this.logger.log(`user:${ctx.from.id} sendInvite to ${initiatorId} `);
+    this.logger.log(`user:${ctx.from.id} sendInvite to ${recipientId} `);
     const message = GROUP_INVITATION_MESSAGE(initiatorId, ctx.session.language);
     const keyboard = {
       reply_markup: {

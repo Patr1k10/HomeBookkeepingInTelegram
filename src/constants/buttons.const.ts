@@ -57,6 +57,7 @@ export const BUTTONS = {
     SEE_COMPARED: 'Подивитися що порівнюємо',
     DELL_COMPARED: 'Видалити порівняння🗑️',
     PREMIUM_BUTTON: '🌟Преміум меню🌟',
+    GET_FAMILY: `Хто в родині`,
   },
   en: {
     SETTING: 'Settings⚙️',
@@ -116,5 +117,6 @@ export const BUTTONS = {
     SEE_COMPARED: 'See what we compare',
     DELL_COMPARED: 'Remove comparison🗑️',
     PREMIUM_BUTTON: '🌟Premium menu🌟',
+    GET_FAMILY: `Who's in the group`,
   },
 };

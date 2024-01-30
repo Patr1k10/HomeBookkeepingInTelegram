@@ -132,6 +132,7 @@ export class TransactionHandler {
     if (errorMessageSent) {
       await ctx.deleteMessage(ctx.message.message_id);
       await ctx.deleteMessage(ctx.message.message_id - 1);
+
       await ctx.replyWithHTML(
         INVALID_DATA_MESSAGE[ctx.session.language || 'ua'],
         backTranButton(ctx.session.language || 'ua'),
