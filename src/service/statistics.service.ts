@@ -1,12 +1,9 @@
 import { Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { InjectBot } from 'nestjs-telegraf';
-import { Telegraf } from 'telegraf';
 import { MessageService } from './message.service';
 import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { PERIOD_E, PERIOD_NULL } from '../constants';
-
 import { IContext, Transaction } from '../interface';
 import { backStatisticButton } from '../battons';
 
@@ -15,7 +12,6 @@ export class StatisticsService {
   constructor(
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
-    @InjectBot() private readonly bot: Telegraf<IContext>,
     private readonly messageService: MessageService,
   ) {}
 
@@ -33,10 +29,7 @@ export class StatisticsService {
         await this.messageService.sendFormattedTransactions(ctx, transactions);
       } else {
         this.logger.log(`No transactions of type ${transactionType} found`);
-        await this.bot.telegram.editMessageText(
-          userId,
-          ctx.session.lastBotMessage,
-          null,
+        await ctx.editMessageText(
           `${PERIOD_NULL[ctx.session.language]} (${transactionType})⛔️`,
           backStatisticButton(ctx.session.language || 'ua'),
         );
@@ -68,13 +61,7 @@ export class StatisticsService {
         await this.messageService.sendFormattedTransactions(ctx, transactions);
       } else {
         this.logger.log(noTransactionsMessage.replace('{userId}', userId.toString()));
-        await this.bot.telegram.editMessageText(
-          userId,
-          ctx.session.lastBotMessage,
-          null,
-          noTransactionsMessage,
-          backStatisticButton(ctx.session.language || 'ua'),
-        );
+        await ctx.editMessageText(noTransactionsMessage, backStatisticButton(ctx.session.language || 'ua'));
       }
     } catch (error) {
       this.logger.error('Error getting transactions', error);

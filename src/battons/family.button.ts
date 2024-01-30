@@ -8,6 +8,7 @@ export function familyButton(language: string = 'ua') {
       Markup.button.callback(BUTTONS[language].ADD_TO_GROUP, 'add_to_group'),
       Markup.button.callback(BUTTONS[language].DELETE_FROM_GROUP, 'remove_group'),
       Markup.button.callback(BUTTONS[language].HELP, 'help'),
+      Markup.button.callback(`${BUTTONS[language].GET_FAMILY}`, 'get_group'),
       Markup.button.callback(BUTTONS[language].BACK, 'back'),
     ],
     {

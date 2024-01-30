@@ -14,6 +14,7 @@ export const FAMILY_TEXT = {
     INVALID_INPUT: '❌Невірні данні❌',
     ACCEPT: 'Користувач прийняв запрошення✅',
     DECLINE: 'Користувач не прийняв запрошення🤨',
+    GET_FAMILY: `в вашій группі такі 🆔:`,
   },
   en: {
     FAMILY_MENU: '🔽Family menu use first:🔽 ',
@@ -30,5 +31,6 @@ export const FAMILY_TEXT = {
     INVALID_INPUT: '❌Invalid input❌',
     ACCEPT: 'The user has accepted the invitation✅',
     DECLINE: 'The user did not accept the invitation🤨',
+    GET_FAMILY: `there are those in your group 🆔:`,
   },
 };
