@@ -11,6 +11,7 @@ export class MessageService {
   ) {}
   async formatTransaction(transaction: Transaction) {
     const transactionName = transaction.transactionName;
+    const userName = transaction.userName;
 
     const amount = transaction.amount;
     const timestamp = new Date(transaction.timestamp).toLocaleString('ru-RU', {
@@ -22,7 +23,7 @@ export class MessageService {
       minute: 'numeric',
     });
     return `📆 ${timestamp}
-📝 <b>${transactionName}</b>: ${amount}
+📝 <b>${transactionName}</b>(👤${userName}): ${amount}
 `;
   }
   async splitArray(array: any[], chunkSize: number) {
@@ -107,7 +108,7 @@ export class MessageService {
 
     await ctx.editMessageText(message, {
       parse_mode: 'HTML',
-      reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium).reply_markup,
+      reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium, ctx).reply_markup,
     });
   }
 

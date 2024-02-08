@@ -222,14 +222,7 @@ export class StatisticsService {
         const mark = backStatisticButton(ctx.session.language || 'ua');
         const detailedStatistics = formattedTransactions.join('\n');
 
-        await ctx.telegram.editMessageText(
-          ctx.from.id,
-          ctx.session.lastBotMessage,
-          null,
-          detailedStatistics,
-
-          { parse_mode: 'HTML', reply_markup: mark.reply_markup },
-        );
+        await ctx.editMessageText(detailedStatistics, { parse_mode: 'HTML', reply_markup: mark.reply_markup });
       } else {
         await ctx.reply('Детальная статистика отсутствует.');
       }
