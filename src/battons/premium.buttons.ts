@@ -1,6 +1,6 @@
 import { Markup } from 'telegraf';
 import { BUTTONS, currencyFlagMapping } from '../constants';
-import { ICryptoAsset } from '../interface';
+import { IContext, ICryptoAsset } from '../interface';
 
 export function actionButtonsPremium(language: string = 'ua', isPremium: boolean = false) {
   const baseButtons = [[Markup.button.callback(`${BUTTONS[language].SET_PREMIUM}`, 'setPremium')]];
@@ -58,11 +58,19 @@ export function actionButtonsBackPremium(language: string = 'ua') {
   return Markup.inlineKeyboard(baseButtons);
 }
 
-export function actionButtonsCompare(language: string = 'ua', isPremium: boolean = false) {
+export function actionButtonsCompare(language: string = 'ua', isPremium: boolean = false, ctx: IContext) {
   const baseButtons = [[Markup.button.callback(BUTTONS[language].BACK, 'backS')]];
 
   if (isPremium) {
     baseButtons.unshift([Markup.button.callback(`${BUTTONS[language].COMPARED}`, 'compare')]);
+  }
+  if (ctx.session.selectedDate) {
+    baseButtons.unshift([
+      Markup.button.callback(
+        BUTTONS[language].DETAILS,
+        `details:${ctx.session.selectedYear}:${ctx.session.selectedMonth}:${ctx.session.selectedDate}`,
+      ),
+    ]);
   }
   return Markup.inlineKeyboard(baseButtons);
 }
