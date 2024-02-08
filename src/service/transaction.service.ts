@@ -29,6 +29,7 @@ export class TransactionService {
       }
       const transaction = new this.transactionModel({
         userId: createTransactionDto.userId,
+        userName: createTransactionDto.userName,
         transactionName: createTransactionDto.transactionName,
         transactionType,
         amount,

@@ -8,6 +8,9 @@ export class Transaction extends Document {
   userId: number;
 
   @Prop({ required: true })
+  userName: string;
+
+  @Prop({ required: true })
   transactionName: string;
 
   @Prop({ required: true, enum: TransactionType })

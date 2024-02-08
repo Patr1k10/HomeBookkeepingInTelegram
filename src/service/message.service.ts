@@ -33,56 +33,61 @@ export class MessageService {
     return result;
   }
   async sendFormattedTransactions(ctx: IContext, transactions: Transaction[]): Promise<void> {
-    const userId = ctx.from.id;
     const language = ctx.session.language;
     const currency = ctx.session.currency;
+    const group = ctx.session.group;
     let totalPositiveAmount = 0;
     let totalNegativeAmount = 0;
-    const positiveTransactionSums: { [key: string]: number } = {};
-    const negativeTransactionSums: { [key: string]: number } = {};
+    const positiveTransactionSums: { [key: string]: { sum: number; userName: string } } = {}; // Изменяем тип объекта
+    const negativeTransactionSums: { [key: string]: { sum: number; userName: string } } = {}; // Изменяем тип объекта
+
+    let message = '';
 
     transactions.forEach((transaction) => {
-      if (transaction.amount > 0) {
-        totalPositiveAmount += transaction.amount;
-        if (positiveTransactionSums[transaction.transactionName]) {
-          positiveTransactionSums[transaction.transactionName] += transaction.amount;
+      const { userName, transactionName, amount } = transaction; // Деструктурируем необходимые данные
+
+      if (amount > 0) {
+        totalPositiveAmount += amount;
+        if (positiveTransactionSums[transactionName]) {
+          positiveTransactionSums[transactionName].sum += amount; // Увеличиваем сумму для существующего ключа
         } else {
-          positiveTransactionSums[transaction.transactionName] = transaction.amount;
+          positiveTransactionSums[transactionName] = { sum: amount, userName }; // Создаем новую запись
         }
       } else {
-        totalNegativeAmount += Math.abs(transaction.amount);
-        if (negativeTransactionSums[transaction.transactionName]) {
-          negativeTransactionSums[transaction.transactionName] += Math.abs(transaction.amount);
+        totalNegativeAmount += Math.abs(amount);
+        if (negativeTransactionSums[transactionName]) {
+          negativeTransactionSums[transactionName].sum += Math.abs(amount); // Увеличиваем сумму для существующего ключа
         } else {
-          negativeTransactionSums[transaction.transactionName] = Math.abs(transaction.amount);
+          negativeTransactionSums[transactionName] = { sum: Math.abs(amount), userName }; // Создаем новую запись
         }
       }
     });
 
+    const setCurrency = CURRNCY[currency];
+
     const sortedPositive = Object.entries(positiveTransactionSums)
-      .sort(([, a], [, b]) => b - a)
-      .map(([name, sum]) => ({
+      .sort(([, a], [, b]) => b.sum - a.sum)
+      .map(([name, { sum, userName }]) => ({
         name,
         sum,
         percentage: ((sum / totalPositiveAmount) * 100).toFixed(2),
+        userName,
       }));
 
     const sortedNegative = Object.entries(negativeTransactionSums)
-      .sort(([, a], [, b]) => b - a)
-      .map(([name, sum]) => ({
+      .sort(([, a], [, b]) => b.sum - a.sum)
+      .map(([name, { sum, userName }]) => ({
         name,
         sum,
         percentage: ((sum / totalNegativeAmount) * 100).toFixed(2),
+        userName,
       }));
-
-    let message = '';
-    const setCurrency = CURRNCY[currency];
 
     if (sortedPositive.length > 0) {
       const localizedMessage = this.getLocalizedMessage('POSITIVE_TRANSACTIONS', language);
       message += `${localizedMessage}`;
-      for (const { name, sum, percentage } of sortedPositive) {
-        message += this.formatMessage(name, percentage, sum, currency);
+      for (const { name, sum, percentage, userName } of sortedPositive) {
+        message += this.formatMessage(name, percentage, sum, currency, group, userName);
       }
       message += `<b>${totalPositiveAmount}${setCurrency}</b>\n\n`; // Общая сумма додатних транзакций
     }
@@ -90,8 +95,8 @@ export class MessageService {
     if (sortedNegative.length > 0) {
       const localizedMessage = this.getLocalizedMessage('NEGATIVE_TRANSACTIONS', language);
       message += `${localizedMessage}`;
-      for (const { name, sum, percentage } of sortedNegative) {
-        message += this.formatMessage(name, percentage, sum, currency);
+      for (const { name, sum, percentage, userName } of sortedNegative) {
+        message += this.formatMessage(name, percentage, sum, currency, group, userName);
       }
       message += `<b>${totalNegativeAmount}${setCurrency}</b>`; // Общая сумма від'ємних транзакцій
     }
@@ -106,10 +111,24 @@ export class MessageService {
     });
   }
 
-  private formatMessage(name: string, percentage: string, sum: number, currency: string) {
-    const paddedName = name.padEnd(12, ' ');
+  private formatMessage(
+    name: string,
+    percentage: string,
+    sum: number,
+    currency: string,
+    group: number[],
+    userName?: string,
+  ) {
+    const paddedName = name.padEnd(10, ' ');
     const setCurrency = CURRNCY[currency];
-    return `<code>${paddedName}: ${percentage}% (${sum}${setCurrency})</code>\n`;
+
+    let userString = '';
+
+    if (group.length >= 2 && userName !== undefined) {
+      userString = `(👤${userName})`;
+    }
+
+    return `<code>${paddedName}${userString}: ${percentage}% (${sum}${setCurrency})</code>\n`;
   }
   private getLocalizedMessage(key: string, language: string) {
     return TOTAL_MESSAGES[key][language] || TOTAL_MESSAGES[key]['ua'];
