@@ -89,7 +89,10 @@ export function actionButtonsStatistics(language: string = 'ua') {
       Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'my_expense'),
       Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'by_category'),
     ],
-    [Markup.button.callback(BUTTONS[language].BACK, 'back')],
+    [
+      Markup.button.callback(`💪Просунута статистика`, 'advanced_statistics'),
+      Markup.button.callback(BUTTONS[language].BACK, 'back'),
+    ],
   ]);
 }
 export function actionButtonsYears(years: number[], language: string = 'ua') {
