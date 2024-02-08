@@ -95,6 +95,7 @@ export class TransactionHandler {
     }
     const message = ctx.message as MyMessage;
     const userId = ctx.from.id;
+    const userName = ctx.from.first_name;
     const text = message.text;
     const transactions = text.split(',').map((t) => t.trim());
     let errorMessageSent = false;
@@ -122,6 +123,7 @@ export class TransactionHandler {
           transactionName,
           transactionType,
           amount,
+          userName,
         });
         await this.balanceService.updateBalance(userId, amount, transactionType);
       } catch (error) {
