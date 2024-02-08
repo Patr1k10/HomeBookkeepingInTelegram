@@ -22,8 +22,13 @@ export class MessageService {
       hour: 'numeric',
       minute: 'numeric',
     });
+    let userString = '';
+
+    if (userName !== undefined) {
+      userString = `(👤${userName})`;
+    }
     return `📆 ${timestamp}
-📝 <b>${transactionName}</b>(👤${userName}): ${amount}
+📝 <b>${transactionName}</b>(👤${userString}): ${amount}
 `;
   }
   async splitArray(array: any[], chunkSize: number) {
