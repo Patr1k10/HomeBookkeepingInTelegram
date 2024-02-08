@@ -130,7 +130,7 @@ export class MessageService {
 
     let userString = '';
 
-    if (group.length >= 2 && userName !== undefined) {
+   if (group && group.length >= 2 && userName !== undefined) {
       userString = `(👤${userName})`;
     }
 
