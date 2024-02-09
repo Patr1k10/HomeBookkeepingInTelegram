@@ -1,10 +1,13 @@
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
-import { CURRNCY, TOTAL_MESSAGES } from '../constants';
+import { CURRNCY, DATA_FOR, DATA_PERIOD, TOTAL_MESSAGES } from '../constants';
 import { IContext, SortTransactionInterface, Transaction, TransactionSums } from '../interface';
 import { actionButtonsCompare } from '../battons';
+import { ITransactionQuery } from '../interface/transaction.query.interface';
+import { Logger } from '@nestjs/common';
 
 export class MessageService {
+  private readonly logger: Logger = new Logger(MessageService.name);
   constructor(
     @InjectBot()
     private readonly bot: Telegraf<IContext>,
@@ -32,15 +35,29 @@ export class MessageService {
 `;
   }
 
-  async sendFormattedTransactions(ctx: IContext, transactions: Transaction[]): Promise<void> {
+  async sendFormattedTransactions(
+    ctx: IContext,
+    transactions: Transaction[],
+    query?: ITransactionQuery,
+  ): Promise<void> {
+    let message = ``;
     const { language, currency, group } = ctx.session;
+    const timestamp = query?.timestamp;
+    if (timestamp !== undefined) {
+      if (timestamp.$lte !== undefined) {
+        const startDate = await this.toNormalDate(timestamp.$gte);
+        const endDate = await this.toNormalDate(timestamp.$lte);
+        message = `${DATA_PERIOD(startDate, endDate, language || 'ua')}`;
+      } else {
+        const startDate = await this.toNormalDate(timestamp.$gte);
+        message = `${DATA_FOR[language || 'ua']} ${startDate}\n`;
+      }
+    }
 
     let totalPositiveAmount = 0;
     let totalNegativeAmount = 0;
     const positiveTransactionSums: TransactionSums = {};
     const negativeTransactionSums: TransactionSums = {};
-
-    let message = '';
 
     transactions.forEach((transaction) => {
       const { userName, transactionName, amount } = transaction;
@@ -130,5 +147,13 @@ export class MessageService {
   }
   private getLocalizedMessage(key: string, language: string) {
     return TOTAL_MESSAGES[key][language] || TOTAL_MESSAGES[key]['ua'];
+  }
+  private async toNormalDate(date: Date) {
+    return new Date(date).toLocaleString('ru-RU', {
+      timeZone: 'Europe/Kiev',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   }
 }

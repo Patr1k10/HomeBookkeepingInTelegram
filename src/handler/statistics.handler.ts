@@ -220,9 +220,18 @@ export class StatisticsHandler {
   async backS(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backS `);
     await resetSession(ctx);
-    await ctx.editMessageText(
-      WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
-      actionButtonsStatistics(ctx.session.language),
-    );
+    const callbackQuery: CustomCallbackQuery = ctx.callbackQuery as CustomCallbackQuery;
+    if (callbackQuery.message.photo) {
+      await ctx.deleteMessage();
+      await ctx.reply(
+        WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
+        actionButtonsStatistics(ctx.session.language),
+      );
+    } else {
+      await ctx.editMessageText(
+        WANT_STATISTICS_MESSAGE[ctx.session.language || 'ua'],
+        actionButtonsStatistics(ctx.session.language),
+      );
+    }
   }
 }

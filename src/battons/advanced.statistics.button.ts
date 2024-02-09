@@ -3,7 +3,7 @@ import { BUTTONS } from '../constants';
 
 export function actionButtonsAdvancedStatistics(language: string = 'ua') {
   return Markup.inlineKeyboard([
-    [Markup.button.callback(`Топ 10 ваших транзакцій`, 'top10'), Markup.button.callback(``, 'select_year')],
+    [Markup.button.callback(`Топ 10 ваших транзакцій`, 'top10'), Markup.button.callback(`Дивитися график`, 'schedule')],
     [
       Markup.button.callback(``, 'today'),
       Markup.button.callback(``, 'on_week'),

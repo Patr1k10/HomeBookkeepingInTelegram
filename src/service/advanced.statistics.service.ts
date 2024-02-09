@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Transaction } from '../interface';
 import { MessageService } from './message.service';
+import { Transaction } from '../shemas/transaction.shemas';
 
 @Injectable()
 export class AdvancedStatisticsService {
@@ -27,6 +27,26 @@ export class AdvancedStatisticsService {
       return topTransactions.map((transaction) => transaction._id);
     } catch (error) {
       throw new Error(`Failed to fetch top 10 transaction names: ${error.message}`);
+    }
+  }
+  async getTop10Transaction(userId: number): Promise<{ amount: number; transactionName: string }[]> {
+    try {
+      const transactions = await this.transactionModel
+        .aggregate([
+          { $match: { userId } },
+          { $group: { _id: '$transactionName', totalAmount: { $sum: '$amount' } } },
+          { $sort: { totalAmount: -1 } },
+          { $limit: 10 },
+        ])
+        .exec();
+
+      // Преобразование объектов из результата агрегации в объекты Transaction
+      return transactions.map((transaction) => ({
+        transactionName: transaction._id,
+        amount: transaction.totalAmount,
+      }));
+    } catch (error) {
+      throw new Error(`Failed to fetch top 10 transactions: ${error.message}`);
     }
   }
 }

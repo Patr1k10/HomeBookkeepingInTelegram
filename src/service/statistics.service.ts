@@ -6,6 +6,7 @@ import { TransactionType } from '../shemas/enum/transactionType.enam';
 import { PERIOD_E, PERIOD_NULL } from '../constants';
 import { IContext, Transaction } from '../interface';
 import { backStatisticButton } from '../battons';
+import { ITransactionQuery } from '../interface/transaction.query.interface';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);
@@ -42,7 +43,7 @@ export class StatisticsService {
 
   private async getTransactions(
     ctx: IContext,
-    query: any,
+    query: ITransactionQuery,
     noTransactionsMessage: string,
     logMessage: string,
   ): Promise<void> {
@@ -58,7 +59,7 @@ export class StatisticsService {
         this.logger.log(
           logMessage.replace('{count}', transactions.length.toString()).replace('{userId}', userId.toString()),
         );
-        await this.messageService.sendFormattedTransactions(ctx, transactions);
+        await this.messageService.sendFormattedTransactions(ctx, transactions, query);
       } else {
         this.logger.log(noTransactionsMessage.replace('{userId}', userId.toString()));
         await ctx.editMessageText(noTransactionsMessage, backStatisticButton(ctx.session.language || 'ua'));
@@ -72,7 +73,7 @@ export class StatisticsService {
   async getTransactionsByTransactionName(ctx: IContext, transactionName: string): Promise<void> {
     await this.getTransactions(
       ctx,
-      { transactionName },
+      { transactionName } as ITransactionQuery,
       `${PERIOD_NULL[ctx.session.language]}(${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
     );
@@ -83,7 +84,7 @@ export class StatisticsService {
     today.setHours(0, 0, 0, 0);
     await this.getTransactions(
       ctx,
-      { timestamp: { $gte: today } },
+      { timestamp: { $gte: today } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for today for user {userId}`,
     );
@@ -95,7 +96,7 @@ export class StatisticsService {
     weekAgo.setDate(today.getDate() - 7);
     await this.getTransactions(
       ctx,
-      { timestamp: { $gte: weekAgo, $lte: today } },
+      { timestamp: { $gte: weekAgo, $lte: today } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the week for user {userId}`,
     );
@@ -107,7 +108,7 @@ export class StatisticsService {
     monthAgo.setDate(today.getDate() - 30);
     await this.getTransactions(
       ctx,
-      { timestamp: { $gte: monthAgo, $lte: today } },
+      { timestamp: { $gte: monthAgo, $lte: today } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the month for user {userId}`,
     );
@@ -115,7 +116,7 @@ export class StatisticsService {
   async getTransactionsByPeriod(ctx: IContext, fromDate: Date, toDate: Date): Promise<void> {
     await this.getTransactions(
       ctx,
-      { timestamp: { $gte: fromDate, $lte: toDate } },
+      { timestamp: { $gte: fromDate, $lte: toDate } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the period for user {userId}`,
     );
@@ -224,7 +225,7 @@ export class StatisticsService {
 
         await ctx.editMessageText(detailedStatistics, { parse_mode: 'HTML', reply_markup: mark.reply_markup });
       } else {
-        await ctx.reply('Детальная статистика отсутствует.');
+        await ctx.reply('Детальна статистика відсутня.');
       }
     } catch (error) {
       this.logger.error('Error getting detailed transactions', error);
