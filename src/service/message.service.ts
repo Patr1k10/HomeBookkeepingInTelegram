@@ -5,6 +5,7 @@ import { IContext, SortTransactionInterface, Transaction, TransactionSums } from
 import { actionButtonsCompare } from '../battons';
 import { ITransactionQuery } from '../interface/transaction.query.interface';
 import { Logger } from '@nestjs/common';
+import { toNormalDate } from '../common';
 
 export class MessageService {
   private readonly logger: Logger = new Logger(MessageService.name);
@@ -45,11 +46,11 @@ export class MessageService {
     const timestamp = query?.timestamp;
     if (timestamp !== undefined) {
       if (timestamp.$lte !== undefined) {
-        const startDate = await this.toNormalDate(timestamp.$gte);
-        const endDate = await this.toNormalDate(timestamp.$lte);
+        const startDate = await toNormalDate(timestamp.$gte);
+        const endDate = await toNormalDate(timestamp.$lte);
         message = `${DATA_PERIOD(startDate, endDate, language || 'ua')}`;
       } else {
-        const startDate = await this.toNormalDate(timestamp.$gte);
+        const startDate = await toNormalDate(timestamp.$gte);
         message = `${DATA_FOR[language || 'ua']} ${startDate}\n`;
       }
     }
@@ -147,13 +148,5 @@ export class MessageService {
   }
   private getLocalizedMessage(key: string, language: string) {
     return TOTAL_MESSAGES[key][language] || TOTAL_MESSAGES[key]['ua'];
-  }
-  private async toNormalDate(date: Date) {
-    return new Date(date).toLocaleString('ru-RU', {
-      timeZone: 'Europe/Kiev',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
   }
 }

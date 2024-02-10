@@ -49,6 +49,7 @@ export class StatisticsService {
   ): Promise<void> {
     const userId = ctx.from.id;
     const groupIds = ctx.session.group;
+    ctx.session.transactionQuery = query;
 
     const adaptedQuery =
       groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, ...query } : { userId, ...query };
@@ -68,6 +69,16 @@ export class StatisticsService {
       this.logger.error('Error getting transactions', error);
       throw error;
     }
+  }
+  async getTransactionsForChard(ctx: IContext, query: ITransactionQuery): Promise<Transaction[]> {
+    const userId = ctx.from.id;
+    const groupIds = ctx.session.group;
+    ctx.session.transactionQuery = query;
+
+    const adaptedQuery =
+      groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, ...query } : { userId, ...query };
+
+    return await this.transactionModel.find(adaptedQuery).exec();
   }
 
   async getTransactionsByTransactionName(ctx: IContext, transactionName: string): Promise<void> {

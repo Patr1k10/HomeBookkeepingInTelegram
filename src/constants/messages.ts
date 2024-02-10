@@ -203,3 +203,18 @@ export const DATA_PERIOD = (startDate: string, endDate: string, language: string
   const message = { ua: `Период с ${startDate} до ${endDate}\n`, en: `Period from ${startDate} to ${endDate}\n` };
   return message[language];
 };
+
+export const ADVANCE_STATISTICS = {
+  ua: `Це меню просунутої статистики воно ще в розробці⚙️ сюди буде додаватися новий функціонал`,
+  en: `This is the menu of advanced statistics, it is still under development⚙️, new functionality will be added here`,
+};
+
+export const TOP10 = {
+  ua: `Це графік 🔝топ10 ваших транзакцій за весь час`,
+  en: `This is a graph of your 🔝top 10 transactions for all time`,
+};
+
+export const SELECT_PERIOD = {
+  ua: `Це ваша діаграма за обраний період`,
+  en: `This is your chart for the selected period`,
+};

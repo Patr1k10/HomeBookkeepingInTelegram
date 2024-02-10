@@ -58,6 +58,10 @@ export const BUTTONS = {
     DELL_COMPARED: 'Видалити порівняння🗑️',
     PREMIUM_BUTTON: '🌟Преміум меню🌟',
     GET_FAMILY: `Хто в родині`,
+    DIAGRAM: `Отримати диграму📊`,
+    TOP10: `Топ10 ваших транзакцій🔝`,
+    TOP10GRAPH: `Отримати графік ваших Топ10`,
+    ADVSTAT: `Просунута статистика💪`,
   },
   en: {
     SETTING: 'Settings⚙️',
@@ -118,5 +122,9 @@ export const BUTTONS = {
     DELL_COMPARED: 'Remove comparison🗑️',
     PREMIUM_BUTTON: '🌟Premium menu🌟',
     GET_FAMILY: `Who's in the group`,
+    DIAGRAM: `Get a diagram📊`,
+    TOP10: `Your top 10 transactions🔝`,
+    TOP10GRAPH: `Get a graph of your Top10`,
+    ADVSTAT: `💪Advanced statistics`,
   },
 };
