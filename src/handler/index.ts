@@ -6,3 +6,4 @@ export * from './statistics.handler';
 export * from './transaction.handler';
 export * from './premium.handler';
 export * from './compare.handler';
+export * from './advanced.statistics.handler';

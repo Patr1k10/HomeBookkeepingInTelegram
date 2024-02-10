@@ -2,6 +2,27 @@ import { BUTTONS } from '../constants';
 import { Markup } from 'telegraf';
 import { IContext } from '../interface';
 
+export function actionButtonsStatistics(language: string = 'ua') {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
+      Markup.button.callback(BUTTONS[language].SELECT_YEAR, 'select_year'),
+    ],
+    [
+      Markup.button.callback(BUTTONS[language].TODAY, 'today'),
+      Markup.button.callback(BUTTONS[language].WEEK, 'on_week'),
+      Markup.button.callback(BUTTONS[language].MONTH, 'on_month'),
+    ],
+    [
+      Markup.button.callback(BUTTONS[language].MY_INCOME, 'my_income'),
+      Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'my_expense'),
+      Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'by_category'),
+    ],
+    [Markup.button.callback(`${BUTTONS[language].ADVSTAT}`, 'advanced_statistics')],
+    [Markup.button.callback(BUTTONS[language].BACK, 'back')],
+  ]);
+}
+
 export function actionButtonsMonths(language: string = 'ua', selectedYear: number, availableMonths: number[]) {
   const monthNames = [
     BUTTONS[language].JANUARY,
@@ -73,25 +94,6 @@ export function backStatisticButtonMessage(language: string = 'ua', ctx: IContex
   return Markup.inlineKeyboard(buttons);
 }
 
-export function actionButtonsStatistics(language: string = 'ua') {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.callback(BUTTONS[language].BALANCE, 'balance'),
-      Markup.button.callback(BUTTONS[language].SELECT_YEAR, 'select_year'),
-    ],
-    [
-      Markup.button.callback(BUTTONS[language].TODAY, 'today'),
-      Markup.button.callback(BUTTONS[language].WEEK, 'on_week'),
-      Markup.button.callback(BUTTONS[language].MONTH, 'on_month'),
-    ],
-    [
-      Markup.button.callback(BUTTONS[language].MY_INCOME, 'my_income'),
-      Markup.button.callback(BUTTONS[language].MY_EXPENSE, 'my_expense'),
-      Markup.button.callback(BUTTONS[language].BY_CATEGORY, 'by_category'),
-    ],
-    [Markup.button.callback(BUTTONS[language].BACK, 'back')],
-  ]);
-}
 export function actionButtonsYears(years: number[], language: string = 'ua') {
   const buttons = years.map((year) => Markup.button.callback(year.toString(), `Year:${year}`));
 

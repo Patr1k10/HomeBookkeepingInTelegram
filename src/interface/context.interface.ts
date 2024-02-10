@@ -1,4 +1,5 @@
 import { Context as ContextTelegraf } from 'telegraf';
+import { ITransactionQuery } from './transaction.query.interface';
 
 export interface IContext extends ContextTelegraf {
   session: {
@@ -15,5 +16,6 @@ export interface IContext extends ContextTelegraf {
     selectedDate?: number;
     isPremium?: boolean;
     compare?: string[];
+    transactionQuery?: ITransactionQuery;
   };
 }

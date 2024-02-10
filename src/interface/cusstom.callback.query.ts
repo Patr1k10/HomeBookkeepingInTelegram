@@ -10,6 +10,7 @@ export interface CustomCallbackQuery {
   message: {
     message_id: number;
     text: string;
+    photo?: [];
   };
   chat_instance: string;
   data: string;

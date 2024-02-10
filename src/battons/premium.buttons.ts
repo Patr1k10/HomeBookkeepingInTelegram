@@ -72,6 +72,8 @@ export function actionButtonsCompare(language: string = 'ua', isPremium: boolean
       ),
     ]);
   }
+  baseButtons.unshift([Markup.button.callback(`${BUTTONS[language].DIAGRAM}`, 'get_сhart')]);
+
   return Markup.inlineKeyboard(baseButtons);
 }
 
