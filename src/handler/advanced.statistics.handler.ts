@@ -1,11 +1,10 @@
 import { Action, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { CustomCallbackQuery, IContext } from '../interface';
+import { IContext } from '../interface';
 import { actionButtonsAdvancedStatistics, actionButtonsTransactionNames, backStatisticButton } from '../battons';
-import { AdvancedStatisticsService, StatisticsService } from '../service';
-import { ChartService } from '../service/chart.service';
+import { AdvancedStatisticsService, ChartService, StatisticsService } from '../service';
 import { Telegraf } from 'telegraf';
-import { ADVANCE_STATISTICS, SELECT_PERIOD, SELECT_TRANSACTION_MESSAGE, TOP10 } from '../constants';
+import { ADVANCE_STATISTICS, SELECT_PERIOD, SELECT_TRANSACTION_MESSAGE } from '../constants';
 
 @Update()
 export class AdvancedStatisticsHandler {
@@ -35,19 +34,6 @@ export class AdvancedStatisticsHandler {
     await ctx.editMessageText(
       `${SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua']}`,
       actionButtonsTransactionNames(top10awaitTransactionsName),
-    );
-  }
-  @Action('schedule')
-  async updateAdvancedStatisticsSchedule(ctx: IContext) {
-    this.logger.log(`user:${ctx.from.id} updateAdvancedStatistics`);
-    const top10 = await this.advancedStatisticsService.getTop10Transaction(ctx.from.id);
-    const chart = await this.chartService.generateTransactionChart(top10);
-    const imageBuffer = Buffer.from(chart, 'base64');
-    await ctx.deleteMessage();
-
-    await ctx.replyWithPhoto(
-      { source: imageBuffer },
-      { caption: `${TOP10[ctx.session.language || 'ua']} `, reply_markup: backStatisticButton().reply_markup },
     );
   }
   @Action('get_сhart')

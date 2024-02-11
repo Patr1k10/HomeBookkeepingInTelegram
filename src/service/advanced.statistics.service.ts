@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MessageService } from './message.service';
 import { Transaction } from '../shemas/transaction.shemas';
+import { TransactionType } from '../shemas/enum/transactionType.enam';
 
 @Injectable()
 export class AdvancedStatisticsService {
@@ -29,11 +30,14 @@ export class AdvancedStatisticsService {
       throw new Error(`Failed to fetch top 10 transaction names: ${error.message}`);
     }
   }
-  async getTop10Transaction(userId: number): Promise<{ amount: number; transactionName: string }[]> {
+  async getTop10Transaction(
+    userId: number,
+    transactionType: TransactionType,
+  ): Promise<{ amount: number; transactionName: string }[]> {
     try {
       const transactions = await this.transactionModel
         .aggregate([
-          { $match: { userId } },
+          { $match: { userId, transactionType } },
           { $group: { _id: '$transactionName', totalAmount: { $sum: '$amount' } } },
           { $sort: { totalAmount: -1 } },
           { $limit: 10 },
