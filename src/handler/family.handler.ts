@@ -33,7 +33,7 @@ export class FamilyHandler {
   }
   @Action('get_group')
   async getGroup(ctx: IContext) {
-    if (ctx.session.group.length <= 0) {
+    if (!ctx.session.group || ctx.session.group.length <= 0) {
       await ctx.editMessageText(`${FAMILY_TEXT[ctx.session.language || 'ua'].GROUP_EMPTY}`, backFamilyButton());
     } else {
       this.logger.log(`user:${ctx.from.id} Executing getId`);
