@@ -19,6 +19,7 @@ export class StatisticsService {
   async getTransactionsByType(ctx: IContext, transactionType: TransactionType): Promise<void> {
     const groupIds = ctx.session.group;
     const userId = ctx.from.id;
+    const firstTransaction = true;
     try {
       const query =
         groupIds && groupIds.length > 0 ? { userId: { $in: groupIds }, transactionType } : { userId, transactionType };
@@ -27,7 +28,7 @@ export class StatisticsService {
 
       if (transactions.length > 0) {
         this.logger.log(`Retrieved ${transactions.length} transactions`);
-        await this.messageService.sendFormattedTransactions(ctx, transactions);
+        await this.messageService.sendFormattedTransactions(ctx, transactions, null, firstTransaction);
       } else {
         this.logger.log(`No transactions of type ${transactionType} found`);
         await ctx.editMessageText(
@@ -46,6 +47,7 @@ export class StatisticsService {
     query: ITransactionQuery,
     noTransactionsMessage: string,
     logMessage: string,
+    firstTransaction?: boolean,
   ): Promise<void> {
     const userId = ctx.from.id;
     const groupIds = ctx.session.group;
@@ -60,7 +62,7 @@ export class StatisticsService {
         this.logger.log(
           logMessage.replace('{count}', transactions.length.toString()).replace('{userId}', userId.toString()),
         );
-        await this.messageService.sendFormattedTransactions(ctx, transactions, query);
+        await this.messageService.sendFormattedTransactions(ctx, transactions, query, firstTransaction);
       } else {
         this.logger.log(noTransactionsMessage.replace('{userId}', userId.toString()));
         await ctx.editMessageText(noTransactionsMessage, backStatisticButton(ctx.session.language || 'ua'));
@@ -87,6 +89,7 @@ export class StatisticsService {
       { transactionName } as ITransactionQuery,
       `${PERIOD_NULL[ctx.session.language]}(${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
+      true,
     );
   }
 
