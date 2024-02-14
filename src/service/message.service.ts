@@ -1,6 +1,6 @@
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
-import { CURRNCY, DATA_FOR, DATA_PERIOD, TOTAL_MESSAGES } from '../constants';
+import { COUNT_WITH, CURRNCY, DATA_FOR, DATA_PERIOD, TOTAL_MESSAGES } from '../constants';
 import { IContext, SortTransactionInterface, Transaction, TransactionSums } from '../interface';
 import { actionButtonsCompare } from '../battons';
 import { ITransactionQuery } from '../interface/transaction.query.interface';
@@ -39,11 +39,17 @@ export class MessageService {
   async sendFormattedTransactions(
     ctx: IContext,
     transactions: Transaction[],
-    query?: ITransactionQuery,
+    query?: ITransactionQuery | null,
+    firstTransaction?: boolean,
   ): Promise<void> {
     let message = ``;
     const { language, currency, group } = ctx.session;
     const timestamp = query?.timestamp;
+    if (firstTransaction) {
+      message = `${COUNT_WITH[ctx.session.language || 'ua']} ${await this.getFirstTransactionTimestamp(
+        transactions,
+      )}📆\n`;
+    }
     if (timestamp !== undefined) {
       if (timestamp.$lte !== undefined) {
         const startDate = await toNormalDate(timestamp.$gte);
@@ -51,7 +57,7 @@ export class MessageService {
         message = `${DATA_PERIOD(startDate, endDate, language || 'ua')}`;
       } else {
         const startDate = await toNormalDate(timestamp.$gte);
-        message = `${DATA_FOR[language || 'ua']} ${startDate}\n`;
+        message = `${DATA_FOR[language || 'ua']} ${startDate}📆\n`;
       }
     }
 
@@ -148,5 +154,10 @@ export class MessageService {
   }
   private getLocalizedMessage(key: string, language: string) {
     return TOTAL_MESSAGES[key][language] || TOTAL_MESSAGES[key]['ua'];
+  }
+
+  private async getFirstTransactionTimestamp(transactions: Transaction[]): Promise<string> {
+    transactions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    return await toNormalDate(transactions[0].timestamp);
   }
 }
