@@ -175,7 +175,6 @@ export class BasicCommandsHandler {
     this.logger.log(`user:${ctx.from.id} back`);
     await this.premiumService.deductPremiumFromUser(ctx.from.id);
     ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
-    this.logger.log(`user:${ctx.from.id} back`);
     await resetSession(ctx);
     await ctx.editMessageText(
       MAIN_MENU[ctx.session.language || 'ua'],
