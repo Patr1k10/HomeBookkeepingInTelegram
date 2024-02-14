@@ -1,9 +1,16 @@
 import { Logger } from '@nestjs/common';
-import { BalanceService, NotificationService, PremiumService } from '../service';
+import { AdvancedStatisticsService, BalanceService, PremiumService } from '../service';
 import { Action, Ctx, Update } from 'nestjs-telegraf';
 import { IContext } from '../interface';
-import { SELECT_SETTING_MESSAGE } from '../constants';
-import { actionButtonsAdmin, actionButtonsSettings, backStartButton } from '../battons';
+import { MAIN_MENU, SELECT_SETTING_MESSAGE } from '../constants';
+import {
+  actionButtonsAdmin,
+  actionButtonsAdminBack,
+  actionButtonsAdminStat,
+  actionButtonsSettings,
+  backStartButton,
+} from '../battons';
+import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
 @Update()
 export class AdminHandler {
@@ -12,7 +19,7 @@ export class AdminHandler {
   constructor(
     private readonly balanceService: BalanceService,
     private readonly premiumService: PremiumService,
-    private readonly notificationService: NotificationService,
+    private readonly advancedStatisticsService: AdvancedStatisticsService,
   ) {}
 
   @Action('settings')
@@ -30,7 +37,7 @@ export class AdminHandler {
     this.logger.log(`user:${ctx.from.id} admin menu command executed`);
     await ctx.editMessageText('Це адмін манель ти знаешь що робити', actionButtonsAdmin());
   }
-  @Action('adminStat')
+  @Action('getAdminStat')
   async adminStatMenuCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} adminStat menu command executed`);
     const user = ctx.from;
@@ -39,11 +46,15 @@ export class AdminHandler {
     const activeUsers = await this.balanceService.countActiveUsersLast3Days();
     const bannedUsers = await this.balanceService.countBannedUsers();
     const countIsPremiumUser = await this.premiumService.countPremiumUsers();
+    const { today, week, month } = await this.advancedStatisticsService.getTotalTransactions();
     this.logger.log(`
       User ID: ${user.id}
       First Name: ${user.first_name}
       Last Name: ${user.last_name}
       Username: ${user.username}
+      TotalTransactionsToday: ${today}
+      TotalTransactionsWeek: ${week}
+      TotalTransactionsMonth: ${month}
       ActiveUsers: ${activeUsers}
       Count Users: ${count}
       Count PremiumUsers: ${countIsPremiumUser}
@@ -55,28 +66,63 @@ export class AdminHandler {
       First Name: ${user.first_name}
       Last Name: ${user.last_name}
       Username: ${user.username}
+      TotalTransactionsToday: ${today}
+      TotalTransactionsWeek: ${week}
+      TotalTransactionsMonth: ${month}
       ActiveUsers: ${activeUsers}
       Count Users: ${count}
       Count PremiumUsers: ${countIsPremiumUser}
       BannedUsers: ${bannedUsers}`,
-      backStartButton(),
+      actionButtonsAdminBack(),
     );
   }
+
+  @Action('adminStat')
+  async adminStatCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} adminStatCommand menu command executed`);
+    await ctx.editMessageText(`Адмін сататистика всього бота`, actionButtonsAdminStat(ctx.session.language || 'ua'));
+  }
+
+  @Action('transactAdminStat')
+  async transactAdminStatCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} transactAdminStatCommand`);
+  }
+
   @Action('sendNews')
   async sendNews(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} sendNews`);
     await ctx.editMessageText(`нваиши новини та її побачать усі🔽🔽🔽`, backStartButton());
     await ctx.scene.enter('news');
   }
-  // @On('text')
-  // async sendNewsAllUser(ctx: IContext) {
-  //   if (ctx.session.type !== 'sendNewsAllUser') {
-  //     return;
-  //   }
-  //   const message = ctx.message as MyMessage;
-  //   await this.notificationService.notificationsAll(message.text);
-  //   await ctx.deleteMessage();
-  //   await ctx.replyWithHTML(`Новини відправлені✅`, backStartButton());
-  //   delete ctx.session.type;
-  // }
+  @Action('popularTransactions')
+  async popularTransactions(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} popularTransactions`);
+    const topTransaction = await this.advancedStatisticsService.getTop10TransactionNames();
+    const message = topTransaction
+      .map((transaction) => {
+        return `Name: <b>${transaction.name}</b>, Count: ${transaction.count}`;
+      })
+      .join('\n');
+    await ctx.editMessageText(message, { reply_markup: actionButtonsAdminBack().reply_markup, parse_mode: 'HTML' });
+  }
+  @Action('toUser')
+  async toUser(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} toUser`);
+    const topUsers = await this.advancedStatisticsService.getTop10UsersWithMostTransactions();
+    const message = topUsers
+      .map((user) => {
+        return `Name: <b>${user.userId}</b>, Count: ${user.transactionCount}`;
+      })
+      .join('\n');
+    await ctx.editMessageText(message, { reply_markup: actionButtonsAdminBack().reply_markup, parse_mode: 'HTML' });
+  }
+  @Action('backA')
+  async backA(ctx: IContext & WizardContext) {
+    this.logger.log(`user:${ctx.from.id} backA`);
+    await resetSession(ctx);
+    await ctx.editMessageText(
+      MAIN_MENU[ctx.session.language || 'ua'],
+      actionButtonsAdmin(ctx.session.language || 'ua'),
+    );
+  }
 }

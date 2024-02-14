@@ -53,4 +53,125 @@ export class AdvancedStatisticsService {
       throw new Error(`Failed to fetch top 10 transactions: ${error.message}`);
     }
   }
+  async getTotalTransactions(): Promise<{ today: number; week: number; month: number }> {
+    try {
+      const today = await this.getTotalTransactionsForToday();
+      const week = await this.getTotalTransactionsForWeek();
+      const month = await this.getTotalTransactionsForMonth();
+
+      return { today, week, month };
+    } catch (error) {
+      throw new Error(`Failed to fetch total transactions: ${error.message}`);
+    }
+  }
+
+  private async getTotalTransactionsForToday(): Promise<number> {
+    try {
+      const startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+
+      const totalTransactions = await this.transactionModel
+        .countDocuments({
+          timestamp: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        })
+        .exec();
+
+      return totalTransactions;
+    } catch (error) {
+      throw new Error(`Failed to fetch total transactions for today: ${error.message}`);
+    }
+  }
+
+  private async getTotalTransactionsForWeek(): Promise<number> {
+    try {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - startDate.getDay());
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date();
+      endDate.setDate(startDate.getDate() + 6);
+      endDate.setHours(23, 59, 59, 999);
+
+      const totalTransactions = await this.transactionModel
+        .countDocuments({
+          timestamp: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        })
+        .exec();
+
+      return totalTransactions;
+    } catch (error) {
+      throw new Error(`Failed to fetch total transactions for the week: ${error.message}`);
+    }
+  }
+
+  private async getTotalTransactionsForMonth(): Promise<number> {
+    try {
+      const startDate = new Date();
+      startDate.setDate(1);
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date();
+      endDate.setMonth(startDate.getMonth() + 1);
+      endDate.setDate(0);
+      endDate.setHours(23, 59, 59, 999);
+
+      const totalTransactions = await this.transactionModel
+        .countDocuments({
+          timestamp: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        })
+        .exec();
+
+      return totalTransactions;
+    } catch (error) {
+      throw new Error(`Failed to fetch total transactions for the month: ${error.message}`);
+    }
+  }
+  async getTop10TransactionNames(): Promise<{ name: string; count: number }[]> {
+    try {
+      const topTransactions = await this.transactionModel
+        .aggregate([
+          { $group: { _id: '$transactionName', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+        ])
+        .exec();
+
+      return topTransactions.map((transaction) => ({
+        name: transaction._id,
+        count: transaction.count,
+      }));
+    } catch (error) {
+      throw new Error(`Failed to fetch top 10 transaction names: ${error.message}`);
+    }
+  }
+  async getTop10UsersWithMostTransactions(): Promise<{ userId: number; transactionCount: number }[]> {
+    try {
+      const topUsers = await this.transactionModel
+        .aggregate([
+          { $group: { _id: '$userId', transactionCount: { $sum: 1 } } },
+          { $sort: { transactionCount: -1 } },
+          { $limit: 10 },
+        ])
+        .exec();
+
+      return topUsers.map((user) => ({
+        userId: user._id,
+        transactionCount: user.transactionCount,
+      }));
+    } catch (error) {
+      throw new Error(`Failed to fetch top 10 users with most transactions: ${error.message}`);
+    }
+  }
 }
