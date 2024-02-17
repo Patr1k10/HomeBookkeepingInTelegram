@@ -84,7 +84,6 @@ export class ChartService {
     centerX = (width * 2.3) / 3;
 
     await this.drawTransactions(ctx, negativeTransactions, totalNegativeValue, startAngle, centerX, centerY, radius);
-
     const imageDataUrl = canvas.toDataURL();
     return imageDataUrl.replace(/^data:image\/png;base64,/, '');
   }
@@ -98,6 +97,9 @@ export class ChartService {
     centerY: number,
     radius: number,
   ): Promise<void> {
+    const totalAmount = transactions.reduce((sum, { amount }) => sum + amount, 0);
+    const textPadding = 20;
+
     for (const { transactionName, amount } of transactions) {
       const percentageChart = Math.abs(amount) / totalValue;
       const endAngle = startAngle + percentageChart * 2 * Math.PI;
@@ -111,15 +113,31 @@ export class ChartService {
       ctx.fill();
 
       const midAngle = (startAngle + endAngle) / 2;
-      const textX = centerX + (radius / 1.1) * Math.cos(midAngle);
-      const textY = centerY + (radius / 1.1) * Math.sin(midAngle);
-      ctx.fillStyle = '#000';
-      ctx.font = 'bold 16px Arial';
+
+      const textX = centerX + (radius + textPadding) * Math.cos(midAngle);
+      const textY = centerY + (radius + textPadding) * Math.sin(midAngle);
+
+      ctx.translate(textX, textY);
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`${transactionName}(${amount}.грн) ${Math.round(percentageChart * 100)}%`, textX, textY);
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 16px Arial';
+      ctx.fillText(`${transactionName}(${amount}.грн) ${Math.round(percentageChart * 100)}%`, 0, 0);
+      ctx.translate(-textX, -textY);
 
       startAngle = endAngle;
+
+      const textUnderTable = `Total: ${totalAmount}`;
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(textUnderTable, centerX, centerY + radius + 40);
+
+      const textUpTable = totalAmount >= 0 ? 'Positive transactions:' : 'Negative transactions:';
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(textUpTable, centerX, centerY - radius - 40);
     }
   }
   private async getRandomColor(): Promise<string> {
