@@ -200,7 +200,7 @@ export const DATA_FOR = {
   en: 'Data for',
 };
 export const DATA_PERIOD = (startDate: string, endDate: string, language: string) => {
-  const message = { ua: `Период с ${startDate} до ${endDate}📆\n`, en: `Period from ${startDate} to ${endDate}📆\n` };
+  const message = { ua: `Период с ${startDate} до ${endDate}\n`, en: `Period from ${startDate} to ${endDate}📆\n` };
   return message[language];
 };
 
