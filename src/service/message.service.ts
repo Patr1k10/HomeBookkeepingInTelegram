@@ -1,6 +1,6 @@
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
-import { COUNT_WITH, CURRNCY, DATA_FOR, DATA_PERIOD, TOTAL_MESSAGES } from '../constants';
+import { COUNT_BY, COUNT_WITH, CURRNCY, DATA_FOR, DATA_PERIOD, TOTAL_MESSAGES } from '../constants';
 import { IContext, SortTransactionInterface, Transaction, TransactionSums } from '../interface';
 import { actionButtonsCompare } from '../battons';
 import { ITransactionQuery } from '../interface/transaction.query.interface';
@@ -45,10 +45,11 @@ export class MessageService {
     let message = ``;
     const { language, currency, group } = ctx.session;
     const timestamp = query?.timestamp;
+    const { firstDate, lastDate } = await this.getFirstTransactionTimestamp(transactions);
     if (firstTransaction) {
-      message = `${COUNT_WITH[ctx.session.language || 'ua']} ${await this.getFirstTransactionTimestamp(
-        transactions,
-      )}📆\n`;
+      message = `${COUNT_WITH[ctx.session.language || 'ua']} ${firstDate}📆\n${
+        COUNT_BY[ctx.session.language || 'ua']
+      } ${lastDate}📆\n`;
     }
     if (timestamp !== undefined) {
       if (timestamp.$lte !== undefined) {
@@ -156,8 +157,12 @@ export class MessageService {
     return TOTAL_MESSAGES[key][language] || TOTAL_MESSAGES[key]['ua'];
   }
 
-  private async getFirstTransactionTimestamp(transactions: Transaction[]): Promise<string> {
+  private async getFirstTransactionTimestamp(
+    transactions: Transaction[],
+  ): Promise<{ firstDate: string; lastDate: string }> {
     transactions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-    return await toNormalDate(transactions[0].timestamp);
+    const firstDate = await toNormalDate(transactions[0].timestamp);
+    const lastDate = await toNormalDate(transactions[transactions.length - 1].timestamp);
+    return { firstDate, lastDate };
   }
 }

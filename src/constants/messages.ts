@@ -223,3 +223,7 @@ export const COUNT_WITH = {
   ua: `Перша транзакція:`,
   en: `First transaction:`,
 };
+export const COUNT_BY = {
+  ua: `Остання транзакція:`,
+  en: `Last transaction:`,
+};
