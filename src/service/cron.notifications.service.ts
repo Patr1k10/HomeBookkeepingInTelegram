@@ -1,6 +1,6 @@
-import { Balance } from '../shemas/balance.shemas';
+import { Balance } from '../mongodb/shemas/balance.shemas';
 import { Injectable, Logger } from '@nestjs/common';
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
@@ -28,7 +28,6 @@ export class CronNotificationsService {
       const inactiveUsers = await this.getInactiveUsers();
       for (const user of inactiveUsers) {
         await this.sendNotification(user);
-        await this.updateLastActivity(user);
         await this.deductPremiumFromBalance(user);
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
@@ -80,20 +79,6 @@ export class CronNotificationsService {
       this.logger.log(`Marked user ${user.userId} as banned`);
     } catch (error) {
       this.logger.error(`Error marking user ${user.userId} as banned`, error);
-    }
-  }
-
-  private async updateLastActivity(user: Balance) {
-    try {
-      if (user.isBaned) {
-        this.logger.log(`User ${user.userId} is banned. Skipping lastActivity update.`);
-        return;
-      }
-      user.lastActivity = new Date();
-      await user.save();
-      this.logger.log(`Updated lastActivity for user ${user.userId}`);
-    } catch (error) {
-      this.logger.error(`Error updating lastActivity for user ${user.userId}`, error);
     }
   }
 

@@ -9,3 +9,4 @@ export * from './premium.service';
 export * from './notification.service';
 export * from './advanced.statistics.service';
 export * from './chart.service';
+export * from './analytics.service';

@@ -1,4 +1,4 @@
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { TransactionType } from '../type/enum/transactionType.enam';
 
 export class CreateTransactionDto {
   userId: number;

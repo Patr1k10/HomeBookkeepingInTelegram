@@ -1,7 +1,7 @@
 import { Action, Ctx, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { BalanceService, CryptoService, CurrencyService, PremiumService } from '../service';
-import { CustomCallbackQuery, IContext } from '../interface';
+import { CustomCallbackQuery, IContext } from '../type/interface';
 import {
   BAY_PREMIUM_MENU,
   CRYPTO_MESSAGE,

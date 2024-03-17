@@ -2,11 +2,11 @@ import { Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MessageService } from './message.service';
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { TransactionType } from '../type/enum/transactionType.enam';
 import { PERIOD_E, PERIOD_NULL } from '../constants';
-import { IContext, Transaction } from '../interface';
+import { IContext, Transaction } from '../type/interface';
 import { backStatisticButton } from '../battons';
-import { ITransactionQuery } from '../interface/transaction.query.interface';
+import { ITransactionQuery } from '../type/interface/transaction.query.interface';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);

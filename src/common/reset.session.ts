@@ -1,4 +1,4 @@
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { WizardContext } from 'telegraf/typings/scenes';
 
 export async function resetSession(ctx: IContext & WizardContext) {

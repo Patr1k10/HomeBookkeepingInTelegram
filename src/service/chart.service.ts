@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createCanvas } from 'canvas';
-import { Transaction } from '../interface';
+import { Transaction } from '../type/interface';
 import { toNormalDate } from '../common';
 import { DATA_FOR, DATA_PERIOD } from '../constants';
-import { ITransactionQuery } from '../interface/transaction.query.interface';
+import { ITransactionQuery } from '../type/interface/transaction.query.interface';
 
 @Injectable()
 export class ChartService {

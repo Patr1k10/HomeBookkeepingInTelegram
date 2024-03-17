@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Balance } from '../shemas/balance.shemas';
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { Balance } from '../mongodb/shemas/balance.shemas';
+import { TransactionType } from '../type/enum/transactionType.enam';
 
 @Injectable()
 export class BalanceService {

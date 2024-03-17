@@ -4,9 +4,9 @@ import { Model } from 'mongoose';
 import { InjectBot } from 'nestjs-telegraf';
 import { BalanceService } from './balance.service';
 import { Telegraf } from 'telegraf';
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { TransactionType } from '../type/enum/transactionType.enam';
 import { CreateTransactionDto } from '../dto/transaction.dto';
-import { IContext, Transaction } from '../interface';
+import { IContext, Transaction } from '../type/interface';
 import { BUTTONS, DELETE_LAST_MESSAGE, DELETE_LAST_MESSAGE2, PERIOD_NULL } from '../constants';
 import { backTranButton } from '../battons';
 

@@ -1,4 +1,4 @@
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { TransactionType } from '../enum/transactionType.enam';
 
 export interface ITransactionQuery {
   userId?: number;

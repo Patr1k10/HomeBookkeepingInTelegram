@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { ICryptoAsset } from '../interface';
+import { ICryptoAsset } from '../type/interface';
 
 export class CryptoService {
   private readonly logger: Logger = new Logger(CryptoService.name);

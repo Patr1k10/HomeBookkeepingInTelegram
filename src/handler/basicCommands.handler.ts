@@ -2,9 +2,9 @@ import { Action, Ctx, Hears, Start, Update } from 'nestjs-telegraf';
 import { BalanceService, PremiumService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
-import { CustomCallbackQuery, IContext } from '../interface';
+import { CustomCallbackQuery, IContext } from '../type/interface';
 import { actionButtonsStart, backHelpButton, backStartButton, currencySet, languageSet, resetButton } from '../battons';
-import { resetSession } from '../common/reset.session';
+import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
@@ -19,7 +19,6 @@ export class BasicCommandsHandler {
   @Start()
   async startCommand(@Ctx() ctx: IContext & WizardContext) {
     try {
-      // await ctx.deleteMessage();
       await resetSession(ctx);
       ctx.session.compare = [];
       await ctx.replyWithHTML('👋');

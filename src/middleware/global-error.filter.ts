@@ -1,4 +1,4 @@
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { Middleware } from 'telegraf';
 import { actionButtonsStart, backStartButton } from '../battons';
 import { MAIN_MENU } from '../constants';

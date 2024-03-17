@@ -2,7 +2,7 @@ import { Middleware } from 'telegraf';
 import { Mongo } from '@telegraf/session/mongodb';
 import { Redis } from '@telegraf/session/redis';
 import { createClient } from 'redis';
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { ConfigService } from '@nestjs/config';
 
 export function createSessionMiddleware(configService: ConfigService): Middleware<IContext> {

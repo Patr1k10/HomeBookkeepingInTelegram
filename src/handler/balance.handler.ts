@@ -2,7 +2,7 @@ import { Action, Ctx, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { backStartButton, backStatisticButton, languageSet } from '../battons';
 import { resetSession } from '../common/reset.session';
 import { WizardContext } from 'telegraf/typings/scenes';
