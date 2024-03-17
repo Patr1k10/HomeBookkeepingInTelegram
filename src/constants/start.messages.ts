@@ -17,4 +17,13 @@ To get started, select "Transaction," and then decide on the type: "Income" or "
 
 Для початку роботи виберіть "Транзакція", а потім визначтеся з типом: "Надходження" або "Витрати". 📊`,
   },
+  pl: {
+    WELCOME_MESSAGE: `<b>👋 Cześć! Witaj w swoim asystencie finansowym. 📘</b>
+
+<i>Narzędzie to zostało zaprojektowane do efektywnego śledzenia budżetu.</i> Dzięki niemu możesz łatwo monitorować <b>Przychody 💰</b> i <b>Wydatki 📉</b>, a także uzyskać podsumowanie bieżącego salda.
+
+Dodatkowo oferujemy funkcję tworzenia <b>Konta rodzinengo 👨‍👩‍👧‍👧</b>, dzięki czemu wszyscy mogą zarządzać budżetem razem.
+
+Aby rozpocząć, wybierz "Transakcję," a następnie zdecyduj o rodzaju: "Przychód" lub "Wydatek". 📊`,
+  },
 };

@@ -20,7 +20,11 @@ export function actionButtonsSettings(language: string = 'ua', bossId: number) {
 }
 export function languageSet() {
   return Markup.inlineKeyboard(
-    [Markup.button.callback('Українська🇺🇦', 'setLanguage:ua'), Markup.button.callback('English🇬🇧', 'setLanguage:en')],
+    [
+      Markup.button.callback('Українська🇺🇦', 'setLanguage:ua'),
+      Markup.button.callback('English🇬🇧', 'setLanguage:en'),
+      Markup.button.callback('Polski🇵🇱', 'setLanguage:pl'),
+    ],
     {
       columns: 2,
     },
@@ -29,7 +33,11 @@ export function languageSet() {
 
 export function currencySet() {
   return Markup.inlineKeyboard(
-    [Markup.button.callback('Українська🇺🇦 гривня', 'UAH'), Markup.button.callback('United States Dollar﹩', 'USD')],
+    [
+      Markup.button.callback('Українська🇺🇦 гривня', 'UAH'),
+      Markup.button.callback('United States🇺🇸 Dollar﹩', 'USD'),
+      Markup.button.callback('Polish🇵🇱 zloty', 'PLN'),
+    ],
     { columns: 1 },
   );
 }

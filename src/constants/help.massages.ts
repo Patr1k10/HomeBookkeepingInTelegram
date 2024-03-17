@@ -70,6 +70,41 @@ export const HELP_MESSAGE = {
 
 📩 <b>Для додаткової допомоги або питань, будь ласка, напишіть на нашу електронну пошту: help.tgbot@icloud.com</b> 📩
    <b>Якщо ви хочете підтримати проєкт фінансово тисніть на кнопку нижче 🔽🔽🔽🔽🔽</b>`,
+  pl: `<b>📘 Przewodnik po korzystaniu z twojego bota finansowego. 📘</b>
+
+<i>Ten bot został zaprojektowany do efektywnego zarządzania Twoimi finansami.</i> Oferuje następujące główne polecenia:
+
+- <b>Transakcje 💸:</b> Pozwala przeglądać i zarządzać swoimi transakcjami.
+- <b>Saldo 💰:</b> Pokazuje twoje aktualne saldo.
+- <b>Statystyki 📊:</b> Zapewnia statystyki twojej aktywności finansowej.
+- <b>Wybierz język📝:</b> Aby zmienić język interfejsu.
+- <b>Rodzina👨‍👩‍👧‍👧:</b> Menu zarządzania rodziną.
+- <b>⛔️Usuń wszystkie dane🗑️:</b> Usuwa wszystkie twoje dane i resetuje twoje konto.
+
+👇 <i>Dodatkowe opcje:</i>
+- <b>Dochody:</b> Dodaj dochód.
+- <b>Wydatki:</b> Dodaj wydatek.
+- <b>Usuń ostatnie❌:</b> Usuń ostatnie transakcje.
+
+<b>👨‍👩‍👧‍👦 Dostęp rodzinny:</b>
+1️⃣ <i>Twoje i twojego partnera transakcje zostaną połączone w jedną.</i>
+2️⃣ <i>Zapytaj swojego partnera o jego ID, które można uzyskać za pomocą menu rodzinnych.</i>
+3️⃣ <i>Naciśnij 'Stwórz rodzinę👩‍❤️‍👨'.</i>
+4️⃣ <i>Dodaj członka rodziny, używając otrzymanego ID.</i>
+5️⃣ <i>Członek rodziny musi potwierdzić zaproszenie.</i>
+🔄 <i>To połączy twoje saldo i transakcje. Jeśli zmienisz zdanie, twoje dane pozostaną twoje.</i>
+🚫 <i>Możesz usunąć dostęp rodzinny w dowolnym momencie, a twoje saldo i transakcje zostaną przywrócone tylko do twoich.</i>
+
+🌟 <b>Dostęp Premium:</b>
+🔓 W fazie testowej możesz teraz uzyskać Dostęp Premium przez ustawienia.
+💹 Obecnie obejmuje kursy wymiany walut i kryptowalut.
+🔄 Planowane są więcej funkcji dla Dostępu Premium.
+💡 Rozważamy również funkcję subskrypcji dla kursów walut i kryptowalut, umożliwiającą aktualizacje co godzinę.
+
+🔧 <i>Jeśli masz jakieś pytania lub sugestie, śmiało się z nami skontaktuj.</i>
+
+📩 <b>W razie dodatkowych pytań lub pomocy, prosimy o kontakt pod adresem e-mail: help.tgbot@icloud.com</b> 📩
+   <b>Jeśli chcesz finansowo wesprzeć projekt, kliknij poniższy przycisk 🔽🔽🔽🔽🔽</b>`,
 };
 
 export const SUPPORT_MESSAGE = {
@@ -85,4 +120,10 @@ export const SUPPORT_MESSAGE = {
 <b>ETH Адреса (ERC20):</b> ${process.env.ETH}
 <b>LTC Адреса:</b> ${process.env.LTC}
 <b>Карта MonoBank:</b> ${process.env.MONO}`,
+  pl: `<u>Wybierz wygodny sposób wsparcia projektu:</u>
+<b>Adres USDT (TRC20):</b> ${process.env.USDT}
+<b>Adres BTC (SegWit new):</b> ${process.env.BTC}
+<b>Adres ETH (ERC20):</b> ${process.env.ETH}
+<b>Adres LTC:</b> ${process.env.LTC}
+<b>Karta MonoBank:</b> ${process.env.MONO}`,
 };
