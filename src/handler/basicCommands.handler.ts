@@ -46,6 +46,18 @@ export class BasicCommandsHandler {
     this.logger.log(`user:${ctx.from.id} usdCommand `);
   }
 
+  @Action('PLN')
+  async plnCommand(ctx: IContext) {
+    ctx.session.currency = 'PLN';
+    const markup = actionButtonsStart(ctx.session.language, ctx.session.isPremium);
+    await ctx.editMessageText(START_MESSAGE[ctx.session.language || 'ua']['WELCOME_MESSAGE'], {
+      reply_markup: markup.reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
+    this.logger.log(`user:${ctx.from.id} usdCommand `);
+  }
+
   @Action('UAH')
   async uahCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} uahCommand `);
