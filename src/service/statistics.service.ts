@@ -149,9 +149,11 @@ export class StatisticsService {
       throw error;
     }
   }
-  async getUniqueYears(userId: number): Promise<number[]> {
+  async getUniqueYears(userId: number, groupIds?: number[]): Promise<number[]> {
     try {
-      const allDates = await this.transactionModel.find({ userId }, 'timestamp').exec();
+      const query = groupIds && groupIds.length > 0 ? { userId: { $in: [...groupIds, userId] } } : { userId };
+
+      const allDates = await this.transactionModel.find(query, 'timestamp').exec();
 
       return Array.from(new Set(allDates.map((date) => new Date(date.timestamp).getFullYear())));
     } catch (error) {
@@ -159,11 +161,13 @@ export class StatisticsService {
       throw error;
     }
   }
-  async getUniqueMonths(selectedYear: number, userId: number): Promise<number[]> {
+  async getUniqueMonths(selectedYear: number, userId: number, groupIds?: number[]): Promise<number[]> {
     try {
+      const query = groupIds && groupIds.length > 0 ? { userId: { $in: [...groupIds, userId] } } : { userId };
+
       const transactions = await this.transactionModel
         .find({
-          userId: userId,
+          ...query,
           timestamp: { $ne: null, $type: 'date' },
         })
         .select('timestamp')
@@ -186,11 +190,18 @@ export class StatisticsService {
       throw error;
     }
   }
-  async getUniqueDays(selectedYear: number, selectedMonth: number, userId: number): Promise<number[]> {
+  async getUniqueDays(
+    selectedYear: number,
+    selectedMonth: number,
+    userId: number,
+    groupIds?: number[],
+  ): Promise<number[]> {
     try {
+      const query = groupIds && groupIds.length > 0 ? { userId: { $in: [...groupIds, userId] } } : { userId };
+
       const transactions = await this.transactionModel
         .find({
-          userId: userId,
+          ...query,
           timestamp: { $ne: null, $type: 'date' },
         })
         .select('timestamp')
@@ -219,13 +230,16 @@ export class StatisticsService {
   }
   async getDetailedTransactions(ctx: IContext, year: number, month: number, date: number): Promise<void> {
     const userId = ctx.from.id;
+    const groupIds = ctx.session.group;
     const fromDate = new Date(year, month - 1, date, 0, 0, 0, 0);
     const toDate = new Date(year, month - 1, date, 23, 59, 59, 999);
 
     try {
+      const query = groupIds && groupIds.length > 0 ? { userId: { $in: [...groupIds, userId] } } : { userId };
+
       const transactions = await this.transactionModel
         .find({
-          userId,
+          ...query,
           timestamp: { $gte: fromDate, $lte: toDate },
         })
         .exec();

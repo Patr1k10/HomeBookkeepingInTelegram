@@ -91,7 +91,7 @@ export class StatisticsHandler {
   @Action('select_year')
   async yearListMenuCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} year menu command executed`);
-    const uniqueYears = await this.statisticsService.getUniqueYears(ctx.from.id);
+    const uniqueYears = await this.statisticsService.getUniqueYears(ctx.from.id, ctx.session.group);
     const yearButtons = actionButtonsYears(uniqueYears, ctx.session.language);
     await ctx.editMessageText(SELECT_YEAR_MESSAGE[ctx.session.language || 'ua'], yearButtons);
   }
@@ -112,7 +112,11 @@ export class StatisticsHandler {
   @Action('select_month')
   async monthListMenuCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} month menu command executed`);
-    const availableMonths = await this.statisticsService.getUniqueMonths(ctx.session.selectedYear, ctx.from.id);
+    const availableMonths = await this.statisticsService.getUniqueMonths(
+      ctx.session.selectedYear,
+      ctx.from.id,
+      ctx.session.group,
+    );
     await ctx.editMessageText(
       SELECT_MONTH_MESSAGE[ctx.session.language || 'ua'],
       actionButtonsMonths(ctx.session.language, ctx.session.selectedYear, availableMonths),
@@ -175,7 +179,12 @@ export class StatisticsHandler {
       const parts = callbackData.split(':');
       const selectedYear = Number(parts[1]);
       const selectedMonth = Number(parts[2]);
-      const availableDays = await this.statisticsService.getUniqueDays(selectedYear, selectedMonth, ctx.from.id);
+      const availableDays = await this.statisticsService.getUniqueDays(
+        selectedYear,
+        selectedMonth,
+        ctx.from.id,
+        ctx.session.group,
+      );
       ctx.session.selectedYear = selectedYear;
       ctx.session.selectedMonth = selectedMonth;
       await ctx.editMessageText(
