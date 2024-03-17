@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MessageService } from './message.service';
-import { Transaction } from '../shemas/transaction.shemas';
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { Transaction } from '../mongodb/shemas/transaction.shemas';
+import { TransactionType } from '../type/enum/transactionType.enam';
 
 @Injectable()
 export class AdvancedStatisticsService {
@@ -44,7 +44,6 @@ export class AdvancedStatisticsService {
         ])
         .exec();
 
-      // Преобразование объектов из результата агрегации в объекты Transaction
       return transactions.map((transaction) => ({
         transactionName: transaction._id,
         amount: transaction.totalAmount,
@@ -65,7 +64,7 @@ export class AdvancedStatisticsService {
     }
   }
 
-  private async getTotalTransactionsForToday(): Promise<number> {
+  async getTotalTransactionsForToday(): Promise<number> {
     try {
       const startDate = new Date();
       startDate.setHours(0, 0, 0, 0);
@@ -172,6 +171,56 @@ export class AdvancedStatisticsService {
       }));
     } catch (error) {
       throw new Error(`Failed to fetch top 10 users with most transactions: ${error.message}`);
+    }
+  }
+
+  async getTotalPositiveAndNegativeTransactionVolumeForToday(): Promise<{
+    totalPositiveTransactionVolume: number;
+    totalNegativeTransactionVolume: number;
+  }> {
+    try {
+      const startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+
+      const endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+
+      const result = await this.transactionModel
+        .aggregate([
+          {
+            $match: {
+              timestamp: {
+                $gte: startDate,
+                $lte: endDate,
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalPositiveTransactionVolume: {
+                $sum: {
+                  $cond: { if: { $gte: ['$amount', 0] }, then: '$amount', else: 0 },
+                },
+              },
+              totalNegativeTransactionVolume: {
+                $sum: {
+                  $cond: { if: { $lt: ['$amount', 0] }, then: '$amount', else: 0 },
+                },
+              },
+            },
+          },
+        ])
+        .exec();
+
+      if (result.length === 0) {
+        return { totalPositiveTransactionVolume: 0, totalNegativeTransactionVolume: 0 };
+      }
+      this.logger.log(result[0]);
+
+      return result[0];
+    } catch (error) {
+      throw new Error(`Failed to fetch total positive and negative transaction volume for today: ${error.message}`);
     }
   }
 }

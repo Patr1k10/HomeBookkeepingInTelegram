@@ -1,9 +1,9 @@
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { COUNT_BY, COUNT_WITH, CURRNCY, DATA_FOR, DATA_PERIOD, TOTAL_MESSAGES } from '../constants';
-import { IContext, SortTransactionInterface, Transaction, TransactionSums } from '../interface';
+import { IContext, SortTransactionInterface, Transaction, TransactionSums } from '../type/interface';
 import { actionButtonsCompare } from '../battons';
-import { ITransactionQuery } from '../interface/transaction.query.interface';
+import { ITransactionQuery } from '../type/interface/transaction.query.interface';
 import { Logger } from '@nestjs/common';
 import { toNormalDate } from '../common';
 

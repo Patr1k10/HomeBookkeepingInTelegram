@@ -1,6 +1,6 @@
-import { Balance } from '../shemas/balance.shemas';
+import { Balance } from '../mongodb/shemas/balance.shemas';
 import { Injectable, Logger } from '@nestjs/common';
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Telegraf } from 'telegraf';

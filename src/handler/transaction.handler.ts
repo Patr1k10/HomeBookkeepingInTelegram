@@ -2,7 +2,7 @@ import { Action, Ctx, On, Update } from 'nestjs-telegraf';
 import { TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { BalanceService } from '../service';
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { TransactionType } from '../type/enum/transactionType.enam';
 import {
   BALANCE_MESSAGE,
   ENTER_EXPENSE_MESSAGE,
@@ -13,7 +13,7 @@ import {
   SELECT_TRANSACTION_MESSAGE,
   TRANSACTION_DELETED_MESSAGE,
 } from '../constants';
-import { CustomCallbackQuery, IContext, MyMessage } from '../interface';
+import { CustomCallbackQuery, IContext, MyMessage } from '../type/interface';
 import { actionButtonsTransaction, backTranButton } from '../battons';
 import { resetSession } from '../common/reset.session';
 import { WizardContext } from 'telegraf/typings/scenes';

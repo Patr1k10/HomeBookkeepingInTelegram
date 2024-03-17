@@ -1,7 +1,7 @@
 import { Action, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
 import { OpenAiApiService } from '../open-ai-api/open-ai-api.service';
-import { CustomCallbackQuery, IContext } from '../interface';
+import { CustomCallbackQuery, IContext } from '../type/interface';
 import {
   actionButtonsBeckP,
   actionButtonsBeckPAndRemove,

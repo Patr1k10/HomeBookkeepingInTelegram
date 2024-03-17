@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AdvancedStatisticsService, BalanceService, PremiumService } from '../service';
 import { Action, Ctx, Update } from 'nestjs-telegraf';
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { MAIN_MENU, SELECT_SETTING_MESSAGE } from '../constants';
 import {
   actionButtonsAdmin,

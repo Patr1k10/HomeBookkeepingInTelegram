@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
-import { ICurrencyRates } from '../interface';
+import { ICurrencyRates } from '../type/interface';
 
 @Injectable()
 export class CurrencyService {

@@ -1,7 +1,7 @@
 import { Ctx, InjectBot, On, Wizard, WizardStep } from 'nestjs-telegraf';
 import { WizardContext } from 'telegraf/typings/scenes';
 import { Context, Telegraf } from 'telegraf';
-import { IContext, MyMessage } from '../interface';
+import { IContext, MyMessage } from '../type/interface';
 import { backStartButton } from '../battons';
 import { NotificationService } from '../service';
 

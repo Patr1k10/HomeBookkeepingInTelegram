@@ -1,6 +1,6 @@
 import { BUTTONS } from '../constants';
 import { Markup } from 'telegraf';
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 
 export function actionButtonsStatistics(language: string = 'ua') {
   return Markup.inlineKeyboard([

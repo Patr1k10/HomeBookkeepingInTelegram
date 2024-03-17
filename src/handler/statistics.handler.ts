@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Action, Ctx, Update } from 'nestjs-telegraf';
-import { TransactionType } from '../shemas/enum/transactionType.enam';
+import { TransactionType } from '../type/enum/transactionType.enam';
 import { StatisticsService } from '../service';
 import {
   PERIOD_NULL,
@@ -10,7 +10,7 @@ import {
   SELECT_YEAR_MESSAGE,
   WANT_STATISTICS_MESSAGE,
 } from '../constants';
-import { CustomCallbackQuery, IContext } from '../interface';
+import { CustomCallbackQuery, IContext } from '../type/interface';
 import {
   actionButtonsDays,
   actionButtonsMonths,

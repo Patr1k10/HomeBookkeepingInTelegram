@@ -1,6 +1,6 @@
 import { Action, InjectBot, Update } from 'nestjs-telegraf';
 import { Logger } from '@nestjs/common';
-import { IContext } from '../interface';
+import { IContext } from '../type/interface';
 import { actionButtonsAdvancedStatistics, actionButtonsTransactionNames, backStatisticButton } from '../battons';
 import { AdvancedStatisticsService, ChartService, StatisticsService } from '../service';
 import { Telegraf } from 'telegraf';

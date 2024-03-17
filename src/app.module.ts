@@ -7,11 +7,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseConfigService } from './mongodb/mongoose-config.service';
 import * as handlers from './handler/index';
-import { Balance, BalanceSchema } from './shemas/balance.shemas';
-import { Transaction, TransactionSchema } from './shemas/transaction.shemas';
+import { Balance, BalanceSchema } from './mongodb/shemas/balance.shemas';
+import { Transaction, TransactionSchema } from './mongodb/shemas/transaction.shemas';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OpenAiApiModule } from './open-ai-api/open-ai-api.module';
 import { createSessionMiddleware, errorHandlingMiddleware } from './middleware';
+import { Analytics, AnalyticsSchema } from './mongodb/shemas/analytics.schemas';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ dotenv.config();
     MongooseModule.forFeature([
       { name: Balance.name, schema: BalanceSchema },
       { name: Transaction.name, schema: TransactionSchema },
+      { name: Analytics.name, schema: AnalyticsSchema },
     ]),
   ],
   providers: [Logger, ...Object.values(services), ...Object.values(handlers), ...Object.values(scene)],

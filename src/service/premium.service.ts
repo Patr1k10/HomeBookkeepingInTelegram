@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Balance } from '../shemas/balance.shemas';
+import { Balance } from '../mongodb/shemas/balance.shemas';
 
 @Injectable()
 export class PremiumService {
