@@ -44,7 +44,6 @@ export class AdvancedStatisticsService {
         ])
         .exec();
 
-      // Преобразование объектов из результата агрегации в объекты Transaction
       return transactions.map((transaction) => ({
         transactionName: transaction._id,
         amount: transaction.totalAmount,

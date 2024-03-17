@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
 import { IContext } from '../type/interface';
 import { backStartButton, backStatisticButton, languageSet } from '../battons';
-import { resetSession } from '../common/reset.session';
+import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()

@@ -4,7 +4,7 @@ import { Telegraf } from 'telegraf';
 import { BUTTONS, FAMILY_TEXT, GROUP_INVITATION_MESSAGE, INVITATION_ACCEPTED_MESSAGE } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../type/interface';
 import { acceptButton, backFamilyButton, backStartButton, familyButton } from '../battons';
-import { resetSession } from '../common/reset.session';
+import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
