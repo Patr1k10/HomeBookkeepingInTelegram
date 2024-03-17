@@ -135,3 +135,48 @@ export function actionButtonsTransactionNames(
 
   return Markup.inlineKeyboard(buttons);
 }
+
+// TODO: calendar
+
+// export function calendar(language: string = 'ua', selectedYear: number, selectedMonth: number, availableDays: number[]) {
+//   const monthNames = [
+//     BUTTONS[language].JANUARY,
+//     BUTTONS[language].FEBRUARY,
+//     BUTTONS[language].MARCH,
+//     BUTTONS[language].APRIL,
+//     BUTTONS[language].MAY,
+//     BUTTONS[language].JUNE,
+//     BUTTONS[language].JULY,
+//     BUTTONS[language].AUGUST,
+//     BUTTONS[language].SEPTEMBER,
+//     BUTTONS[language].OCTOBER,
+//     BUTTONS[language].NOVEMBER,
+//     BUTTONS[language].DECEMBER,
+//   ];
+//
+//   const monthButton = Markup.button.callback(
+//     monthNames[selectedMonth - 1],
+//     `selectedDate:${selectedYear}:${selectedMonth}`,
+//   );
+//   const backButton = Markup.button.callback('⬅️', 'назад');
+//   const forwardButton = Markup.button.callback('➡️', 'вперед');
+//
+//   const daysButtons = availableDays.map((day) =>
+//     Markup.button.callback(
+//       availableDays.includes(day) ? day.toString() : `✘${day}`,
+//       `Day:${selectedYear}:${selectedMonth}:${day}`
+//     )
+//   );
+//
+//   const buttonsInColumns: ReturnType<typeof Markup.button.callback>[][] = [];
+//   for (let i = 0; i < daysButtons.length; i += 7) {
+//     buttonsInColumns.push(daysButtons.slice(i, i + 7));
+//   }
+//
+//   return Markup.inlineKeyboard([
+//     [Markup.button.callback('год', 'год')],
+//     [backButton, monthButton, forwardButton],
+//     ...buttonsInColumns,
+//     [Markup.button.callback(BUTTONS[language].BACK, 'back')],
+//   ]);
+// }
