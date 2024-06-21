@@ -4,7 +4,7 @@ export function actionButtonsAdmin(language: string = 'ua') {
   const baseButtons = [
     [Markup.button.callback('Отримати статистуки по боту', 'adminStat')],
     [Markup.button.callback('Відправити новини', 'sendNews')],
-    [Markup.button.callback('Заглушка', 'Заглушка'), Markup.button.callback('Повирнутися ↩️', 'back')],
+    [Markup.button.callback('Реферальные данные ', 'refData'), Markup.button.callback('Повирнутися ↩️', 'back')],
   ];
   return Markup.inlineKeyboard(baseButtons);
 }

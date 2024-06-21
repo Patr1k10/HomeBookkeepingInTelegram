@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { MessageService } from './message.service';
 import { Transaction } from '../mongodb/shemas/transaction.shemas';
 import { TransactionType } from '../type/enum/transactionType.enam';
+import { Balance } from '../mongodb/shemas/balance.shemas';
+import { GetRefDataDto } from '../dto/ref.dto';
 
 @Injectable()
 export class AdvancedStatisticsService {
@@ -12,6 +14,8 @@ export class AdvancedStatisticsService {
   constructor(
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
+    @InjectModel('Balance')
+    private readonly balanceModel: Model<Balance>,
     private readonly messageService: MessageService,
   ) {}
   async getTop10TransactionNamesByCount(userId: number): Promise<string[]> {
@@ -221,6 +225,35 @@ export class AdvancedStatisticsService {
       return result[0];
     } catch (error) {
       throw new Error(`Failed to fetch total positive and negative transaction volume for today: ${error.message}`);
+    }
+  }
+  async getRefData(): Promise<GetRefDataDto> {
+    try {
+      const balanceDocuments = await this.balanceModel.find().exec();
+
+      let undefinedCount = 0;
+      const payloadCounts: { [key: string]: number } = {};
+
+      for (const doc of balanceDocuments) {
+        if (doc.startPayload === undefined || doc.startPayload === null) {
+          undefinedCount++;
+        } else {
+          if (payloadCounts[doc.startPayload]) {
+            payloadCounts[doc.startPayload]++;
+          } else {
+            payloadCounts[doc.startPayload] = 1;
+          }
+        }
+      }
+
+      const uniqueStartPayloads = Object.entries(payloadCounts).map(([payload, count]) => ({ payload, count }));
+
+      return {
+        undefinedCount,
+        uniqueStartPayloads,
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch reference data: ${error.message}`);
     }
   }
 }

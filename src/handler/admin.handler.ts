@@ -116,6 +116,22 @@ export class AdminHandler {
       .join('\n');
     await ctx.editMessageText(message, { reply_markup: actionButtonsAdminBack().reply_markup, parse_mode: 'HTML' });
   }
+
+  @Action('refData')
+  async refData(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} refData`);
+    const refData = await this.advancedStatisticsService.getRefData();
+    const refDataMessage = `
+    Undefined Count: ${refData.undefinedCount}\nUnique Start Payloads:\n${refData.uniqueStartPayloads
+      .map((payload) => `Payload: <b>${payload.payload}</b>, Count: ${payload.count}`)
+      .join('\n')}
+  `;
+    await ctx.editMessageText(refDataMessage, {
+      reply_markup: actionButtonsAdminBack().reply_markup,
+      parse_mode: 'HTML',
+    });
+  }
+
   @Action('backA')
   async backA(ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backA`);
