@@ -18,6 +18,9 @@ export class Balance extends Document {
   @Prop({ required: true, default: 0 })
   dayOfPremium: Date;
 
+  @Prop({})
+  startPayload: string;
+
   @Prop({ default: Date.now })
   lastActivity: Date;
 }

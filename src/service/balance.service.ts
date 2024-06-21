@@ -124,4 +124,15 @@ export class BalanceService {
       throw error;
     }
   }
+  async setStartPayload(userId: number, userStartPayload: string) {
+    if (!userStartPayload.split(' ')[1]) {
+      console.log('ret');
+      return;
+    } else {
+      const user = await this.balanceModel.findOne({ userId }).exec();
+      const startPayload = userStartPayload.split(' ')[1];
+      user.startPayload = startPayload;
+      await user.save();
+    }
+  }
 }

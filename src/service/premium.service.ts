@@ -28,7 +28,7 @@ export class PremiumService {
   async getIsPremium(userId: number): Promise<boolean> {
     const balance = await this.balanceModel.findOne({ userId }).exec();
     if (!balance.isPremium) {
-      balance.isPremium;
+      balance.isPremium = false;
       await balance.save();
       return balance.isPremium;
     }
@@ -50,6 +50,10 @@ export class PremiumService {
   async deductPremiumFromUser(userId: number) {
     try {
       const user = await this.balanceModel.findOne({ userId });
+      if (!user.isPremium) {
+        user.isPremium = false;
+        await user.save();
+      }
       if (user.isPremium === false) {
         return;
       }

@@ -2,7 +2,7 @@ import { Action, Ctx, Hears, Start, Update } from 'nestjs-telegraf';
 import { BalanceService, PremiumService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
-import { CustomCallbackQuery, IContext } from '../type/interface';
+import { CustomCallbackQuery, IContext, MyMessage } from '../type/interface';
 import { actionButtonsStart, backHelpButton, backStartButton, currencySet, languageSet, resetButton } from '../battons';
 import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
@@ -19,15 +19,18 @@ export class BasicCommandsHandler {
   @Start()
   async startCommand(@Ctx() ctx: IContext & WizardContext) {
     try {
+      const startPayload = ctx.message as MyMessage;
       await resetSession(ctx);
       ctx.session.compare = [];
       await ctx.replyWithHTML('👋');
-      await this.premiumService.deductPremiumFromUser(ctx.from.id);
       await this.balanceService.createBalance(ctx.from.id);
+      await this.premiumService.deductPremiumFromUser(ctx.from.id);
       ctx.session.isPremium = await this.premiumService.getIsPremium(ctx.from.id);
       const sentMessage = await ctx.reply('Оберіть мову / Choose language', languageSet());
       ctx.session.lastBotMessage = sentMessage.message_id;
       this.logger.log(`user:${ctx.from.id} startCommand executed successfully`);
+      this.logger.log(`user:${JSON.stringify(startPayload.text)}`);
+      await this.balanceService.setStartPayload(ctx.from.id, startPayload.text);
     } catch (error) {
       this.logger.error('Error in startCommand:', error);
       await ctx.reply(ERROR_MESSAGE[ctx.session.language || 'ua']);
