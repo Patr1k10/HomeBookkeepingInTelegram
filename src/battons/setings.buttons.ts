@@ -10,8 +10,9 @@ export function actionButtonsSettings(language: string = 'ua', bossId: number) {
     [Markup.button.callback(BUTTONS[language].RESET, 'reset')],
     [
       Markup.button.callback(BUTTONS[language].GET_PREMIUM, 'premium'),
-      Markup.button.callback(BUTTONS[language].BACK, 'back'),
-    ],
+      Markup.button.callback('аналитика бота', 'bot_analytics'),
+
+    ],[Markup.button.callback(BUTTONS[language].BACK, 'back')]
   ];
   if (bossId === +process.env.BOSID) {
     baseButtons[1].push(Markup.button.callback('Адмін😎 панель🔓', 'admin'));

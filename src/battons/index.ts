@@ -6,3 +6,4 @@ export * from './setings.buttons';
 export * from './family.button';
 export * from './advanced.statistics.button';
 export * from './admin.buttons';
+export * from './analytics.buttons';

@@ -141,4 +141,13 @@ export class AdminHandler {
       actionButtonsAdmin(ctx.session.language || 'ua'),
     );
   }
+  @Action('backSettings')
+  async backSettings(ctx: IContext & WizardContext) {
+    this.logger.log(`user:${ctx.from.id} backSettings`);
+    await resetSession(ctx);
+    await ctx.editMessageText(
+      MAIN_MENU[ctx.session.language || 'ua'],
+      actionButtonsSettings(ctx.session.language || 'ua', ctx.from.id),
+    );
+  }
 }
