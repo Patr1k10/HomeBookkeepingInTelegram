@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MongooseModuleOptions, MongooseOptionsFactory } from '@nestjs/mongoose';
-import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
-
-dotenv.config();
 
 @Injectable()
 export class MongooseConfigService implements MongooseOptionsFactory {

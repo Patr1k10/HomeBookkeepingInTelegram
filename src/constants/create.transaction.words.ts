@@ -1,0 +1,1 @@
+export const createTransactionWord = 3

@@ -5,6 +5,7 @@ import { BalanceService } from '../service';
 import { TransactionType } from '../type/enum/transactionType.enam';
 import {
   BALANCE_MESSAGE,
+  createTransactionWord,
   ENTER_EXPENSE_MESSAGE,
   ENTER_INCOME_MESSAGE,
   getBalanceMessage,
@@ -112,7 +113,8 @@ export class TransactionHandler {
         continue;
       }
       const words = transactionName.split(' ');
-      if (words.length > 2) {
+      //number of words to create a transaction
+      if (words.length > createTransactionWord) {
         errorMessageSent = true;
         continue;
       }
