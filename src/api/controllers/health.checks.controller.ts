@@ -1,6 +1,5 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 
-
 @Controller('HealthChecks')
 export class HealthChecksController {
   private readonly logger: Logger = new Logger(HealthChecksController.name);
