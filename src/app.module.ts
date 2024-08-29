@@ -13,9 +13,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { OpenAiApiModule } from './open-ai-api/open-ai-api.module';
 import { createSessionMiddleware, errorHandlingMiddleware } from './middleware';
 import { Analytics, AnalyticsSchema } from './mongodb/shemas/analytics.schemas';
-import { HealthChecksController } from './api/controllers/health.checks.controller';
-
-dotenv.config();
+import { HealthChecksController } from './api/health.checks.controller';
 
 @Module({
   imports: [
