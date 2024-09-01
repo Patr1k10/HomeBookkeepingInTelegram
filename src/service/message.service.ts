@@ -46,11 +46,13 @@ export class MessageService {
     const { language, currency, group } = ctx.session;
     const timestamp = query?.timestamp;
     const { firstDate, lastDate } = await this.getFirstTransactionTimestamp(transactions);
+
     if (firstTransaction) {
       message = `${COUNT_WITH[ctx.session.language || 'ua']} ${firstDate}📆\n${
         COUNT_BY[ctx.session.language || 'ua']
       } ${lastDate}📆\n`;
     }
+
     if (timestamp !== undefined) {
       if (timestamp.$lte !== undefined) {
         const startDate = await toNormalDate(timestamp.$gte);
@@ -90,7 +92,6 @@ export class MessageService {
     const setCurrency = CURRNCY[currency];
 
     const sortedPositive = await this.sortTransactionsBySum(positiveTransactionSums, totalPositiveAmount);
-
     const sortedNegative = await this.sortTransactionsBySum(negativeTransactionSums, totalNegativeAmount);
 
     if (sortedPositive.length > 0) {
@@ -115,11 +116,26 @@ export class MessageService {
     // General summary
     message += `${localizedMessage}<b>${totalPositiveAmount - totalNegativeAmount}${setCurrency}</b>\n`;
 
-    await ctx.editMessageText(message, {
-      parse_mode: 'HTML',
-      reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium, ctx).reply_markup,
-    });
+    this.logger.log(message);
+
+    // Разделить сообщение, если оно слишком длинное
+    const messages = this.splitMessage(message);
+
+    for (const [index, part] of messages.entries()) {
+      if (index === 0) {
+        await ctx.editMessageText(part, {
+          parse_mode: 'HTML',
+          reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium, ctx).reply_markup,
+        });
+      } else {
+        await ctx.reply(part, {
+          parse_mode: 'HTML',
+          reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium, ctx).reply_markup,
+        });
+      }
+    }
   }
+
   private async sortTransactionsBySum(
     transactions: TransactionSums,
     totalAmount: number,
@@ -132,6 +148,23 @@ export class MessageService {
         percentage: ((sum / totalAmount) * 100).toFixed(2),
         userName,
       }));
+  }
+
+  private splitMessage(message: string, maxLength: number = 4096): string[] {
+    const parts: string[] = [];
+    let remainingMessage = message;
+
+    while (remainingMessage.length > maxLength) {
+      let splitIndex = remainingMessage.lastIndexOf('\n', maxLength);
+      if (splitIndex === -1) {
+        splitIndex = maxLength;
+      }
+      parts.push(remainingMessage.slice(0, splitIndex));
+      remainingMessage = remainingMessage.slice(splitIndex);
+    }
+    parts.push(remainingMessage);
+
+    return parts;
   }
 
   private formatMessage(
