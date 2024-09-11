@@ -5,7 +5,6 @@ import { BalanceService } from '../service';
 import { TransactionType } from '../type/enum/transactionType.enam';
 import {
   BALANCE_MESSAGE,
-  createTransactionWord,
   ENTER_EXPENSE_MESSAGE,
   ENTER_INCOME_MESSAGE,
   getBalanceMessage,
@@ -16,7 +15,7 @@ import {
 } from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../type/interface';
 import { actionButtonsTransaction, backTranButton } from '../battons';
-import { resetSession } from '../common/reset.session';
+import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
 
 @Update()
@@ -101,20 +100,15 @@ export class TransactionHandler {
     const transactions = text.split(',').map((t) => t.trim());
     let errorMessageSent = false;
     for (const transaction of transactions) {
-      const matches = transaction.match(regex);
+      const matches = transaction.match(regex); // regex до трех слів
       if (!matches) {
         errorMessageSent = true;
+        this.logger.error(`Error creating transaction: no matches:${matches} `);
         continue;
       }
       const transactionName = matches[1].trim().toLowerCase();
       const amount = Number(matches[2]);
       if (!transactionName || isNaN(amount) || amount <= 0) {
-        errorMessageSent = true;
-        continue;
-      }
-      const words = transactionName.split(' ');
-      //number of words to create a transaction
-      if (words.length > createTransactionWord) {
         errorMessageSent = true;
         continue;
       }
