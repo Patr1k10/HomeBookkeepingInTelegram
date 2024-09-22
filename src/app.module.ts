@@ -2,7 +2,6 @@ import { Logger, Module } from '@nestjs/common';
 import { TelegrafModule } from 'nestjs-telegraf';
 import * as services from './service';
 import * as scene from './scene';
-import * as dotenv from 'dotenv';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseConfigService } from './mongodb/mongoose-config.service';

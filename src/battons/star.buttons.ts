@@ -9,7 +9,7 @@ export function actionButtonsStart(language: string = 'ua', isPremium: boolean =
     ],
     [
       Markup.button.callback(BUTTONS[language].SETTING, 'settings'),
-      Markup.button.callback(BUTTONS[language].HELP, 'help'),
+      Markup.button.callback(BUTTONS[language].INFO, 'info'),
     ],
   ];
   if (isPremium) {
@@ -17,6 +17,17 @@ export function actionButtonsStart(language: string = 'ua', isPremium: boolean =
   }
   return Markup.inlineKeyboard(baseButtons);
 }
+
+export function infoButton(language: string = 'ua') {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(BUTTONS[language].FIN, 'financial-literacy'),
+      Markup.button.callback(BUTTONS[language].HELP, 'help'),
+    ],
+    [Markup.button.callback(BUTTONS[language].BACK, 'back')],
+  ]);
+}
+
 export function backStartButton(language: string = 'ua') {
   return Markup.inlineKeyboard([Markup.button.callback(BUTTONS[language].BACK, 'back')]);
 }
