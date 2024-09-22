@@ -17,15 +17,15 @@ export const SELECT_TRANSACTION_MESSAGE = {
 };
 
 export const ENTER_INCOME_MESSAGE = {
-  en: 'Enter the income name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nNote: Use up to <b>two words for each transaction name.</b>\n<u>Example: "<b>Salary 100000</b>, <b>Bonus 5000"</b></u>',
-  ua: 'Введіть найменування приходу та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПримітка: Використовуйте до <b>двох слів для назви кожної транзакції.</b>\n<u>Приклад: "<b>Зарплата 100000</b>, <b>Віддали борг 5000"</b></u>',
-  pl: 'Wprowadź nazwę i kwotę przychodu oddzieloną spacją. \nAby wprowadzić wiele transakcji, oddziel je przecinkiem. \nUwaga: Użyj maksymalnie <b>dwóch słów na nazwę każdej transakcji.</b>\n<u>Przykład: "<b>Wynagrodzenie 100000</b>, <b>Premia 5000"</b></u>',
+  en: `Enter the income name and amount separated by a space. \n<b><u>To enter multiple transactions, separate them with a comma.</u></b> \nNote: Use up to <b>three words for each transaction name, and emojis are allowed.</b>\n<u>Example: "<b>Salary 💼 100000</b>, <b>Bonus 🏆 5000"</b></u>`,
+  ua: `Введіть найменування приходу та суму через пробіл. \n<b><u>Для введення кількох транзакцій, розділіть їх комою.</u></b> \nПримітка: Використовуйте до <b>трьох слів для назви кожної транзакції, дозволено використовувати емодзі.</b>\n<u>Приклад: "<b>Зарплата 💼 100000</b>, <b>Премія 🏆 5000"</b></u>`,
+  pl: `Wprowadź nazwę i kwotę przychodu oddzieloną spacją. \n<b><u>Aby wprowadzić wiele transakcji, oddziel je przecinkiem.</u></b> \nUwaga: Użyj maksymalnie <b>trzech słów na nazwę każdej transakcji, dozwolone są emoji.</b>\n<u>Przykład: "<b>Wynagrodzenie 💼 100000</b>, <b>Premia 🏆 5000"</b></u>`,
 };
 
 export const ENTER_EXPENSE_MESSAGE = {
-  en: 'Enter the expense name and amount separated by a space. \nTo enter multiple transactions, separate them with a comma. \nNote: Use up to <b>two words for each transaction name.</b>\n<u>Example: "<b>Rent 2000</b>, <b>Groceries 500"</b></u>',
-  ua: 'Введіть найменування витрати та суму через пробіл. \nДля введення кількох транзакцій, розділіть їх комою. \nПримітка: Використовуйте до <b>двох слів для назви кожної транзакції.</b>\n<u>Приклад: "<b>Оренда 2000</b>, <b>Продукти АТБ 500"</b></u>',
-  pl: 'Wprowadź nazwę i kwotę wydatku oddzieloną spacją. \nAby wprowadzić wiele transakcji, oddziel je przecinkiem. \nUwaga: Użyj maksymalnie <b>dwóch słów na nazwę każdej transakcji.</b>\n<u>Przykład: "<b>Wynajem 2000</b>, <b>Artykuły spożywcze 500"</b></u>',
+  en: `Enter the expense name and amount separated by a space. \n<b><u>To enter multiple transactions, separate them with a comma.</u></b> \nNote: Use up to <b>three words for each transaction name, and emojis are allowed.</b>\n<u>Example: "<b>Rent 🏠 2000</b>, <b>Groceries 🛒 500"</b></u>`,
+  ua: `Введіть найменування витрати та суму через пробіл. \n<b><u>Для введення кількох транзакцій, розділіть їх комою.</u></b> \nПримітка: Використовуйте до <b>трьох слів для назви кожної транзакції, дозволено використовувати емодзі.</b>\n<u>Приклад: "<b>Оренда 🏠 2000</b>, <b>Продукти АТБ 🛒 500"</b></u>`,
+  pl: `Wprowadź nazwę i kwotę wydatku oddzieloną spacją. \n<b><u>Aby wprowadzić wiele transakcji, oddziel je przecinkiem.</u></b> \nUwaga: Użyj maksymalnie <b>trzech słów na nazwę każdej transakcji, dozwolone są emoji.</b>\n<u>Przykład: "<b>Wynajem 🏠 2000</b>, <b>Artykuły spożywcze 🛒 500"</b></u>`,
 };
 
 export const TRANSACTION_DELETED_MESSAGE = {
@@ -277,4 +277,10 @@ export const COUNT_BY = {
   ua: `Остання транзакція:`,
   en: `Last transaction:`,
   pl: `Ostatnia transakcja:`,
+};
+
+export const INFO_MESSAGE = {
+  ua: `Це інформаційне меню тут буде з'являтися корисна інформація ℹ️`,
+  en: `This information menu, useful information will appear here ℹ️`,
+  pl: `To menu informacyjne, przydatne informacje pojawią się tutaj ℹ️`,
 };

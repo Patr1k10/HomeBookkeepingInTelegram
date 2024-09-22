@@ -91,7 +91,7 @@ export class AdminHandler {
   @Action('sendNews')
   async sendNews(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} sendNews`);
-    await ctx.editMessageText(`нваиши новини та її побачать усі🔽🔽🔽`, backStartButton());
+    await ctx.editMessageText(`напиши новини та її побачать усі🔽🔽🔽`, backStartButton());
     await ctx.scene.enter('news');
   }
   @Action('popularTransactions')

@@ -8,3 +8,4 @@ export * from './premium.handler';
 export * from './compare.handler';
 export * from './advanced.statistics.handler';
 export * from './analytics.handler';
+export * from './financial-literacy.handler';

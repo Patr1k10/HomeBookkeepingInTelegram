@@ -62,6 +62,8 @@ export const BUTTONS = {
     TOP10: `Топ10 ваших транзакцій🔝`,
     TOP10GRAPH: `Отримати графік ваших Топ10`,
     ADVSTAT: `Просунута статистика💪`,
+    INFO: `Інформація ℹ️`,
+    FIN: `Фінаносва грамотність`,
   },
   en: {
     SETTING: 'Settings⚙️',
@@ -126,6 +128,8 @@ export const BUTTONS = {
     TOP10: `Your top 10 transactions🔝`,
     TOP10GRAPH: `Get a graph of your Top10`,
     ADVSTAT: `💪Advanced statistics`,
+    INFO: `Information ℹ️`,
+    FIN: `Financial literacy`,
   },
   pl: {
     SETTING: 'Ustawienia⚙️',
@@ -190,5 +194,7 @@ export const BUTTONS = {
     TOP10: `Top 10 twoich transakcji🔝`,
     TOP10GRAPH: `Pobierz wykres swoich Top10`,
     ADVSTAT: `💪Zaawansowane statystyki`,
+    INFO: `Informacje ℹ️`,
+    FIN: `Umiejętność finansowa`,
   },
 };

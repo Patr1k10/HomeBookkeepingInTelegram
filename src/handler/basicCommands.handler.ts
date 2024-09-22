@@ -1,9 +1,25 @@
 import { Action, Ctx, Hears, Start, Update } from 'nestjs-telegraf';
 import { BalanceService, PremiumService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
-import { ERROR_MESSAGE, HELP_MESSAGE, MAIN_MENU, RESETS_ALL, START_MESSAGE, SUPPORT_MESSAGE } from '../constants';
+import {
+  ERROR_MESSAGE,
+  HELP_MESSAGE,
+  INFO_MESSAGE,
+  MAIN_MENU,
+  RESETS_ALL,
+  START_MESSAGE,
+  SUPPORT_MESSAGE,
+} from '../constants';
 import { CustomCallbackQuery, IContext, MyMessage } from '../type/interface';
-import { actionButtonsStart, backHelpButton, backStartButton, currencySet, languageSet, resetButton } from '../battons';
+import {
+  actionButtonsStart,
+  backHelpButton,
+  backStartButton,
+  currencySet,
+  infoButton,
+  languageSet,
+  resetButton,
+} from '../battons';
 import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
 
@@ -107,6 +123,17 @@ export class BasicCommandsHandler {
       ctx.editedMessage;
     }
   }
+
+  @Action('info')
+  async infoCommand(ctx: IContext) {
+    this.logger.log(`user:${ctx.from.id} infoCommand executed`);
+    await ctx.editMessageText(INFO_MESSAGE[ctx.session.language], {
+      reply_markup: infoButton(ctx.session.language).reply_markup,
+      disable_web_page_preview: true,
+      parse_mode: 'HTML',
+    });
+  }
+
   @Action('language')
   async languageCommand(ctx: IContext) {
     try {

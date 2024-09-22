@@ -5,3 +5,4 @@ export * from './transaction.interface';
 export * from './currency.rates.interface';
 export * from './crypto.asset.interface';
 export * from './sort.transaction.interface';
+export * from './compoundInterestData.interface';
