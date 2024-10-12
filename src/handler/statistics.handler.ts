@@ -21,6 +21,7 @@ import {
 } from '../battons';
 import { resetSession } from '../common/reset.session';
 import { WizardContext } from 'telegraf/typings/scenes';
+import { sendSplitMessage } from '../common';
 
 @Update()
 export class StatisticsHandler {
@@ -39,13 +40,15 @@ export class StatisticsHandler {
   @Action('my_income')
   async incomeListCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} my_income command executed`);
-    await this.statisticsService.getTransactionsByType(ctx, TransactionType.INCOME);
+    const message = await this.statisticsService.getTransactionsByType(ctx, TransactionType.INCOME);
+    await sendSplitMessage(message, ctx);
   }
 
   @Action('my_expense')
   async expenseListCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} my_expense command executed`);
-    await this.statisticsService.getTransactionsByType(ctx, TransactionType.EXPENSE);
+    const message = await this.statisticsService.getTransactionsByType(ctx, TransactionType.EXPENSE);
+    await sendSplitMessage(message, ctx);
   }
   @Action('by_category')
   async categoryListCommand(ctx: IContext) {
@@ -67,7 +70,8 @@ export class StatisticsHandler {
       const callbackData = callbackQuery.data;
       const parts = callbackData.split(':');
       const selectedTransactionName = parts[1];
-      await this.statisticsService.getTransactionsByTransactionName(ctx, selectedTransactionName);
+      const message = await this.statisticsService.getTransactionsByTransactionName(ctx, selectedTransactionName);
+      await sendSplitMessage(message, ctx);
     } else {
       this.logger.log('callbackQuery is undefined');
     }
@@ -75,17 +79,20 @@ export class StatisticsHandler {
   @Action('today')
   async todayListCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} today command executed`);
-    await this.statisticsService.getFormattedTransactionsForToday(ctx);
+    const message = await this.statisticsService.getFormattedTransactionsForToday(ctx);
+    await sendSplitMessage(message, ctx);
   }
   @Action('on_week')
   async weekListCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} week command executed`);
-    await this.statisticsService.getFormattedTransactionsForWeek(ctx);
+    const message = await this.statisticsService.getFormattedTransactionsForWeek(ctx);
+    await sendSplitMessage(message, ctx);
   }
   @Action('on_month')
   async monthListCommand(ctx: IContext) {
     this.logger.log(`user:${ctx.from.id} month command executed`);
-    await this.statisticsService.getFormattedTransactionsForMonth(ctx);
+    const message = await this.statisticsService.getFormattedTransactionsForMonth(ctx);
+    await sendSplitMessage(message, ctx);
   }
 
   @Action('select_year')
@@ -136,11 +143,13 @@ export class StatisticsHandler {
         if (selectedMonth === null) {
           const fromDate = new Date(selectedYear, 0, 1, 0, 0, 0, 0);
           const toDate = new Date(selectedYear + 1, 0, 1, 0, 0, 0, 0);
-          await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+          const message = await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+          await sendSplitMessage(message, ctx);
         } else {
           const fromDate = new Date(selectedYear, selectedMonth - 1, 1, 0, 0, 0, 0);
           const toDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59, 999);
-          await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+          const message = await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+          await sendSplitMessage(message, ctx);
         }
       } else {
         this.logger.log(`user:${ctx.from.id} Failed to parse callbackData`);
@@ -165,7 +174,8 @@ export class StatisticsHandler {
       ctx.session.selectedDate = selectedDay;
       const fromDate = new Date(selectedYear, selectedMonth - 1, selectedDay, 0, 0, 0, 0);
       const toDate = new Date(selectedYear, selectedMonth - 1, selectedDay, 23, 59, 59, 999);
-      await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+      const message = await this.statisticsService.getTransactionsByPeriod(ctx, fromDate, toDate);
+      await sendSplitMessage(message, ctx);
     } else {
       this.logger.log(`user:${ctx.from.id} callbackQuery is undefined`);
     }

@@ -1,10 +1,11 @@
 import { Action, Ctx, On, Update } from 'nestjs-telegraf';
-import { TransactionService } from '../service';
+import { StatisticsService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { BalanceService } from '../service';
 import { TransactionType } from '../type/enum/transactionType.enam';
 import {
   BALANCE_MESSAGE,
+  CREATE_TRANSACTION_MESSAGE,
   ENTER_EXPENSE_MESSAGE,
   ENTER_INCOME_MESSAGE,
   getBalanceMessage,
@@ -24,6 +25,7 @@ export class TransactionHandler {
   constructor(
     private readonly transactionService: TransactionService,
     private readonly balanceService: BalanceService,
+    private readonly statisticsService: StatisticsService,
   ) {}
 
   @Action('transactions')
@@ -99,6 +101,7 @@ export class TransactionHandler {
     const text = message.text;
     const transactions = text.split(',').map((t) => t.trim());
     let errorMessageSent = false;
+    const transactionMessage = [];
     for (const transaction of transactions) {
       const matches = transaction.match(regex); // regex до трех слів
       if (!matches) {
@@ -122,6 +125,7 @@ export class TransactionHandler {
           userName,
         });
         await this.balanceService.updateBalance(userId, amount, transactionType);
+        transactionMessage.push(await this.statisticsService.getTransactionsByTransactionName(ctx, transactionName));
       } catch (error) {
         this.logger.error('Error creating transaction:', error);
         errorMessageSent = true;
@@ -134,11 +138,16 @@ export class TransactionHandler {
       );
     } else {
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
+
       const balanceMessage = getBalanceMessage(balance, ctx.session.language || 'ua', ctx.session.currency || 'UAH');
-      await ctx.replyWithHTML(`${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`, {
-        parse_mode: 'HTML',
-        reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
-      });
+      await ctx.replyWithHTML(
+        `${CREATE_TRANSACTION_MESSAGE[ctx.session.language || 'ua']}\n${transactionMessage}
+      ${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`,
+        {
+          parse_mode: 'HTML',
+          reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
+        },
+      );
       this.logger.log(`user:${ctx.from.id} textCommand executed`);
     }
 
