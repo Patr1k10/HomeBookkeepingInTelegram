@@ -41,7 +41,7 @@ export class MessageService {
     transactions: Transaction[],
     query?: ITransactionQuery | null,
     firstTransaction?: boolean,
-  ): Promise<void> {
+  ): Promise<string[]> {
     let message = ``;
     const { language, currency, group } = ctx.session;
     const timestamp = query?.timestamp;
@@ -115,25 +115,10 @@ export class MessageService {
     const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
     // General summary
     message += `${localizedMessage}<b>${totalPositiveAmount - totalNegativeAmount}${setCurrency}</b>\n`;
-
-    this.logger.log(message);
-
     // Разделить сообщение, если оно слишком длинное
     const messages = this.splitMessage(message);
 
-    for (const [index, part] of messages.entries()) {
-      if (index === 0) {
-        await ctx.editMessageText(part, {
-          parse_mode: 'HTML',
-          reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium, ctx).reply_markup,
-        });
-      } else {
-        await ctx.reply(part, {
-          parse_mode: 'HTML',
-          reply_markup: actionButtonsCompare(ctx.session.language || 'ua', ctx.session.isPremium, ctx).reply_markup,
-        });
-      }
-    }
+    return messages;
   }
 
   private async sortTransactionsBySum(

@@ -76,6 +76,12 @@ export const BALANCE_MESSAGE = {
   pl: 'Saldo zostało zaktualizowane✅',
 };
 
+export const CREATE_TRANSACTION_MESSAGE = {
+  en: `🔽Your statistics on these transactions🔽`,
+  ua: `🔽Ваша статистика по цім транзакціям🔽`,
+  pl: `🔽Twoje statystyki dotyczące tych transakcji🔽`,
+};
+
 export const getBalanceMessage = (balance: number, language: string = 'ua', currency: string = 'UAH') => {
   const setCurrency = CURRNCY[currency];
   const messages = {

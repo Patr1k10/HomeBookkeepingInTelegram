@@ -7,6 +7,7 @@ import { PERIOD_E, PERIOD_NULL } from '../constants';
 import { IContext, Transaction } from '../type/interface';
 import { backStatisticButton } from '../battons';
 import { ITransactionQuery } from '../type/interface/transaction.query.interface';
+import { message } from 'telegraf/filters';
 
 export class StatisticsService {
   private readonly logger: Logger = new Logger(StatisticsService.name);
@@ -16,7 +17,7 @@ export class StatisticsService {
     private readonly messageService: MessageService,
   ) {}
 
-  async getTransactionsByType(ctx: IContext, transactionType: TransactionType): Promise<void> {
+  async getTransactionsByType(ctx: IContext, transactionType: TransactionType): Promise<string[]> {
     const groupIds = ctx.session.group;
     const userId = ctx.from.id;
     const firstTransaction = true;
@@ -28,7 +29,8 @@ export class StatisticsService {
 
       if (transactions.length > 0) {
         this.logger.log(`Retrieved ${transactions.length} transactions`);
-        await this.messageService.sendFormattedTransactions(ctx, transactions, null, firstTransaction);
+        const message = await this.messageService.sendFormattedTransactions(ctx, transactions, null, firstTransaction);
+        return message;
       } else {
         this.logger.log(`No transactions of type ${transactionType} found`);
         await ctx.editMessageText(
@@ -48,7 +50,7 @@ export class StatisticsService {
     noTransactionsMessage: string,
     logMessage: string,
     firstTransaction?: boolean,
-  ): Promise<void> {
+  ): Promise<string[]> {
     const userId = ctx.from.id;
     const groupIds = ctx.session.group;
     ctx.session.transactionQuery = query;
@@ -62,10 +64,13 @@ export class StatisticsService {
         this.logger.log(
           logMessage.replace('{count}', transactions.length.toString()).replace('{userId}', userId.toString()),
         );
-        await this.messageService.sendFormattedTransactions(ctx, transactions, query, firstTransaction);
+        const message = await this.messageService.sendFormattedTransactions(ctx, transactions, query, firstTransaction);
+        return message;
       } else {
         this.logger.log(noTransactionsMessage.replace('{userId}', userId.toString()));
-        await ctx.editMessageText(noTransactionsMessage, backStatisticButton(ctx.session.language || 'ua'));
+        const messageError = [];
+        messageError.push(noTransactionsMessage);
+        return messageError;
       }
     } catch (error) {
       this.logger.error('Error getting transactions', error);
@@ -83,57 +88,62 @@ export class StatisticsService {
     return await this.transactionModel.find(adaptedQuery).exec();
   }
 
-  async getTransactionsByTransactionName(ctx: IContext, transactionName: string): Promise<void> {
-    await this.getTransactions(
+  async getTransactionsByTransactionName(ctx: IContext, transactionName: string): Promise<string[]> {
+    const message = await this.getTransactions(
       ctx,
       { transactionName } as ITransactionQuery,
       `${PERIOD_NULL[ctx.session.language]}(${transactionName})⛔️`,
       `Retrieved {count} transactions by name for user {userId}`,
       true,
     );
+    return message;
   }
 
-  async getFormattedTransactionsForToday(ctx: IContext): Promise<void> {
+  async getFormattedTransactionsForToday(ctx: IContext): Promise<string[]> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    await this.getTransactions(
+    const message = await this.getTransactions(
       ctx,
       { timestamp: { $gte: today } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for today for user {userId}`,
     );
+    return message;
   }
 
-  async getFormattedTransactionsForWeek(ctx: IContext): Promise<void> {
+  async getFormattedTransactionsForWeek(ctx: IContext): Promise<string[]> {
     const today = new Date();
     const weekAgo = new Date();
     weekAgo.setDate(today.getDate() - 7);
-    await this.getTransactions(
+    const message = await this.getTransactions(
       ctx,
       { timestamp: { $gte: weekAgo, $lte: today } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the week for user {userId}`,
     );
+    return message;
   }
 
-  async getFormattedTransactionsForMonth(ctx: IContext): Promise<void> {
+  async getFormattedTransactionsForMonth(ctx: IContext): Promise<string[]> {
     const today = new Date();
     const monthAgo = new Date();
     monthAgo.setDate(today.getDate() - 30);
-    await this.getTransactions(
+    const message = await this.getTransactions(
       ctx,
       { timestamp: { $gte: monthAgo, $lte: today } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the month for user {userId}`,
     );
+    return message;
   }
-  async getTransactionsByPeriod(ctx: IContext, fromDate: Date, toDate: Date): Promise<void> {
-    await this.getTransactions(
+  async getTransactionsByPeriod(ctx: IContext, fromDate: Date, toDate: Date): Promise<string[]> {
+    const message = await this.getTransactions(
       ctx,
       { timestamp: { $gte: fromDate, $lte: toDate } } as ITransactionQuery,
       PERIOD_E[ctx.session.language],
       `Retrieved {count} transactions for the period for user {userId}`,
     );
+    return message;
   }
 
   async getUniqueTransactionNames(ctx: IContext): Promise<string[] | null> {
