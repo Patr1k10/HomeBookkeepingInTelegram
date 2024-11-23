@@ -98,18 +98,18 @@ export class MessageService {
       const localizedMessage = this.getLocalizedMessage('POSITIVE_TRANSACTIONS', language);
       message += `${localizedMessage}`;
       for (const { name, sum, percentage, userName } of sortedPositive) {
-        message += this.formatMessage(name, percentage, sum, currency, group, userName);
+        message += this.formatMessage(name, percentage, sum, currency, group, userName, false);
       }
-      message += `<b>${totalPositiveAmount}${setCurrency}</b>\n\n`; // Общая сумма додатних транзакций
+      message += `<b>${totalPositiveAmount}${setCurrency}</b>\n\n`;
     }
 
     if (sortedNegative.length > 0) {
       const localizedMessage = this.getLocalizedMessage('NEGATIVE_TRANSACTIONS', language);
       message += `${localizedMessage}`;
       for (const { name, sum, percentage, userName } of sortedNegative) {
-        message += this.formatMessage(name, percentage, sum, currency, group, userName);
+        message += this.formatMessage(name, percentage, sum, currency, group, userName, true);
       }
-      message += `<b>${totalNegativeAmount}${setCurrency}</b>`; // Общая сумма від'ємних транзакцій
+      message += `-<b>${totalNegativeAmount}${setCurrency}</b>`;
     }
 
     const localizedMessage = this.getLocalizedMessage('TOTAL_AMOUNT', language);
@@ -159,17 +159,19 @@ export class MessageService {
     currency: string,
     group: number[],
     userName?: string,
+    isNegative: boolean = false,
   ) {
     const paddedName = name.padEnd(10, ' ');
     const setCurrency = CURRNCY[currency];
 
     let userString = '';
-
     if (group && group.length >= 2 && userName !== undefined) {
       userString = `(👤${userName})`;
     }
 
-    return `<code>${paddedName}${userString}: ${percentage}% (${sum}${setCurrency})</code>\n`;
+    const formattedSum = isNegative ? `-${sum}` : sum;
+
+    return `<code>${paddedName}${userString}: ${percentage}% (${formattedSum}${setCurrency})</code>\n`;
   }
   private getLocalizedMessage(key: string, language: string) {
     return TOTAL_MESSAGES[key][language] || TOTAL_MESSAGES[key]['ua'];

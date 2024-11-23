@@ -1,7 +1,7 @@
 import { Action, Ctx, Update } from 'nestjs-telegraf';
 import { BalanceService } from '../service';
 import { Logger } from '@nestjs/common';
-import { ERROR_MESSAGE, getBalanceMessage } from '../constants';
+import { ERROR_MESSAGE, getBalanceMessage, SET_BALANCE_TEX } from '../constants';
 import { IContext } from '../type/interface';
 import { backStartButton, backStatisticButton, languageSet } from '../battons';
 import { resetSession } from '../common';
@@ -10,6 +10,7 @@ import { WizardContext } from 'telegraf/typings/scenes';
 @Update()
 export class BalanceHandler {
   private readonly logger: Logger = new Logger(BalanceHandler.name);
+
   constructor(private readonly balanceService: BalanceService) {}
 
   @Action('balance')
@@ -35,5 +36,11 @@ export class BalanceHandler {
       this.logger.error(`user:${ctx.from.id}Error in listCommand:`, error);
       await ctx.editMessageText(ERROR_MESSAGE[ctx.session.language || 'ua'], backStartButton());
     }
+  }
+  @Action('change_balance')
+  async change_balanceCommand(@Ctx() ctx: IContext & WizardContext) {
+    this.logger.log(`user:${ctx.from.id} change_balanceCommand executed`);
+    await ctx.editMessageText(SET_BALANCE_TEX[ctx.session.language], backStartButton());
+    await ctx.scene.enter('change_balance');
   }
 }

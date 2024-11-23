@@ -15,6 +15,7 @@ export interface MyMessage {
   };
   date: number;
   text?: string;
+  photo?: string;
   location?: {
     latitude: number;
     longitude: number;

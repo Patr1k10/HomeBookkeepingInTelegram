@@ -1,5 +1,5 @@
 import { Action, Ctx, On, Update } from 'nestjs-telegraf';
-import { StatisticsService, TransactionService } from '../service';
+import { ChartService, StatisticsService, TransactionService } from '../service';
 import { Logger } from '@nestjs/common';
 import { BalanceService } from '../service';
 import { TransactionType } from '../type/enum/transactionType.enam';
@@ -18,6 +18,7 @@ import { CustomCallbackQuery, IContext, MyMessage } from '../type/interface';
 import { actionButtonsTransaction, backTranButton } from '../battons';
 import { resetSession } from '../common';
 import { WizardContext } from 'telegraf/typings/scenes';
+import { ITransactionQuery } from '../type/interface/transaction.query.interface';
 
 @Update()
 export class TransactionHandler {
@@ -26,6 +27,7 @@ export class TransactionHandler {
     private readonly transactionService: TransactionService,
     private readonly balanceService: BalanceService,
     private readonly statisticsService: StatisticsService,
+    private readonly chartService: ChartService,
   ) {}
 
   @Action('transactions')
@@ -102,6 +104,9 @@ export class TransactionHandler {
     const transactions = text.split(',').map((t) => t.trim());
     let errorMessageSent = false;
     const transactionMessage = [];
+    const transactionNames = [];
+    const transactionType = ctx.session.type === 'income' ? TransactionType.INCOME : TransactionType.EXPENSE;
+
     for (const transaction of transactions) {
       const matches = transaction.match(regex); // regex до трех слів
       if (!matches) {
@@ -110,12 +115,12 @@ export class TransactionHandler {
         continue;
       }
       const transactionName = matches[1].trim().toLowerCase();
+      transactionNames.push(transactionName);
       const amount = Number(matches[2]);
       if (!transactionName || isNaN(amount) || amount <= 0) {
         errorMessageSent = true;
         continue;
       }
-      const transactionType = ctx.session.type === 'income' ? TransactionType.INCOME : TransactionType.EXPENSE;
       try {
         await this.transactionService.createTransaction({
           userId,
@@ -137,17 +142,42 @@ export class TransactionHandler {
         backTranButton(ctx.session.language || 'ua'),
       );
     } else {
+      const transactionQueue = {} as ITransactionQuery;
+      const today = new Date();
+      const monthAgo = new Date();
+      monthAgo.setDate(today.getDate() - 30);
+      transactionQueue.userId = userId;
+      transactionQueue.transactionName = `${transactionNames[0]}`;
+      // transactionQueue.timestamp = {
+      //   $gte: monthAgo,
+      //   $lte: today,
+      // };
+
+      const transactionForCard = await this.statisticsService.getTransactionsForChard(ctx, transactionQueue);
+      this.logger.log(`transactionQueue ${JSON.stringify(transactionQueue, null, 2)}`);
+      const chart = await this.chartService.generateDailyTransactionChart(transactionForCard);
+      const imageBuffer = Buffer.from(chart, 'base64');
+
       const balance = await this.balanceService.getBalance(userId, ctx.session.group);
 
       const balanceMessage = getBalanceMessage(balance, ctx.session.language || 'ua', ctx.session.currency || 'UAH');
-      await ctx.replyWithHTML(
-        `${CREATE_TRANSACTION_MESSAGE[ctx.session.language || 'ua']}\n${transactionMessage}
-      ${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`,
+      await ctx.replyWithPhoto(
+        { source: imageBuffer },
         {
-          parse_mode: 'HTML',
+          caption: `${CREATE_TRANSACTION_MESSAGE[ctx.session.language || 'ua']}\n${transactionMessage}
+      ${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`,
           reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
+          parse_mode: 'HTML',
         },
       );
+      // await ctx.replyWithHTML(
+      //   `${CREATE_TRANSACTION_MESSAGE[ctx.session.language || 'ua']}\n${transactionMessage}
+      // ${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`,
+      //   {
+      //     parse_mode: 'HTML',
+      //     reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
+      //   },
+      // );
       this.logger.log(`user:${ctx.from.id} textCommand executed`);
     }
 
@@ -157,10 +187,27 @@ export class TransactionHandler {
   @Action('backT')
   async backT(@Ctx() ctx: IContext & WizardContext) {
     this.logger.log(`user:${ctx.from.id} backT executed`);
+    const callbackQuery = ctx.callbackQuery as CustomCallbackQuery;
     await resetSession(ctx);
-    await ctx.editMessageText(
-      SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua'],
-      actionButtonsTransaction(ctx.session.language || 'ua'),
-    );
+    try {
+      if (callbackQuery.message.photo) {
+        await ctx.deleteMessage();
+        await ctx.reply(
+          SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua'],
+          actionButtonsTransaction(ctx.session.language || 'ua'),
+        );
+      } else {
+        await ctx.editMessageText(
+          SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua'],
+          actionButtonsTransaction(ctx.session.language || 'ua'),
+        );
+      }
+    } catch (error) {
+      this.logger.error(`Error in backT: ${error.message}`);
+      await ctx.reply(
+        SELECT_TRANSACTION_MESSAGE[ctx.session.language || 'ua'],
+        actionButtonsTransaction(ctx.session.language || 'ua'),
+      );
+    }
   }
 }

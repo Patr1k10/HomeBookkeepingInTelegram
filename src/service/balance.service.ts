@@ -52,6 +52,19 @@ export class BalanceService {
     }
   }
 
+  async setBalance(userId: number, amount: number): Promise<void> {
+    try {
+      const balance = await this.getOrCreateBalance(userId);
+      balance.balance = amount;
+      balance.lastActivity = new Date();
+      await balance.save();
+      this.logger.log(`Set balance for user ${userId}`);
+    } catch (error) {
+      this.logger.error('Error updating balance', error);
+      throw error;
+    }
+  }
+
   async deleteAllBalancesOfUser(userId: number): Promise<void> {
     try {
       await this.balanceModel.deleteMany({ userId }).exec();
@@ -126,7 +139,6 @@ export class BalanceService {
   }
   async setStartPayload(userId: number, userStartPayload: string) {
     if (!userStartPayload.split(' ')[1]) {
-      console.log('ret');
       return;
     } else {
       const user = await this.balanceModel.findOne({ userId }).exec();
