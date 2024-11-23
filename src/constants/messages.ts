@@ -290,3 +290,23 @@ export const INFO_MESSAGE = {
   en: `This information menu, useful information will appear here ℹ️`,
   pl: `To menu informacyjne, przydatne informacje pojawią się tutaj ℹ️`,
 };
+
+export const PLEASE_NUM = {
+  ua: `Будь ласка, введіть ціле число ⛔️`,
+  en: `Please enter a whole number. ⛔️`,
+  pl: `Please enter a whole number. ⛔️`,
+};
+export const SET_BALANCE = {
+  ua: `Баланс встановлено на:`,
+  en: `The balance is set to:`,
+  pl: `Saldo jest ustawione na:`,
+};
+
+export const SET_BALANCE_TEX = {
+  ua: `Якщо вам потрібно змінити баланс на будь який вам потрібний то напишіть його нижче 
+  (також можна додати знак ➖ і баланс буду від'ємний)🔽🔽🔽`,
+  en: `If you need to change the balance to any you want, write it below 
+  (you can also add a ➖ sign and the balance will be negative)🔽🔽🔽`,
+  pl: `Jeśli chcesz zmienić saldo na takie jakie potrzebujesz napisz to poniżej
+ (możesz też dodać znak ➖ i saldo będzie ujemne)🔽🔽🔽`,
+};

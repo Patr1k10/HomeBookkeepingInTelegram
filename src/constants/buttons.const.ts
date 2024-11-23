@@ -64,6 +64,7 @@ export const BUTTONS = {
     ADVSTAT: `Просунута статистика💪`,
     INFO: `Інформація ℹ️`,
     FIN: `Фінаносва грамотність`,
+    SET_BALANCE: `Встановити Баланс💸`,
   },
   en: {
     SETTING: 'Settings⚙️',
@@ -130,6 +131,7 @@ export const BUTTONS = {
     ADVSTAT: `💪Advanced statistics`,
     INFO: `Information ℹ️`,
     FIN: `Financial literacy`,
+    SET_BALANCE: `Set Balance💸`,
   },
   pl: {
     SETTING: 'Ustawienia⚙️',
@@ -196,5 +198,6 @@ export const BUTTONS = {
     ADVSTAT: `💪Zaawansowane statystyki`,
     INFO: `Informacje ℹ️`,
     FIN: `Umiejętność finansowa`,
+    SET_BALANCE: `Ustaw balans💸`,
   },
 };
