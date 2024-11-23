@@ -3,7 +3,7 @@ import { WizardContext } from 'telegraf/typings/scenes';
 import { Context, Telegraf } from 'telegraf';
 import { IContext, MyMessage } from '../type/interface';
 import { backStartButton } from '../battons';
-import { BalanceService, NotificationService } from '../service';
+import { BalanceService } from '../service';
 import { PLEASE_NUM, SET_BALANCE } from '../constants';
 
 @Wizard('change_balance')
