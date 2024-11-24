@@ -149,6 +149,54 @@ export class ChartService {
     return color;
   }
 
+  private getTimeScale(
+    startDate: Date,
+    endDate: Date,
+  ): {
+    scale: 'day' | 'week' | 'month';
+    format: string;
+    groupingFn: (date: Date) => string;
+  } {
+    const diffInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffInDays <= 31) {
+      // For periods up to a month, show daily data
+      return {
+        scale: 'day',
+        format: 'dd.MM',
+        groupingFn: (date: Date) => date.toISOString().split('T')[0],
+      };
+    } else if (diffInDays <= 180) {
+      // For periods up to 6 months, show weekly data
+      return {
+        scale: 'week',
+        format: 'dd.MM',
+        groupingFn: (date: Date) => {
+          const weekStart = new Date(date);
+          weekStart.setDate(date.getDate() - date.getDay());
+          return weekStart.toISOString().split('T')[0];
+        },
+      };
+    } else {
+      // For longer periods, show monthly data
+      return {
+        scale: 'month',
+        format: 'MM.yyyy',
+        groupingFn: (date: Date) => {
+          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        },
+      };
+    }
+  }
+
+  private formatDate(date: Date, format: string): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return format.replace('dd', day).replace('MM', month).replace('yyyy', year.toString());
+  }
+
   async generateDailyTransactionChart(transactions: Transaction[]): Promise<string> {
     try {
       this.logger.log(`Starting to generate chart. Received ${transactions.length} transactions`);
@@ -168,13 +216,24 @@ export class ChartService {
       const chartWidth = width - 2 * padding;
       const chartHeight = height - 2 * padding;
 
-      // Group transactions by date and calculate daily totals
-      this.logger.log('Grouping transactions by date');
-      const dailyTotals = new Map<string, { positive: number; negative: number }>();
+      // Sort transactions by date and get time range
+      const sortedTransactions = [...transactions].sort(
+        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+      );
+      const startDate = new Date(sortedTransactions[0].timestamp);
+      const endDate = new Date(sortedTransactions[sortedTransactions.length - 1].timestamp);
+
+      // Determine the appropriate time scale
+      const timeScale = this.getTimeScale(startDate, endDate);
+      this.logger.log(`Using time scale: ${timeScale.scale}`);
+
+      // Group transactions by the determined scale
+      const groupedTotals = new Map<string, { positive: number; negative: number }>();
 
       transactions.forEach((transaction) => {
-        const date = new Date(transaction.timestamp).toISOString().split('T')[0];
-        const current = dailyTotals.get(date) || { positive: 0, negative: 0 };
+        const date = new Date(transaction.timestamp);
+        const groupKey = timeScale.groupingFn(date);
+        const current = groupedTotals.get(groupKey) || { positive: 0, negative: 0 };
 
         if (transaction.amount >= 0) {
           current.positive += transaction.amount;
@@ -182,12 +241,12 @@ export class ChartService {
           current.negative += transaction.amount;
         }
 
-        dailyTotals.set(date, current);
+        groupedTotals.set(groupKey, current);
       });
 
-      this.logger.log(`Grouped into ${dailyTotals.size} daily entries`);
+      this.logger.log(`Grouped into ${groupedTotals.size} ${timeScale.scale} entries`);
 
-      const dates = Array.from(dailyTotals.keys()).sort();
+      const groupedDates = Array.from(groupedTotals.keys()).sort();
 
       // Find min and max values for scaling
       let minTotal = 0;
@@ -195,156 +254,130 @@ export class ChartService {
       const positiveData: number[] = [];
       const negativeData: number[] = [];
 
-      dates.forEach((date) => {
-        const { positive, negative } = dailyTotals.get(date)!;
+      groupedDates.forEach((date) => {
+        const { positive, negative } = groupedTotals.get(date)!;
         positiveData.push(positive);
         negativeData.push(negative);
         minTotal = Math.min(minTotal, negative);
         maxTotal = Math.max(maxTotal, positive);
       });
 
-      this.logger.log(`Value range: min=${minTotal}, max=${maxTotal}`);
-
-      // Add some padding to min/max values
+      // Add padding to min/max values
       const valueRange = maxTotal - minTotal;
       minTotal -= valueRange * 0.1;
       maxTotal += valueRange * 0.1;
 
-      try {
-        // Clear background
-        this.logger.log('Drawing background');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, width, height);
+      // Draw background and title
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
 
-        // Draw title
-        this.logger.log('Drawing title');
-        ctx.fillStyle = '#2c3e50';
-        ctx.font = 'bold 20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`Daily Transaction Summary for ${transactions[0].transactionName}`, width / 2, padding / 2);
+      ctx.fillStyle = '#2c3e50';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      const periodText = `${timeScale.scale === 'day' ? 'Daily' : timeScale.scale === 'week' ? 'Weekly' : 'Monthly'}`;
+      ctx.fillText(`${periodText} Transaction Summary for ${transactions[0].transactionName}`, width / 2, padding / 2);
 
-        // Draw axes
-        this.logger.log('Drawing axes');
-        ctx.strokeStyle = '#2c3e50';
-        ctx.lineWidth = 2;
+      // Draw axes
+      ctx.strokeStyle = '#2c3e50';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(padding, padding);
+      ctx.lineTo(padding, height - padding);
+      ctx.lineTo(width - padding, height - padding);
+      ctx.stroke();
 
-        // Y-axis
-        ctx.beginPath();
-        ctx.moveTo(padding, padding);
-        ctx.lineTo(padding, height - padding);
-        ctx.stroke();
+      // Draw Y-axis labels
+      ctx.fillStyle = '#2c3e50';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'right';
 
-        // X-axis
-        ctx.beginPath();
-        ctx.moveTo(padding, height - padding);
-        ctx.lineTo(width - padding, height - padding);
-        ctx.stroke();
+      const ySteps = 10;
+      for (let i = 0; i <= ySteps; i++) {
+        const value = minTotal + (maxTotal - minTotal) * (i / ySteps);
+        const y = height - padding - (height - 2 * padding) * (i / ySteps);
+        ctx.fillText(value.toLocaleString('uk-UA'), padding - 10, y + 4);
+      }
 
-        // Y-axis labels
-        this.logger.log('Drawing Y-axis labels');
-        ctx.fillStyle = '#2c3e50';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'right';
+      // Draw X-axis labels with appropriate date formatting
+      ctx.textAlign = 'center';
+      const maxLabels = timeScale.scale === 'day' ? 10 : timeScale.scale === 'week' ? 12 : 12;
+      const step = Math.ceil(groupedDates.length / maxLabels);
 
-        const ySteps = 10;
-        for (let i = 0; i <= ySteps; i++) {
-          const value = minTotal + (maxTotal - minTotal) * (i / ySteps);
-          const y = height - padding - (height - 2 * padding) * (i / ySteps);
-          ctx.fillText(value.toLocaleString('uk-UA'), padding - 10, y + 4);
+      groupedDates.forEach((dateStr, i) => {
+        if (i % step === 0) {
+          const x = padding + (width - 2 * padding) * (i / (groupedDates.length - 1));
+          const date = new Date(dateStr);
+          const label = this.formatDate(date, timeScale.format);
+
+          ctx.save();
+          ctx.translate(x, height - padding + 20);
+          ctx.rotate(Math.PI / 4);
+          ctx.fillText(label, 0, 0);
+          ctx.restore();
         }
+      });
 
-        // X-axis labels
-        this.logger.log('Drawing X-axis labels');
-        ctx.textAlign = 'center';
-        const step = Math.ceil(dates.length / 10); // Show maximum 10 date labels
-        dates.forEach((date, i) => {
-          if (i % step === 0) {
-            const x = padding + (width - 2 * padding) * (i / (dates.length - 1));
-            ctx.save();
-            ctx.translate(x, height - padding + 20);
-            ctx.rotate(Math.PI / 4);
-            ctx.fillText(new Date(date).toLocaleDateString('uk-UA'), 0, 0);
-            ctx.restore();
+      // Draw grid
+      ctx.strokeStyle = '#e5e5e5';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= ySteps; i++) {
+        const y = padding + chartHeight * (i / ySteps);
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(padding + chartWidth, y);
+        ctx.stroke();
+      }
+
+      // Draw data lines
+      const drawLine = (data: number[], color: string) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        data.forEach((value, i) => {
+          const x = padding + chartWidth * (i / (groupedDates.length - 1));
+          const y = padding + chartHeight - chartHeight * ((value - minTotal) / (maxTotal - minTotal));
+
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
           }
         });
 
-        // Draw grid
-        this.logger.log('Drawing grid');
-        ctx.strokeStyle = '#e5e5e5';
-        ctx.lineWidth = 1;
+        ctx.stroke();
 
-        for (let i = 0; i <= ySteps; i++) {
-          const y = padding + chartHeight * (i / ySteps);
+        // Draw points
+        data.forEach((value, i) => {
+          const x = padding + chartWidth * (i / (groupedDates.length - 1));
+          const y = padding + chartHeight - chartHeight * ((value - minTotal) / (maxTotal - minTotal));
+
           ctx.beginPath();
-          ctx.moveTo(padding, y);
-          ctx.lineTo(padding + chartWidth, y);
-          ctx.stroke();
-        }
+          ctx.arc(x, y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+        });
+      };
 
-        // Draw data lines
-        this.logger.log('Starting to draw data lines');
-        const drawLine = (data: number[], color: string, label: string) => {
-          this.logger.log(`Drawing ${label} line with ${data.length} points`);
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
+      drawLine(positiveData, '#198754');
+      drawLine(negativeData, '#dc3545');
 
-          data.forEach((value, i) => {
-            const x = padding + chartWidth * (i / (dates.length - 1));
-            const y = padding + chartHeight - chartHeight * ((value - minTotal) / (maxTotal - minTotal));
+      // Draw legend
+      const legendY = padding / 2;
+      ctx.font = '14px Arial';
 
-            if (i === 0) {
-              ctx.moveTo(x, y);
-            } else {
-              ctx.lineTo(x, y);
-            }
-          });
+      ctx.fillStyle = '#198754';
+      ctx.fillRect(width - padding - 200, legendY - 8, 16, 16);
+      ctx.fillStyle = '#2c3e50';
+      ctx.fillText('Income', width - padding - 175, legendY + 4);
 
-          ctx.stroke();
+      ctx.fillStyle = '#dc3545';
+      ctx.fillRect(width - padding - 100, legendY - 8, 16, 16);
+      ctx.fillStyle = '#2c3e50';
+      ctx.fillText('Expenses', width - padding - 75, legendY + 4);
 
-          // Draw points
-          data.forEach((value, i) => {
-            const x = padding + chartWidth * (i / (dates.length - 1));
-            const y = padding + chartHeight - chartHeight * ((value - minTotal) / (maxTotal - minTotal));
-
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-          });
-        };
-
-        // Draw both lines
-        drawLine(positiveData, '#198754', 'positive'); // Green for positive
-        drawLine(negativeData, '#dc3545', 'negative'); // Red for negative
-
-        // Draw legend
-        this.logger.log('Drawing legend');
-        const legendY = padding / 2;
-        ctx.font = '14px Arial';
-
-        // Positive transactions
-        ctx.fillStyle = '#198754';
-        ctx.fillRect(width - padding - 200, legendY - 8, 16, 16);
-        ctx.fillStyle = '#2c3e50';
-        ctx.fillText('Income', width - padding - 175, legendY + 4);
-
-        // Negative transactions
-        ctx.fillStyle = '#dc3545';
-        ctx.fillRect(width - padding - 100, legendY - 8, 16, 16);
-        ctx.fillStyle = '#2c3e50';
-        ctx.fillText('Expenses', width - padding - 75, legendY + 4);
-
-        this.logger.log('Converting canvas to base64');
-        const imageData = canvas.toDataURL();
-        const base64Data = imageData.replace(/^data:image\/png;base64,/, '');
-
-        this.logger.log('Chart generation completed successfully');
-        return base64Data;
-      } catch (drawError) {
-        this.logger.error('Error during drawing operations', drawError);
-        throw drawError;
-      }
+      const imageData = canvas.toDataURL();
+      return imageData.replace(/^data:image\/png;base64,/, '');
     } catch (error) {
       this.logger.error('Error generating chart', error);
       throw error;

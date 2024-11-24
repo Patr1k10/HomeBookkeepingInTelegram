@@ -143,18 +143,11 @@ export class TransactionHandler {
       );
     } else {
       const transactionQueue = {} as ITransactionQuery;
-      const today = new Date();
-      const monthAgo = new Date();
-      monthAgo.setDate(today.getDate() - 30);
       transactionQueue.userId = userId;
       transactionQueue.transactionName = `${transactionNames[0]}`;
-      // transactionQueue.timestamp = {
-      //   $gte: monthAgo,
-      //   $lte: today,
-      // };
+
 
       const transactionForCard = await this.statisticsService.getTransactionsForChard(ctx, transactionQueue);
-      this.logger.log(`transactionQueue ${JSON.stringify(transactionQueue, null, 2)}`);
       const chart = await this.chartService.generateDailyTransactionChart(transactionForCard);
       const imageBuffer = Buffer.from(chart, 'base64');
 
@@ -170,14 +163,6 @@ export class TransactionHandler {
           parse_mode: 'HTML',
         },
       );
-      // await ctx.replyWithHTML(
-      //   `${CREATE_TRANSACTION_MESSAGE[ctx.session.language || 'ua']}\n${transactionMessage}
-      // ${BALANCE_MESSAGE[ctx.session.language]}\n${balanceMessage}`,
-      //   {
-      //     parse_mode: 'HTML',
-      //     reply_markup: backTranButton(ctx.session.language || 'ua').reply_markup,
-      //   },
-      // );
       this.logger.log(`user:${ctx.from.id} textCommand executed`);
     }
 
